@@ -2,21 +2,21 @@
 
 ## Tech Stack
 
-| Layer       | Technology                        |
-|-------------|-----------------------------------|
-| Frontend    | React.js                          |
-| Backend     | Python Flask                      |
-| Database    | PostgreSQL                        |
-| Server      | AWS EC2                           |
-| CI/CD       | GitHub Actions                    |
-| Container   | Docker / Docker Compose (local)   |
+| Layer     | Technology                      |
+| --------- | ------------------------------- |
+| Frontend  | React.js                        |
+| Backend   | Python Flask                    |
+| Database  | PostgreSQL                      |
+| Server    | AWS EC2                         |
+| CI/CD     | GitHub Actions                  |
+| Container | Docker / Docker Compose (local) |
 
 ## Team Split
 
-| Person | Role              | Scope                                                        |
-|--------|-------------------|--------------------------------------------------------------|
-| **A**  | API Integration   | OAuth flows, Instagram/TikTok API clients, scheduled jobs    |
-| **B**  | App Development   | DB schema, REST API, frontend, infrastructure                |
+| Person | Role            | Scope                                                     |
+| ------ | --------------- | --------------------------------------------------------- |
+| **A**  | API Integration | OAuth flows, Instagram/TikTok API clients, scheduled jobs |
+| **B**  | App Development | DB schema, REST API, frontend, infrastructure             |
 
 ### Interface Contract
 
@@ -42,13 +42,13 @@ This allows both to work independently. Person B builds routes/UI using mock dat
 
 ## Phase 1: Local Development
 
-Goal: Fully working app running locally via Docker Compose.
+**Goal: Fully working app running locally via Docker Compose.**
 
 ### Sprint 0: Project Setup (Both, 1 day)
 
 Work together to establish the foundation.
 
-- [ ] Initialize Git repo and branching strategy (`main`, `dev`, feature branches)
+- [x] Initialize Git repo and branching strategy (`main`, `dev`, feature branches)
 - [ ] Set up project structure:
 
 ```
@@ -226,11 +226,11 @@ Goal: Deploy to AWS EC2 with CI/CD via GitHub Actions.
 
 ## Timeline Summary
 
-| Sprint   | Duration | Focus                              |
-|----------|----------|------------------------------------|
-| Sprint 0 | 1 day    | Project setup (together)           |
-| Sprint 1 | 2 weeks  | Core backend + OAuth               |
-| Sprint 2 | 2 weeks  | Scheduled jobs + Frontend          |
-| Sprint 3 | 1 week   | Integration + Polish               |
-| Sprint 4 | 1 week   | AWS infra + CI/CD                  |
-| Sprint 5 | 1 week   | Production hardening               |
+| Sprint   | Duration | Focus                     |
+| -------- | -------- | ------------------------- |
+| Sprint 0 | 1 day    | Project setup (together)  |
+| Sprint 1 | 2 weeks  | Core backend + OAuth      |
+| Sprint 2 | 2 weeks  | Scheduled jobs + Frontend |
+| Sprint 3 | 1 week   | Integration + Polish      |
+| Sprint 4 | 1 week   | AWS infra + CI/CD         |
+| Sprint 5 | 1 week   | Production hardening      |
