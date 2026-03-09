@@ -4,7 +4,7 @@
 
 Platform for content creators to measure campaign performance and display portfolios across Instagram and TikTok.
 
-### Key Decisions
+## Key Decisions
 
 - **Performance data**: Stored in our DB (fetched via scheduled jobs)
 - **Media content**: Not stored — use oEmbed to embed posts from Instagram/TikTok
@@ -109,28 +109,3 @@ Account        ──1:N──> Posts
 | shares           | INT          | Default 0                |
 | created_at       | TIMESTAMP    |                          |
 | updated_at       | TIMESTAMP    |                          |
-
-## Data Flow
-
-1. **Admin** creates a Campaign (assigns creators + company)
-2. **Admin** adds Accounts to the Campaign
-3. **Creator** authenticates via OAuth (Instagram / TikTok)
-4. **Scheduled job** fetches posts & metrics using stored tokens
-5. **Token refresh job** renews tokens before expiry
-6. **Frontend** displays posts via oEmbed (no media storage needed)
-
-## API Integration
-
-### Instagram (Graph API)
-
-- OAuth via Facebook Login
-- Long-lived token: **60 days** (must refresh before expiry)
-- Endpoints: `/me/media`, `/media/{id}/insights`
-- oEmbed: `GET https://graph.facebook.com/v18.0/instagram_oembed?url={post_url}`
-
-### TikTok (Content API)
-
-- OAuth via TikTok Login
-- Access token: **24 hours** / Refresh token: **365 days**
-- Endpoints: `/v2/video/list/`, `/v2/video/query/`
-- oEmbed: `GET https://www.tiktok.com/oembed?url={video_url}`
