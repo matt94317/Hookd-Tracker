@@ -74,5 +74,5 @@ docker-compose build --no-cache
 | Service  | URL                   |
 | -------- | --------------------- |
 | Frontend | http://localhost:3000 |
-| Backend  | http://localhost:5000 |
+| Backend  | http://localhost:5001 |
 | Database | localhost:5432        |

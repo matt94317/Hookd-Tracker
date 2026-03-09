@@ -94,7 +94,7 @@ hookd/
   - Map response to `posts` table schema
   - Handle pagination
 - [ ] **Post fetching -- TikTok**
-  - Fetch videos via Content API (`/v2/video/list/`)
+  - Fetch videos via TikTok API v2 (`/v2/video/list/`)
   - Map response to `posts` table schema
   - Handle pagination
 - [ ] Unit tests with mocked API responses
@@ -106,7 +106,7 @@ hookd/
   - JWT-based session management
   - Role-based access control middleware (admin / company / creator)
 - [ ] **Campaign CRUD API**
-  - `POST /campaigns` -- create (company only)
+  - `POST /campaigns` -- create (admin / company)
   - `GET /campaigns` -- list (filtered by role)
   - `GET /campaigns/:id` -- detail
   - `PUT /campaigns/:id` -- update
