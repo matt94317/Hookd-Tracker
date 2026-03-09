@@ -17,6 +17,7 @@ User (creator) ──N:M──> Campaigns  (via campaign_creators)
 User (company) ──1:N──> Campaigns
 Campaign       ──1:N──> Accounts
 Channel        ──1:N──> Accounts
+User (creator) ──1:N──> Accounts
 Account        ──1:N──> Posts
 ```
 
@@ -80,6 +81,7 @@ Account        ──1:N──> Posts
 |---------------------|--------------|----------------------------|
 | id                  | BIGINT PK    | Auto increment             |
 | campaign_id         | BIGINT FK    | References campaigns(id)   |
+| creator_id          | BIGINT FK    | References users(id)       |
 | channel_id          | BIGINT FK    | References channels(id)    |
 | platform_account_id | VARCHAR(255) | NOT NULL                   |
 | username            | VARCHAR(255) |                            |

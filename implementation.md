@@ -159,11 +159,10 @@ hookd/
   - Set daily/monthly targets per account
 - [ ] **Performance views**
   - Post-level metrics
-  - Aggregation by account / campaign / channel
-- [ ] **Top Performer page**
-  - Creator leaderboard
-  - Creator detail view
-  - Campaign comparison
+  - Aggregation by account / creator / campaign / channel
+  - Creator leaderboard (ranked by selected metric)
+  - Creator detail view (per-creator breakdown)
+  - Campaign comparison (compare creators within a campaign)
 
 ---
 

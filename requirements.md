@@ -45,6 +45,7 @@ Performance data can be aggregated at the following levels:
 | ------------ | ------------------------------------------------ |
 | **Post**     | Individual post metrics                          |
 | **Account**  | All posts from a single Instagram/TikTok account |
+| **Creator**  | All accounts/posts belonging to a creator        |
 | **Campaign** | All accounts/posts within a campaign             |
 | **Company**  | All campaigns owned by a company                 |
 | **Channel**  | Filtered by platform (Instagram or TikTok)       |
@@ -72,30 +73,6 @@ Company users can set daily/monthly posting targets per account and track whethe
 ### Schema
 
 See `daily_target` / `monthly_target` columns on the `accounts` table in [data-schema.md](plan/data-schema.md).
-
----
-
-## Feature 3: Performer Analysis
-
-### Overview
-
-Company users can view overall performance and analyse, compare across creators within their campaigns.
-
-### Requirements
-
-- Company able to view overall performance for one campaign
-- Rank creators by key metrics: total views, total likes, engagement rate, number of posts
-- Filter by campaign, channel, or date range
-- View per-creator breakdown: which posts performed best, average metrics
-- Engagement rate formula: `(likes + comments) / views`
-
-### Views
-
-| View                    | Description                                   |
-| ----------------------- | --------------------------------------------- |
-| **Overall Campaign**    | View performance of campaign                  |
-| **Creator leaderboard** | Ranked list of creators by selected metric    |
-| **Campaign comparison** | Compare creator performance within a campaign |
 
 ---
 
