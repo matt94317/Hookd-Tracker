@@ -49,7 +49,7 @@ This allows both to work independently. Person B builds routes/UI using mock dat
 Work together to establish the foundation.
 
 - [x] Initialize Git repo and branching strategy (`main`, `dev`, feature branches)
-- [ ] Set up project structure:
+- [x] Set up project structure:
 
 ```
 hookd/
@@ -74,7 +74,7 @@ hookd/
 
 - [ ] Set up Docker Compose (PostgreSQL + Flask + React)
 - [ ] Define and agree on the `PlatformService` interface
-- [ ] Create DB migrations (all tables from data-schema.md)
+- [x] Create DB migrations (all tables from data-schema.md)
 
 ---
 
