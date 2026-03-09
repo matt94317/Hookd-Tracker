@@ -72,8 +72,8 @@ hookd/
 └── plan/
 ```
 
-- [ ] Set up Docker Compose (PostgreSQL + Flask + React)
-- [ ] Define and agree on the `PlatformService` interface
+- [x] Set up Docker Compose (PostgreSQL + Flask + React)
+- [x] Define and agree on the `PlatformService` interface
 - [x] Create DB migrations (all tables from data-schema.md)
 
 ---
