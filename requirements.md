@@ -60,19 +60,18 @@ Performance data can be aggregated at the following levels:
 
 ### Overview
 
-Company users can view whether creator hit weekly or daily target and able to see posting time.
+Company users can set daily/monthly posting targets per account and track whether creators are meeting those targets.
 
 ### Requirements
 
-- Company creates **individual schedule entries** per account with a target date
-- Each schedule entry represents one expected post
-- When a post is fetched and matched, the schedule entry is linked to the post and marked as published
-- Dashboard shows calendar/timeline view of all schedules across accounts
-- Overdue detection: scheduled job marks entries as overdue when `scheduled_date` has passed with no linked post
+- Company sets **daily_target** and **monthly_target** (number of posts) on each account
+- System counts posts fetched for the account within the current day/month and compares against targets
+- Dashboard shows target achievement status per account (on track / behind)
+- Company can view posting times for each account's posts
 
 ### Schema
 
-See `campaign_schedules` table in [data-schema.md](plan/data-schema.md).
+See `daily_target` / `monthly_target` columns on the `accounts` table in [data-schema.md](plan/data-schema.md).
 
 ---
 

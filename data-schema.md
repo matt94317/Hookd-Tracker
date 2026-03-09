@@ -18,8 +18,6 @@ User (company) ──1:N──> Campaigns
 Campaign       ──1:N──> Accounts
 Channel        ──1:N──> Accounts
 Account        ──1:N──> Posts
-Account        ──1:N──> Campaign Schedules
-Campaign Schedule ──0:1──> Post  (linked when published)
 ```
 
 ## User Roles
@@ -88,20 +86,10 @@ Campaign Schedule ──0:1──> Post  (linked when published)
 | access_token        | TEXT         | Encrypted                  |
 | refresh_token       | TEXT         | Encrypted                  |
 | token_expires_at    | TIMESTAMP    |                            |
+| daily_target        | INT          | Default 0. Expected posts per day. |
+| monthly_target      | INT          | Default 0. Expected posts per month. |
 | created_at          | TIMESTAMP    |                            |
 | updated_at          | TIMESTAMP    |                            |
-
-### campaign_schedules
-
-| Column         | Type                              | Notes                      |
-|----------------|-----------------------------------|----------------------------|
-| id             | BIGINT PK                         | Auto increment             |
-| account_id     | BIGINT FK                         | References accounts(id)    |
-| scheduled_date | DATE                              | NOT NULL                   |
-| status         | ENUM(pending, published, overdue) | Default: pending           |
-| post_id        | BIGINT FK                         | References posts(id), nullable. Linked when post is matched. |
-| created_at     | TIMESTAMP                         |                            |
-| updated_at     | TIMESTAMP                         |                            |
 
 ### posts
 

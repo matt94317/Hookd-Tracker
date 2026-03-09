@@ -137,10 +137,9 @@ hookd/
   - Check `token_expires_at` for upcoming expirations
   - Auto-refresh tokens
   - Log/alert on refresh failure
-- [ ] **Schedule matching job**
-  - Match fetched posts to `campaign_schedules` by account + date
-  - Update schedule status to `published` and link `post_id`
-  - Mark past unmatched entries as `overdue`
+- [ ] **Target achievement check**
+  - Count posts per account for the current day/month
+  - Compare against `daily_target` / `monthly_target` on the account
 - [ ] Set up APScheduler or Celery Beat for job scheduling
 - [ ] Integration tests with sandbox/test accounts
 
@@ -151,13 +150,13 @@ hookd/
 - [ ] **Campaign detail page**
   - Creator list
   - Account list with OAuth status
-  - Schedule calendar/timeline view
+  - Target achievement status (daily/monthly)
   - Posts list with oEmbed
 - [ ] **Campaign management**
   - Create/edit campaign form
   - Add/remove creators
   - Add/remove accounts
-  - Create/edit schedule entries
+  - Set daily/monthly targets per account
 - [ ] **Performance views**
   - Post-level metrics
   - Aggregation by account / campaign / channel
