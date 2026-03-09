@@ -1,4 +1,5 @@
 # Hookd-Tracker
+
 This is a Content Creator Campaign Management platform. It could track, analyze real time content statists, manage campaign, content creations and search, match with different available campaigns.
 
 ## Docker Commands
@@ -70,8 +71,8 @@ docker-compose build --no-cache
 
 ### Ports
 
-| Service  | URL                    |
-|----------|------------------------|
-| Frontend | http://localhost:3000   |
-| Backend  | http://localhost:5001   |
-| Database | localhost:5432          |
+| Service  | URL                   |
+| -------- | --------------------- |
+| Frontend | http://localhost:3000 |
+| Backend  | http://localhost:5000 |
+| Database | localhost:5432        |

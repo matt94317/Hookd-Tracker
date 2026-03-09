@@ -1,22 +1,27 @@
-"""
-Shared interface between Person A (API Integration) and Person B (App Development).
-Person A implements these methods; Person B calls them from API routes.
-"""
+from abc import ABC, abstractmethod
+from typing import List, Dict, Any
 
-
-class PlatformService:
+class PlatformService(ABC):
+    """
+    Interface for platform integrations (Instagram, TikTok).
+    """
+    
+    @abstractmethod
     def get_oauth_url(self, account_id: int, channel: str) -> str:
-        """Generate OAuth authorization URL for a given platform."""
-        raise NotImplementedError
+        """Generate the OAuth authorization URL."""
+        pass
 
-    def handle_oauth_callback(self, channel: str, code: str) -> dict:
-        """Exchange OAuth callback code for tokens."""
-        raise NotImplementedError
+    @abstractmethod
+    def handle_oauth_callback(self, channel: str, code: str) -> Dict[str, Any]:
+        """Exchange code for access tokens."""
+        pass
 
-    def fetch_posts(self, account_id: int) -> list[dict]:
-        """Fetch posts from the platform for a given account."""
-        raise NotImplementedError
+    @abstractmethod
+    def fetch_posts(self, account_id: int) -> List[Dict[str, Any]]:
+        """Fetch recent posts for the account."""
+        pass
 
+    @abstractmethod
     def refresh_token(self, account_id: int) -> bool:
-        """Refresh an expired or expiring token. Returns True on success."""
-        raise NotImplementedError
+        """Refresh the access token if expired."""
+        pass
