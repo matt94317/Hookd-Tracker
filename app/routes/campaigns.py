@@ -1,0 +1,192 @@
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
+from .. import db
+from ..models import Campaign, CampaignCreator, User
+from . import roles_required
+
+campaigns_bp = Blueprint('campaigns', __name__, url_prefix='/campaigns')
+
+# a shared helper that formats a campaign into JSON. Used by every endpoint so the response format is consistent
+def _campaign_to_dict(c):
+    return {
+        "id": c.id,
+        "name": c.name,
+        "company_id": c.company_id,
+        "start_date": str(c.start_date) if c.start_date else None,
+        "end_date": str(c.end_date) if c.end_date else None,
+        "created_at": str(c.created_at) if c.created_at else None,
+    }
+
+# a shared helper that checks if a user is allowed to see a campaign. Avoids duplicating the same role-check logic across multiple endpoints
+def _can_access_campaign(campaign, user_id, role):
+    """Check if the current user is allowed to view this campaign."""
+    if role == 'admin':
+        return True
+    if role == 'company':
+        return campaign.company_id == user_id
+    # creator: must be in campaign_creators
+    return CampaignCreator.query.filter_by(
+        campaign_id=campaign.id, creator_id=user_id
+    ).first() is not None
+
+
+@campaigns_bp.route('', methods=['POST'])
+# Creators can't create campaigns (a company hires them)
+@roles_required('admin', 'company')
+def create_campaign():
+    data = request.get_json()
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+
+    name = data.get('name')
+    if not name:
+        return jsonify({"error": "Name is required"}), 400
+
+    # company role always owns the campaign they create
+    # admin must supply company_id explicitly
+    if claims['role'] == 'company':
+        company_id = user_id
+    else:
+        company_id = data.get('company_id')
+        if not company_id:
+            return jsonify({"error": "company_id is required for admin"}), 400
+
+    campaign = Campaign(
+        name=name,
+        company_id=company_id,
+        start_date=data.get('start_date'),
+        end_date=data.get('end_date'),
+    )
+    db.session.add(campaign)
+    db.session.commit()
+
+    return jsonify(_campaign_to_dict(campaign)), 201
+
+
+@campaigns_bp.route('', methods=['GET'])
+@jwt_required()
+def list_campaigns():
+    claims = get_jwt()
+    role = claims['role']
+    user_id = int(get_jwt_identity())
+
+    if role == 'admin':
+        campaigns = Campaign.query.all()
+    elif role == 'company':
+        campaigns = Campaign.query.filter_by(company_id=user_id).all()
+    else:  # creator
+        campaigns = (
+            Campaign.query
+            .join(CampaignCreator, Campaign.id == CampaignCreator.campaign_id)
+            .filter(CampaignCreator.creator_id == user_id)
+            .all()
+        )
+
+    return jsonify([_campaign_to_dict(c) for c in campaigns]), 200
+
+
+@campaigns_bp.route('/<int:campaign_id>', methods=['GET'])
+@jwt_required()
+def get_campaign(campaign_id):
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+
+    # returns 403 if the user has no business seeing that campaign
+    campaign = Campaign.query.get_or_404(campaign_id)
+
+    if not _can_access_campaign(campaign, user_id, claims['role']):
+        return jsonify({"error": "Access forbidden"}), 403
+
+    return jsonify(_campaign_to_dict(campaign)), 200
+
+
+@campaigns_bp.route('/<int:campaign_id>', methods=['PUT'])
+@roles_required('admin', 'company')
+def update_campaign(campaign_id):
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+
+    campaign = Campaign.query.get_or_404(campaign_id)
+
+    if claims['role'] == 'company' and campaign.company_id != user_id:
+        return jsonify({"error": "Access forbidden"}), 403
+
+    data = request.get_json()
+    if 'name' in data:
+        campaign.name = data['name']
+    if 'start_date' in data:
+        campaign.start_date = data['start_date']
+    if 'end_date' in data:
+        campaign.end_date = data['end_date']
+
+    db.session.commit()
+    return jsonify(_campaign_to_dict(campaign)), 200
+
+
+@campaigns_bp.route('/<int:campaign_id>', methods=['DELETE'])
+@roles_required('admin', 'company')
+def delete_campaign(campaign_id):
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+
+    campaign = Campaign.query.get_or_404(campaign_id)
+
+    if claims['role'] == 'company' and campaign.company_id != user_id:
+        return jsonify({"error": "Access forbidden"}), 403
+
+    db.session.delete(campaign)
+    db.session.commit()
+    return jsonify({"message": "Campaign deleted"}), 200
+
+
+@campaigns_bp.route('/<int:campaign_id>/creators', methods=['POST'])
+@roles_required('admin', 'company')
+def add_creator(campaign_id):
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+
+    campaign = Campaign.query.get_or_404(campaign_id)
+
+    if claims['role'] == 'company' and campaign.company_id != user_id:
+        return jsonify({"error": "Access forbidden"}), 403
+
+    data = request.get_json()
+    creator_id = data.get('creator_id')
+    if not creator_id:
+        return jsonify({"error": "creator_id is required"}), 400
+
+    creator = User.query.get_or_404(creator_id)
+    if creator.role != 'creator':
+        return jsonify({"error": "User is not a creator"}), 400
+
+    existing = CampaignCreator.query.filter_by(
+        campaign_id=campaign_id, creator_id=creator_id
+    ).first()
+    if existing:
+        return jsonify({"error": "Creator already in campaign"}), 409
+
+    entry = CampaignCreator(campaign_id=campaign_id, creator_id=creator_id)
+    db.session.add(entry)
+    db.session.commit()
+
+    return jsonify({"campaign_id": campaign_id, "creator_id": creator_id}), 201
+
+
+@campaigns_bp.route('/<int:campaign_id>/creators/<int:creator_id>', methods=['DELETE'])
+@roles_required('admin', 'company')
+def remove_creator(campaign_id, creator_id):
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+
+    campaign = Campaign.query.get_or_404(campaign_id)
+
+    if claims['role'] == 'company' and campaign.company_id != user_id:
+        return jsonify({"error": "Access forbidden"}), 403
+
+    entry = CampaignCreator.query.filter_by(
+        campaign_id=campaign_id, creator_id=creator_id
+    ).first_or_404()
+
+    db.session.delete(entry)
+    db.session.commit()
+    return jsonify({"message": "Creator removed from campaign"}), 200
