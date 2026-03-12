@@ -18,6 +18,7 @@ def _post_to_dict(p):
         "views": p.views,
         "shares": p.shares,
         "created_at": str(p.created_at) if p.created_at else None,
+        "updated_at": str(p.updated_at) if p.updated_at else None,
     }
 
 
