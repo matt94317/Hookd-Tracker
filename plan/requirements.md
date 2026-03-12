@@ -25,12 +25,11 @@
 ### Flow
 
 1. **Admin/ Company** creates a Campaign (name, start_date, end_date). If created by a Company, the campaign is automatically linked to that Company.
-2. **Admin** assigns a Company to the Campaign (admin-created campaigns only)
-3. **Admin/ Company** adds Creator users to the Campaign
-4. **Admin/ Company** adds Accounts (Instagram / TikTok) from the assigned Creators only
-5. **Creator** receives an authorisation request and completes OAuth 2.0 to grant access
-6. **Collecting data** fetches post data and metrics automatically
-7. **Token refresh job** renews tokens before expiry
+2. **Admin/ Company** adds Creator users to the Campaign
+3. **Admin/ Company** adds Accounts (Instagram / TikTok) from the assigned Creators only
+4. **Creator** receives an authorisation request and completes OAuth 2.0 to grant access
+5. **Collecting data** fetches post data and metrics automatically
+6. **Token refresh job** renews tokens before expiry
 
 ### Data Collection
 

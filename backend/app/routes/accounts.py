@@ -117,10 +117,11 @@ def get_oauth_url(account_id):
         if campaign.company_id != user_id:
             return jsonify({"error": "Access forbidden"}), 403
 
-    # TODO: Person A implements this — replace stub with PlatformService.get_oauth_url()
-    # from ..services.instagram import InstagramService
-    # url = InstagramService().get_oauth_url(account_id, channel)
-    return jsonify({"oauth_url": "NOT_IMPLEMENTED"}), 200
+    from ..services import get_platform_service
+    channel = account.channel
+    service = get_platform_service(channel.name)
+    url = service.get_oauth_url(account.id, channel.name)
+    return jsonify({"oauth_url": url}), 200
 
 
 @accounts_bp.route('/oauth/callback/<channel>', methods=['GET'])
@@ -129,7 +130,39 @@ def oauth_callback(channel):
     if not code:
         return jsonify({"error": "Missing code parameter"}), 400
 
-    # TODO: Person A implements this — replace stub with PlatformService.handle_oauth_callback()
-    # from ..services.instagram import InstagramService
-    # tokens = InstagramService().handle_oauth_callback(channel, code)
-    return jsonify({"message": "NOT_IMPLEMENTED", "channel": channel}), 200
+    state = request.args.get('state')
+    from ..services import get_platform_service
+    try:
+        service = get_platform_service(channel)
+        result = service.handle_oauth_callback(channel, code, state=state)
+        return jsonify({"message": "OAuth connected", "data": result}), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": "OAuth callback failed"}), 500
+
+
+@accounts_bp.route('/accounts/<int:account_id>/fetch-posts', methods=['POST'])
+@jwt_required()
+def trigger_fetch_posts(account_id):
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+
+    account = Account.query.get_or_404(account_id)
+
+    # Access control
+    if claims['role'] == 'creator' and account.creator_id != user_id:
+        return jsonify({"error": "Access forbidden"}), 403
+    if claims['role'] == 'company':
+        campaign = Campaign.query.get(account.campaign_id)
+        if campaign.company_id != user_id:
+            return jsonify({"error": "Access forbidden"}), 403
+
+    if not account.access_token:
+        return jsonify({"error": "Account not authorized. Complete OAuth first."}), 400
+
+    from ..services import get_platform_service
+    channel = account.channel
+    service = get_platform_service(channel.name)
+    posts = service.fetch_posts(account_id)
+    return jsonify({"fetched": len(posts)}), 200
