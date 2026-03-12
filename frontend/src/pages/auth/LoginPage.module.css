@@ -1,0 +1,138 @@
+/* Full viewport wrapper */
+.pageWrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Centered white card */
+.card {
+  background-color: #ffffff;
+  border: 1px solid #E2D9CC;
+  border-radius: 12px;
+  padding: 48px 44px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Logo — fixed top-left of screen */
+.logo {
+  position: fixed;
+  top: 28px;
+  left: 36px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+  cursor: pointer;
+}
+
+/* "Welcome back" heading */
+.heading {
+  font-size: 26px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 32px;
+  letter-spacing: -0.3px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4a4a4a;
+}
+
+.input {
+  padding: 10px 14px;
+  border: 1px solid #D4C9BA;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #1a1a1a;
+  background-color: #FDFBF8;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.input::placeholder {
+  color: #B0A899;
+}
+
+.input:focus {
+  border-color: #1a1a1a;
+  background-color: #ffffff;
+}
+
+/* Forgot password — centered */
+.forgotRow {
+  display: flex;
+  justify-content: center;
+  margin-top: -8px;
+}
+
+.linkSmall {
+  font-size: 13px;
+  color: #7a6f63;
+  text-decoration: none;
+}
+
+.linkSmall:hover {
+  color: #1a1a1a;
+  text-decoration: underline;
+}
+
+/* Black CTA button */
+.signInBtn {
+  margin-top: 4px;
+  padding: 12px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.15s ease;
+  letter-spacing: 0.1px;
+}
+
+.signInBtn:hover {
+  background-color: #333333;
+}
+
+.signInBtn:active {
+  background-color: #000000;
+}
+
+/* "Don't have an account?" footer */
+.signupPrompt {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: #7a6f63;
+}
+
+.linkPrimary {
+  color: #1a1a1a;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.linkPrimary:hover {
+  text-decoration: underline;
+}

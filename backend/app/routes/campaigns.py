@@ -138,7 +138,7 @@ def delete_campaign(campaign_id):
     db.session.commit()
     return jsonify({"message": "Campaign deleted"}), 200
 
-
+# Company can only add creators to their own campaigns (ownership check)
 @campaigns_bp.route('/<int:campaign_id>/creators', methods=['POST'])
 @roles_required('admin', 'company')
 def add_creator(campaign_id):
@@ -171,7 +171,7 @@ def add_creator(campaign_id):
 
     return jsonify({"campaign_id": campaign_id, "creator_id": creator_id}), 201
 
-
+# Company can only remove creators from their own campaigns (ownership check)
 @campaigns_bp.route('/<int:campaign_id>/creators/<int:creator_id>', methods=['DELETE'])
 @roles_required('admin', 'company')
 def remove_creator(campaign_id, creator_id):
