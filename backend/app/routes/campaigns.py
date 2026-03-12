@@ -15,6 +15,7 @@ def _campaign_to_dict(c):
         "start_date": str(c.start_date) if c.start_date else None,
         "end_date": str(c.end_date) if c.end_date else None,
         "created_at": str(c.created_at) if c.created_at else None,
+        "updated_at": str(c.updated_at) if c.updated_at else None,
     }
 
 # a shared helper that checks if a user is allowed to see a campaign. Avoids duplicating the same role-check logic across multiple endpoints

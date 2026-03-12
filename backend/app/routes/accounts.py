@@ -19,6 +19,7 @@ def _account_to_dict(a):
         "daily_target": a.daily_target,
         "monthly_target": a.monthly_target,
         "created_at": str(a.created_at) if a.created_at else None,
+        "updated_at": str(a.updated_at) if a.updated_at else None,
     }
 
 
