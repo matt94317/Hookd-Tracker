@@ -9,7 +9,7 @@ import requests
 from .platform import PlatformService
 from .encryption import TokenEncryption
 from .. import db
-from ..models import Account, Post
+from ..models import Account, Channel, Post
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +30,13 @@ class InstagramService(PlatformService):
 
     # ── OAuth ────────────────────────────────────────────────────────────────
 
-    def get_oauth_url(self, account_id: int, channel: str) -> str:
+    def get_oauth_url(self, state: str, channel: str) -> str:
         params = {
             'client_id': self.app_id,
             'redirect_uri': self.redirect_uri,
             'scope': 'instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement',
             'response_type': 'code',
-            'state': str(account_id),
+            'state': state,
         }
         return f"https://www.facebook.com/v19.0/dialog/oauth?{urlencode(params)}"
 
@@ -96,23 +96,29 @@ class InstagramService(PlatformService):
         if not ig_user_id:
             raise ValueError("No Instagram Business/Creator account found linked to any Facebook Page.")
 
-        # Step 4: Update Account row
-        account_id = int(state) if state else None
-        if not account_id:
-            raise ValueError("Missing account_id in OAuth state parameter")
+        # Step 4: Parse state and create Account
+        import json
+        if not state:
+            raise ValueError("Missing state in OAuth callback")
+        state_data = json.loads(state)
+        campaign_id = state_data['campaign_id']
+        creator_id = state_data['creator_id']
+        channel_id = state_data['channel_id']
 
-        account = Account.query.get(account_id)
-        if not account:
-            raise ValueError(f"Account {account_id} not found")
-
-        account.access_token = self.encryption.encrypt(long_lived_token)
-        account.platform_account_id = ig_user_id
-        account.username = ig_username
-        account.token_expires_at = datetime.now(timezone.utc) + timedelta(days=60)
+        account = Account(
+            campaign_id=campaign_id,
+            creator_id=creator_id,
+            channel_id=channel_id,
+            platform_account_id=ig_user_id,
+            username=ig_username,
+            access_token=self.encryption.encrypt(long_lived_token),
+            token_expires_at=datetime.now(timezone.utc) + timedelta(days=60),
+        )
+        db.session.add(account)
         db.session.commit()
 
         return {
-            'account_id': account_id,
+            'account_id': account.id,
             'platform_account_id': ig_user_id,
             'username': ig_username,
             'expires_at': str(account.token_expires_at),
