@@ -1,5 +1,4 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import styles from './Sidebar.module.css';
 
 const NAV_ITEMS = [
@@ -12,13 +11,6 @@ const NAV_ITEMS = [
 function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo} onClick={() => navigate('/campaigns')}>
@@ -38,9 +30,14 @@ function Sidebar() {
         ))}
       </nav>
 
-      <button className={styles.logoutBtn} onClick={handleLogout}>
-        Sign out
+      <button
+        className={`${styles.navItem} ${location.pathname === '/settings' ? styles.active : ''}`}
+        onClick={() => navigate('/settings')}
+      >
+        <span className={styles.icon}>⚙</span>
+        Settings
       </button>
+
     </aside>
   );
 }

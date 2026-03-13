@@ -76,3 +76,32 @@ docker-compose build --no-cache
 | Frontend | http://localhost:3000 |
 | Backend  | http://localhost:5001 |
 | Database | localhost:5432        |
+
+## Mock / Seed Data
+
+Run the seed script to populate the database with test accounts, campaigns, and posts:
+
+```bash
+docker-compose exec backend python seed.py
+```
+
+The script is idempotent — safe to run multiple times (skips existing records).
+
+### Test Credentials
+
+| Role    | Email               | Password  |
+| ------- | ------------------- | --------- |
+| Company | company@test.com    | Test1234! |
+| Creator | creator@test.com    | Test1234! |
+
+### What Gets Created
+
+**Company — Acme Brands**
+- Campaign: Summer Launch 2026 (Jun 1 – Aug 31, 2026)
+- Campaign: Back to School 2026 (Aug 15 – Sep 15, 2026)
+
+**Creator — Alex Creator**
+- Assigned to both campaigns
+- Instagram account (`@alexcreator_ig`) linked to each campaign
+- TikTok account (`@alexcreator_tt`) linked to each campaign
+- 15 mock posts per account (60 posts total) with randomized engagement metrics
