@@ -1,20 +1,45 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { apiFetch } from '../../utils/api';
 import styles from './LoginPage.module.css';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const registered = location.state?.registered;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Placeholder — API integration added in Sprint 3
-    console.log('Sign in attempted:', { email });
+    setError('');
+    setLoading(true);
+    try {
+      const data = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      login(data.access_token);
+      navigate('/campaigns');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className={styles.pageWrapper}>
+      {registered && (
+        <div className={styles.successBanner}>
+          Your account has been created. Sign in to get started.
+        </div>
+      )}
       <div className={styles.logo} onClick={() => navigate('/')}>Hookd Tracker</div>
       <div className={styles.card}>
         <h1 className={styles.heading}>Welcome back</h1>
@@ -50,8 +75,10 @@ function LoginPage() {
             <a className={styles.linkSmall} href="#">Forgot password?</a>
           </div>
 
-          <button className={styles.signInBtn} type="submit">
-            Sign In
+          {error && <p className={styles.errorMsg}>{error}</p>}
+
+          <button className={styles.signInBtn} type="submit" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 

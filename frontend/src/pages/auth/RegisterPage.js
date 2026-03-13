@@ -1,23 +1,56 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiFetch } from '../../utils/api';
 import styles from './RegisterPage.module.css';
+
+const FREE_EMAIL_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com',
+  'outlook.com', 'hotmail.com', 'hotmail.co.uk', 'live.com', 'msn.com',
+  'yahoo.com', 'yahoo.co.uk', 'yahoo.fr', 'ymail.com',
+  'icloud.com', 'me.com', 'mac.com',
+  'aol.com', 'aim.com',
+  'protonmail.com', 'proton.me',
+  'mail.com', 'gmx.com', 'gmx.net',
+  'yandex.com', 'yandex.ru',
+]);
 
 function RegisterPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState('select'); // 'select' | 'form'
   const [role, setRole] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleRoleSelect = (selected) => {
     setRole(selected);
     setStep('form');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Placeholder — API integration added in Sprint 3
-    console.log('Register attempted:', { email, role });
+    setError('');
+
+    const domain = email.split('@')[1]?.toLowerCase();
+    if (!domain || FREE_EMAIL_DOMAINS.has(domain)) {
+      setError('Please use a professional work email address.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await apiFetch('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, password, role }),
+      });
+      navigate('/login', { state: { registered: true } });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,12 +101,29 @@ function RegisterPage() {
 
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="email">Email address</label>
+              <label className={styles.label} htmlFor="name">
+                {role === 'company' ? 'Company name' : 'Full name'}
+              </label>
+              <input
+                className={styles.input}
+                id="name"
+                type="text"
+                placeholder={role === 'company' ? 'Your company name' : 'Your name'}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label className={styles.label} htmlFor="email">
+                {role === 'company' ? 'Work email address' : 'Email address'}
+              </label>
               <input
                 className={styles.input}
                 id="email"
                 type="email"
-                placeholder="name@example.com"
+                placeholder={role === 'company' ? 'you@yourcompany.com' : 'name@example.com'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -93,8 +143,10 @@ function RegisterPage() {
               />
             </div>
 
-            <button className={styles.signUpBtn} type="submit">
-              Sign up
+            {error && <p className={styles.errorMsg}>{error}</p>}
+
+            <button className={styles.signUpBtn} type="submit" disabled={loading}>
+              {loading ? 'Creating account...' : 'Sign up'}
             </button>
           </form>
 
