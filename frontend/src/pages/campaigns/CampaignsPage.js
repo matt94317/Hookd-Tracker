@@ -35,6 +35,7 @@ export default function CampaignsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null); // campaign id pending delete
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     apiFetch('/campaigns', {}, token)
@@ -44,11 +45,16 @@ export default function CampaignsPage() {
   }, [token]);
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return campaigns;
-    return campaigns.filter((c) =>
-      c.name.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [campaigns, search]);
+    return campaigns.filter((c) => {
+      if (search.trim() && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
+      if (statusFilter === 'active' && !isActive(c)) return false;
+      if (statusFilter === 'upcoming') {
+        const start = c.start_date ? new Date(c.start_date) : null;
+        if (!start || start <= new Date()) return false;
+      }
+      return true;
+    });
+  }, [campaigns, search, statusFilter]);
 
   // Summary stats
   const totalCampaigns = campaigns.length;
@@ -110,7 +116,7 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      {/* Search */}
+      {/* Search + Filter */}
       <div className={styles.searchRow}>
         <div className={styles.searchWrap}>
           <span className={styles.searchIcon}>🔍</span>
@@ -122,6 +128,15 @@ export default function CampaignsPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+        <select
+          className={styles.statusSelect}
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="upcoming">Upcoming</option>
+        </select>
       </div>
 
       {/* Campaign grid */}

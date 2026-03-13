@@ -3,9 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import styles from './Sidebar.module.css';
 
 const NAV_ITEMS = [
-  { label: 'Campaigns', path: '/campaigns', icon: '◎' },
-  { label: 'Creators',  path: '/creators',  icon: '👤' },
-  { label: 'Posts',     path: '/posts',     icon: '📋' },
+  { label: 'Dashboard', path: '/dashboard',  icon: '📊' },
+  { label: 'Campaigns', path: '/campaigns',  icon: '◎' },
+  { label: 'Creators',  path: '/creators',   icon: '👤' },
+  { label: 'Posts',     path: '/posts',      icon: '📋' },
 ];
 
 function Sidebar() {

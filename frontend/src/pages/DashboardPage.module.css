@@ -1,0 +1,134 @@
+/* ── Page header ── */
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.4px;
+}
+
+/* ── Filter bar ── */
+.filterBar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #111827;
+  background-color: #ffffff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.filterSelect:focus {
+  border-color: #111827;
+}
+
+/* ── Metrics grid ── */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.metricCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.8px;
+  line-height: 1;
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* ── Chart card ── */
+.chartCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.chartTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.chartToggle {
+  display: flex;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.toggleBtn:hover {
+  background-color: #f5f6f8;
+  color: #111827;
+}
+
+.toggleActive {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.toggleActive:hover {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.emptyChart {
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 48px 0;
+}

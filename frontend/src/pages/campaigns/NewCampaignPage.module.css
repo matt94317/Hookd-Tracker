@@ -1,0 +1,131 @@
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.pageHeader {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.4px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #7a6f63;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.block {
+  background-color: #ffffff;
+  border: 1px solid #E2D9CC;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #D4C9BA;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #1a1a1a;
+  background-color: #FDFBF8;
+  outline: none;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #B0A899;
+}
+
+.input:focus {
+  border-color: #1a1a1a;
+  background-color: #ffffff;
+}
+
+.dateRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.dateField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dateLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #7a6f63;
+}
+
+.errorMsg {
+  font-size: 13px;
+  color: #c0392b;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.cancelBtn {
+  background: none;
+  border: 1px solid #D4C9BA;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cancelBtn:hover {
+  background-color: #F6F4F0;
+}
+
+.createBtn {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.createBtn:hover {
+  background-color: #333333;
+}
+
+.createBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
