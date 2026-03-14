@@ -18,7 +18,6 @@ function RegisterPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState('select'); // 'select' | 'form'
   const [role, setRole] = useState('');
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -43,7 +42,7 @@ function RegisterPage() {
     try {
       await apiFetch('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ email, password, role }),
       });
       navigate('/login', { state: { registered: true } });
     } catch (err) {
@@ -64,7 +63,7 @@ function RegisterPage() {
 
           <div className={styles.roleGrid}>
             <button
-              className={`${styles.roleBtn} ${styles.roleDark}`}
+              className={`${styles.roleBtn} ${styles.roleCreator}`}
               onClick={() => handleRoleSelect('creator')}
             >
               <span className={styles.roleIcon}>🎬</span>
@@ -73,7 +72,7 @@ function RegisterPage() {
             </button>
 
             <button
-              className={`${styles.roleBtn} ${styles.roleLight}`}
+              className={`${styles.roleBtn} ${styles.roleCompany}`}
               onClick={() => handleRoleSelect('company')}
             >
               <span className={styles.roleIcon}>🏢</span>
@@ -100,21 +99,6 @@ function RegisterPage() {
           </p>
 
           <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="name">
-                {role === 'company' ? 'Company name' : 'Full name'}
-              </label>
-              <input
-                className={styles.input}
-                id="name"
-                type="text"
-                placeholder={role === 'company' ? 'Your company name' : 'Your name'}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-
             <div className={styles.inputGroup}>
               <label className={styles.label} htmlFor="email">
                 {role === 'company' ? 'Work email address' : 'Email address'}

@@ -3,13 +3,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
   gap: 12px;
 }
 
 .pageTitle {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #111827;
   letter-spacing: -0.4px;
@@ -18,15 +17,23 @@
 /* ── Filter bar ── */
 .filterBar {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  align-items: center;
+}
+
+.selectWrap {
+  position: relative;
+  display: flex;
   align-items: center;
 }
 
 .filterSelect {
-  padding: 8px 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 7px 32px 7px 12px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13.5px;
   font-family: inherit;
   color: #111827;
   background-color: #ffffff;
@@ -35,30 +42,82 @@
   transition: border-color 0.15s ease;
 }
 
+.filterSelectDate {
+  padding-left: 32px;
+}
+
 .filterSelect:focus {
-  border-color: #111827;
+  border-color: #9ca3af;
 }
 
-/* ── Metrics grid ── */
-.metricsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-bottom: 24px;
+.selectChevron {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
 }
 
-.metricCard {
+.selectCalendar {
+  position: absolute;
+  left: 10px;
+  pointer-events: none;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+}
+
+.refreshBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.refreshBtn:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+/* ── Metrics — single card with 4×2 grid ── */
+.metricsCard {
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 20px 20px 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.metricCell {
+  padding: 20px 24px 18px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Remove right border on last of each row */
+.metricCell:nth-child(4n) {
+  border-right: none;
+}
+
+/* Remove bottom border on last row */
+.metricCell:nth-last-child(-n+4) {
+  border-bottom: none;
 }
 
 .metricValue {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   color: #111827;
   letter-spacing: -0.8px;
@@ -68,7 +127,16 @@
 .metricLabel {
   font-size: 12px;
   color: #6b7280;
-  font-weight: 500;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.infoIcon {
+  font-size: 11px;
+  color: #9ca3af;
+  cursor: default;
 }
 
 /* ── Chart card ── */
@@ -76,33 +144,41 @@
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 24px;
+  padding: 24px 24px 16px;
 }
 
 .chartHeader {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .chartTitle {
   font-size: 15px;
   font-weight: 600;
   color: #111827;
+  margin-bottom: 3px;
+}
+
+.chartSubtitle {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 400;
 }
 
 .chartToggle {
   display: flex;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 7px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .toggleBtn {
   background: none;
   border: none;
-  padding: 6px 14px;
+  padding: 5px 14px;
   font-size: 13px;
   font-weight: 500;
   font-family: inherit;
@@ -124,11 +200,4 @@
 .toggleActive:hover {
   background-color: #111827;
   color: #ffffff;
-}
-
-.emptyChart {
-  font-size: 14px;
-  color: #9ca3af;
-  text-align: center;
-  padding: 48px 0;
 }

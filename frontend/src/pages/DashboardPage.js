@@ -8,10 +8,10 @@ import {
 import styles from './DashboardPage.module.css';
 
 const TIME_PERIODS = [
-  { label: 'Last 7 days', days: 7 },
-  { label: 'Last 30 days', days: 30 },
-  { label: 'Last 90 days', days: 90 },
-  { label: 'All time', days: null },
+  { label: 'Last 7 Days',  days: 7 },
+  { label: 'Last 30 Days', days: 30 },
+  { label: 'Last 90 Days', days: 90 },
+  { label: 'All Time',     days: null },
 ];
 
 function formatNumber(n) {
@@ -24,23 +24,47 @@ function toFixed2(n) {
   return isNaN(n) || !isFinite(n) ? '0.00' : n.toFixed(2);
 }
 
+const CalendarIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+);
+
+const RefreshIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 4 23 10 17 10"/>
+    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+  </svg>
+);
+
+const ChevronIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+);
+
 export default function DashboardPage() {
   const { token } = useAuth();
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState('all');
   const [timePeriod, setTimePeriod] = useState(30);
-  const [chartMode, setChartMode] = useState('daily'); // 'daily' | 'monthly'
+  const [chartMode, setChartMode] = useState('daily');
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // Fetch campaign list
   useEffect(() => {
     apiFetch('/campaigns', {}, token)
       .then((data) => setCampaigns(data))
       .catch(() => {});
-  }, [token]);
+  }, [token, refreshKey]);
 
-  // Fetch posts when campaign changes
   useEffect(() => {
     if (selectedCampaign === '') return;
     setLoadingPosts(true);
@@ -67,7 +91,6 @@ export default function DashboardPage() {
     }
   }, [selectedCampaign, campaigns, token]);
 
-  // Apply time period filter
   const filteredPosts = useMemo(() => {
     if (!timePeriod) return posts;
     const cutoff = new Date();
@@ -75,7 +98,6 @@ export default function DashboardPage() {
     return posts.filter((p) => p.posted_at && new Date(p.posted_at) >= cutoff);
   }, [posts, timePeriod]);
 
-  // Aggregate metrics
   const metrics = useMemo(() => {
     const videos = filteredPosts.length;
     const views = filteredPosts.reduce((s, p) => s + (p.views || 0), 0);
@@ -87,7 +109,6 @@ export default function DashboardPage() {
     return { videos, views, likes, comments, shares, saves: 0, engagementRate, commentRate };
   }, [filteredPosts]);
 
-  // Build chart data
   const chartData = useMemo(() => {
     const map = {};
     filteredPosts.forEach((p) => {
@@ -98,20 +119,29 @@ export default function DashboardPage() {
         : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       map[key] = (map[key] || 0) + (p.views || 0);
     });
-    return Object.entries(map)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, views]) => ({ date, views }));
+
+    const entries = Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
+
+    if (chartMode === 'total') {
+      let cumulative = 0;
+      return entries.map(([date, views]) => {
+        cumulative += views;
+        return { date, views: cumulative };
+      });
+    }
+
+    return entries.map(([date, views]) => ({ date, views }));
   }, [filteredPosts, chartMode]);
 
   const metricCards = [
-    { label: 'Videos', value: formatNumber(metrics.videos) },
-    { label: 'Views', value: formatNumber(metrics.views) },
-    { label: 'Likes', value: formatNumber(metrics.likes) },
-    { label: 'Comments', value: formatNumber(metrics.comments) },
-    { label: 'Shares', value: formatNumber(metrics.shares) },
-    { label: 'Saves', value: formatNumber(metrics.saves) },
-    { label: 'Eng. Rate', value: toFixed2(metrics.engagementRate) + '%' },
-    { label: 'Comment Rate', value: toFixed2(metrics.commentRate) + '%' },
+    { label: 'Videos',          value: formatNumber(metrics.videos) },
+    { label: 'Views',           value: formatNumber(metrics.views) },
+    { label: 'Likes',           value: formatNumber(metrics.likes) },
+    { label: 'Comments',        value: formatNumber(metrics.comments) },
+    { label: 'Shares',          value: formatNumber(metrics.shares) },
+    { label: 'Saves',           value: formatNumber(metrics.saves) },
+    { label: 'Engagement Rate', value: toFixed2(metrics.engagementRate) + '%', info: true },
+    { label: 'Comment Rate',    value: toFixed2(metrics.commentRate) + '%',    info: true },
   ];
 
   return (
@@ -120,34 +150,49 @@ export default function DashboardPage() {
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Dashboard</h1>
         <div className={styles.filterBar}>
-          <select
-            className={styles.filterSelect}
-            value={selectedCampaign}
-            onChange={(e) => setSelectedCampaign(e.target.value)}
-          >
-            <option value="all">All Campaigns</option>
-            {campaigns.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-          <select
-            className={styles.filterSelect}
-            value={timePeriod ?? ''}
-            onChange={(e) => setTimePeriod(e.target.value === '' ? null : Number(e.target.value))}
-          >
-            {TIME_PERIODS.map((t) => (
-              <option key={t.label} value={t.days ?? ''}>{t.label}</option>
-            ))}
-          </select>
+          <div className={styles.selectWrap}>
+            <select
+              className={styles.filterSelect}
+              value={selectedCampaign}
+              onChange={(e) => setSelectedCampaign(e.target.value)}
+            >
+              <option value="all">All Campaigns</option>
+              {campaigns.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+            <span className={styles.selectChevron}><ChevronIcon /></span>
+          </div>
+
+          <div className={styles.selectWrap}>
+            <span className={styles.selectCalendar}><CalendarIcon /></span>
+            <select
+              className={`${styles.filterSelect} ${styles.filterSelectDate}`}
+              value={timePeriod ?? ''}
+              onChange={(e) => setTimePeriod(e.target.value === '' ? null : Number(e.target.value))}
+            >
+              {TIME_PERIODS.map((t) => (
+                <option key={t.label} value={t.days ?? ''}>{t.label}</option>
+              ))}
+            </select>
+            <span className={styles.selectChevron}><ChevronIcon /></span>
+          </div>
+
+          <button className={styles.refreshBtn} onClick={() => setRefreshKey(k => k + 1)} title="Refresh">
+            <RefreshIcon />
+          </button>
         </div>
       </div>
 
-      {/* Metrics grid */}
-      <div className={styles.metricsGrid}>
+      {/* Metrics — single card */}
+      <div className={styles.metricsCard}>
         {metricCards.map((m) => (
-          <div key={m.label} className={styles.metricCard}>
+          <div key={m.label} className={styles.metricCell}>
             <span className={styles.metricValue}>{loadingPosts ? '—' : m.value}</span>
-            <span className={styles.metricLabel}>{m.label}</span>
+            <span className={styles.metricLabel}>
+              {m.label}
+              {m.info && <span className={styles.infoIcon}>ⓘ</span>}
+            </span>
           </div>
         ))}
       </div>
@@ -155,7 +200,10 @@ export default function DashboardPage() {
       {/* Line chart */}
       <div className={styles.chartCard}>
         <div className={styles.chartHeader}>
-          <h2 className={styles.chartTitle}>Views Over Time</h2>
+          <div>
+            <h2 className={styles.chartTitle}>Daily Views Across All Campaigns</h2>
+            <p className={styles.chartSubtitle}>Combined daily views across all active campaigns</p>
+          </div>
           <div className={styles.chartToggle}>
             <button
               className={`${styles.toggleBtn} ${chartMode === 'daily' ? styles.toggleActive : ''}`}
@@ -164,47 +212,48 @@ export default function DashboardPage() {
               Daily
             </button>
             <button
-              className={`${styles.toggleBtn} ${chartMode === 'monthly' ? styles.toggleActive : ''}`}
-              onClick={() => setChartMode('monthly')}
+              className={`${styles.toggleBtn} ${chartMode === 'total' ? styles.toggleActive : ''}`}
+              onClick={() => setChartMode('total')}
             >
-              Monthly
+              Total
             </button>
           </div>
         </div>
 
-        {chartData.length === 0 ? (
-          <p className={styles.emptyChart}>No data for the selected period.</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F0EBE4" />
-              <XAxis
-                dataKey="date"
-                tick={{ fontSize: 12, fill: '#7a6f63' }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 12, fill: '#7a6f63' }}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={formatNumber}
-              />
-              <Tooltip
-                contentStyle={{ border: '1px solid #E2D9CC', borderRadius: 8, fontSize: 13 }}
-                formatter={(v) => [formatNumber(v), 'Views']}
-              />
-              <Line
-                type="monotone"
-                dataKey="views"
-                stroke="#1a1a1a"
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="4 4" stroke="#e5e7eb" vertical={true} />
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 11, fill: '#9ca3af' }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v) => {
+                const d = new Date(v);
+                return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              }}
+            />
+            <YAxis
+              tick={{ fontSize: 11, fill: '#9ca3af' }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={formatNumber}
+              width={32}
+            />
+            <Tooltip
+              contentStyle={{ border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+              formatter={(v) => [formatNumber(v), 'Views']}
+            />
+            <Line
+              type="monotone"
+              dataKey="views"
+              stroke="#6366f1"
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 4, fill: '#6366f1' }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </AppLayout>
   );
