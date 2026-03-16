@@ -7,6 +7,7 @@ from . import roles_required
 
 campaigns_bp = Blueprint('campaigns', __name__, url_prefix='/campaigns')
 
+
 # a shared helper that formats a campaign into JSON. Used by every endpoint so the response format is consistent
 def _campaign_to_dict(c, include_stats=False):
     d = {
@@ -16,6 +17,7 @@ def _campaign_to_dict(c, include_stats=False):
         "start_date": str(c.start_date) if c.start_date else None,
         "end_date": str(c.end_date) if c.end_date else None,
         "created_at": str(c.created_at) if c.created_at else None,
+        "updated_at": str(c.updated_at) if c.updated_at else None,
     }
     if include_stats:
         creator_count = CampaignCreator.query.filter_by(campaign_id=c.id).count()
@@ -56,13 +58,11 @@ def create_campaign():
         return jsonify({"error": "Name is required"}), 400
 
     # company role always owns the campaign they create
-    # admin must supply company_id explicitly
+    # admin-created campaigns have no company association
     if claims['role'] == 'company':
         company_id = user_id
     else:
-        company_id = data.get('company_id')
-        if not company_id:
-            return jsonify({"error": "company_id is required for admin"}), 400
+        company_id = None
 
     campaign = Campaign(
         name=name,

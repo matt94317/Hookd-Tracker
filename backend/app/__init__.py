@@ -43,4 +43,9 @@ def create_app(config=None):
     app.register_blueprint(posts_bp)
     app.register_blueprint(users_bp)
 
+    # Start scheduled jobs (unless disabled, e.g. during testing)
+    if not app.config.get('SCHEDULER_DISABLED'):
+        from .jobs import init_scheduler
+        init_scheduler(app)
+
     return app

@@ -34,7 +34,7 @@ class Campaign(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    company_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=False)
+    company_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=True)
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
     created_at = db.Column(db.DateTime, server_default=func.now())

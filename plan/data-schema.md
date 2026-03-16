@@ -29,7 +29,7 @@ Account        ──1:N──> Posts
 | **creator** | Content creator        | Campaigns via `campaign_creators` join table |
 | **company** | Brand / sponsor        | Campaigns where `company_id = user.id`       |
 
-- Each Campaign has **multiple creators** and **one company**
+- Each Campaign has **multiple creators** and **at most one company** (NULL when created by Admin)
 
 ## Tables
 

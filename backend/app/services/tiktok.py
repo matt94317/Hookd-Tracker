@@ -9,7 +9,7 @@ import requests
 from .platform import PlatformService
 from .encryption import TokenEncryption
 from .. import db
-from ..models import Account, Post
+from ..models import Account, Channel, Post
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +31,13 @@ class TikTokService(PlatformService):
 
     # ── OAuth ────────────────────────────────────────────────────────────────
 
-    def get_oauth_url(self, account_id: int, channel: str) -> str:
+    def get_oauth_url(self, state: str, channel: str) -> str:
         params = {
             'client_key': self.client_key,
             'scope': 'user.info.basic,video.list',
             'response_type': 'code',
             'redirect_uri': self.redirect_uri,
-            'state': str(account_id),
+            'state': state,
         }
         return f"{TIKTOK_AUTH_BASE}?{urlencode(params)}"
 
@@ -72,24 +72,30 @@ class TikTokService(PlatformService):
         except Exception:
             logger.warning("Failed to fetch TikTok user info, continuing without display_name")
 
-        # Step 3: Update Account row
-        account_id = int(state) if state else None
-        if not account_id:
-            raise ValueError("Missing account_id in OAuth state parameter")
+        # Step 3: Parse state and create Account
+        import json
+        if not state:
+            raise ValueError("Missing state in OAuth callback")
+        state_data = json.loads(state)
+        campaign_id = state_data['campaign_id']
+        creator_id = state_data['creator_id']
+        channel_id = state_data['channel_id']
 
-        account = Account.query.get(account_id)
-        if not account:
-            raise ValueError(f"Account {account_id} not found")
-
-        account.access_token = self.encryption.encrypt(access_token)
-        account.refresh_token = self.encryption.encrypt(refresh_token)
-        account.platform_account_id = open_id
-        account.username = display_name
-        account.token_expires_at = datetime.now(timezone.utc) + timedelta(seconds=expires_in)
+        account = Account(
+            campaign_id=campaign_id,
+            creator_id=creator_id,
+            channel_id=channel_id,
+            platform_account_id=open_id,
+            username=display_name,
+            access_token=self.encryption.encrypt(access_token),
+            refresh_token=self.encryption.encrypt(refresh_token),
+            token_expires_at=datetime.now(timezone.utc) + timedelta(seconds=expires_in),
+        )
+        db.session.add(account)
         db.session.commit()
 
         return {
-            'account_id': account_id,
+            'account_id': account.id,
             'platform_account_id': open_id,
             'username': display_name,
             'expires_at': str(account.token_expires_at),

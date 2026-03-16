@@ -37,6 +37,24 @@
   letter-spacing: -0.4px;
 }
 
+/* Account row */
+.accountRow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 13px 18px;
+  color: #6b7280;
+}
+
+.accountEmail {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Nav */
 .nav {
   display: flex;

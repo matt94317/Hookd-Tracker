@@ -8,4 +8,5 @@ python-dotenv==1.0.0
 bcrypt==4.1.2
 requests==2.31.0
 cryptography==41.0.7
+Flask-APScheduler==1.13.1
 pytest==7.4.4

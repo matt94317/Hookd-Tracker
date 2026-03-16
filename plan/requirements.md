@@ -20,14 +20,14 @@
 
 ### Overview
 
-> Company/ Admin users able to create campaigns, assign companies (admin only), assign creators, link social accounts (limited to accounts owned by creators assigned to the campaign), and automatically collect post performance data.
+> Company/ Admin users able to create campaigns, assign creators, link social accounts (limited to accounts owned by creators assigned to the campaign), and automatically collect post performance data.
 
 ### Flow
 
 1. **Admin/ Company** creates a Campaign (name, start_date, end_date). If created by a Company, the campaign is automatically linked to that Company.
 2. **Admin/ Company** adds Creator users to the Campaign
-3. **Admin/ Company** adds Accounts (Instagram / TikTok) from the assigned Creators only
-4. **Creator** receives an authorisation request and completes OAuth 2.0 to grant access
+3. **Creator** opens the Campaign detail page and clicks "Connect Instagram" or "Connect TikTok" to initiate OAuth 2.0
+4. **Creator** completes the OAuth authorisation flow. The Account is then automatically created and linked to the Campaign.
 5. **Collecting data** fetches post data and metrics automatically
 6. **Token refresh job** renews tokens before expiry
 
