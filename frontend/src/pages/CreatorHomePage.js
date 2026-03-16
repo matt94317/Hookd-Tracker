@@ -7,6 +7,22 @@ function getTodayStr() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function ordinalSuffix(n) {
+  const v = n % 100;
+  const s = ['th', 'st', 'nd', 'rd'];
+  return s[(v - 20) % 10] || s[v] || s[0];
+}
+
+function formatDueDate(dateStr) {
+  const today = getTodayStr();
+  if (dateStr === today) return 'due today';
+  const d = new Date(dateStr + 'T00:00:00');
+  const day   = d.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+  const month = d.toLocaleDateString('en-US', { month: 'short' });
+  const date  = d.getDate();
+  return `due ${day} ${month} ${date}${ordinalSuffix(date)}`;
+}
+
 function loadTodos(userId) {
   try {
     return JSON.parse(localStorage.getItem(`todos_${userId}`)) || [];
@@ -92,12 +108,7 @@ export default function CreatorHomePage() {
     if (e.key === 'Escape') setShowForm(false);
   }
 
-  function formatDate(dateStr) {
-    const d = new Date(dateStr + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  }
-
-  const TodoItem = ({ todo, showDate }) => (
+  const TodoItem = ({ todo }) => (
     <div className={`${styles.todoItem} ${todo.completed ? styles.todoCompleted : ''}`}>
       <button
         className={`${styles.checkBtn} ${todo.completed ? styles.checkBtnDone : ''}`}
@@ -108,7 +119,7 @@ export default function CreatorHomePage() {
       </button>
       <div className={styles.todoContent}>
         <span className={styles.todoTitle}>{todo.title}</span>
-        {showDate && <span className={styles.todoDate}>{formatDate(todo.dueDate)}</span>}
+        <span className={styles.todoDate}>{formatDueDate(todo.dueDate)}</span>
       </div>
       <button className={styles.deleteBtn} onClick={() => deleteTodo(todo.id)} title="Delete">
         <TrashIcon />
@@ -116,18 +127,33 @@ export default function CreatorHomePage() {
     </div>
   );
 
-  const Section = ({ title, tasks, emptyMsg, showDate = false, accent }) => (
-    <div className={styles.section}>
-      <div className={styles.sectionHeader}>
-        <h2 className={`${styles.sectionTitle} ${accent ? styles[accent] : ''}`}>{title}</h2>
-        <span className={styles.sectionCount}>{tasks.filter(t => !t.completed).length} remaining</span>
+  const Section = ({ title, tasks, emptyMsg, accent }) => {
+    const completed = tasks.filter((t) => t.completed).length;
+    const total     = tasks.length;
+    const pct       = total > 0 ? (completed / total) * 100 : 0;
+
+    return (
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2 className={`${styles.sectionTitle} ${accent ? styles[accent] : ''}`}>{title}</h2>
+        </div>
+
+        {tasks.length === 0 ? (
+          <p className={styles.emptyMsg}>{emptyMsg}</p>
+        ) : (
+          <>
+            {tasks.map((t) => <TodoItem key={t.id} todo={t} />)}
+            <div className={styles.progressFooter}>
+              <span className={styles.progressText}>{completed}/{total} complete</span>
+              <div className={styles.progressTrack}>
+                <div className={styles.progressFill} style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          </>
+        )}
       </div>
-      {tasks.length === 0
-        ? <p className={styles.emptyMsg}>{emptyMsg}</p>
-        : tasks.map((t) => <TodoItem key={t.id} todo={t} showDate={showDate} />)
-      }
-    </div>
-  );
+    );
+  };
 
   return (
     <AppLayout>
@@ -174,7 +200,6 @@ export default function CreatorHomePage() {
           title="Overdue"
           tasks={overdueTasks}
           emptyMsg=""
-          showDate={true}
           accent="accentRed"
         />
       )}
@@ -183,14 +208,12 @@ export default function CreatorHomePage() {
         title="Today"
         tasks={todayTasks}
         emptyMsg="No tasks for today."
-        showDate={false}
       />
 
       <Section
         title="Upcoming"
         tasks={upcomingTasks}
         emptyMsg="No upcoming tasks."
-        showDate={true}
       />
     </AppLayout>
   );

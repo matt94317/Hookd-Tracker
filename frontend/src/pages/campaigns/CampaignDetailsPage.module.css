@@ -1,0 +1,515 @@
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.breadcrumbLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  color: #6b7280;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.breadcrumbLink:hover {
+  color: #111827;
+}
+
+.breadcrumbSep {
+  display: flex;
+  align-items: center;
+  color: #9ca3af;
+}
+
+.breadcrumbCurrent {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+  gap: 0;
+}
+
+.tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab:hover {
+  color: #111827;
+}
+
+.tabActive {
+  color: #111827;
+  border-bottom-color: #111827;
+  font-weight: 600;
+}
+
+/* ── Filter bar ── */
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.selectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filterSelect {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 7px 32px 7px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: #111827;
+  background-color: #ffffff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  white-space: nowrap;
+}
+
+.filterSelectDate {
+  padding-left: 32px;
+}
+
+.filterSelect:focus {
+  border-color: #9ca3af;
+}
+
+.selectChevron {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+}
+
+.selectCalendar {
+  position: absolute;
+  left: 10px;
+  pointer-events: none;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+}
+
+.refreshBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 13.5px;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  white-space: nowrap;
+}
+
+.refreshBtn:hover {
+  background-color: #f5f6f8;
+}
+
+.updateInfo {
+  font-size: 12.5px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.infoIcon {
+  font-size: 11px;
+  color: #9ca3af;
+  cursor: default;
+}
+
+.moreBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: #6b7280;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background-color 0.15s;
+}
+
+.moreBtn:hover {
+  background-color: #f5f6f8;
+  color: #111827;
+}
+
+/* ── Metrics card ── */
+.metricsCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.metricCell {
+  padding: 20px 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.metricCell:nth-child(4n) {
+  border-right: none;
+}
+
+.metricCell:nth-last-child(-n+4) {
+  border-bottom: none;
+}
+
+.metricValue {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.8px;
+  line-height: 1;
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Chart card ── */
+.chartCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px 24px 16px;
+  margin-bottom: 28px;
+}
+
+.chartHeader {
+  margin-bottom: 20px;
+}
+
+.chartTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ── Creator Progress ── */
+.progressSection {
+  margin-bottom: 32px;
+}
+
+.progressHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.progressTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.2px;
+}
+
+.seeAllBtn {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13.5px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #111827;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.seeAllBtn:hover {
+  background-color: #f5f6f8;
+}
+
+.progressGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.progressCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px 18px 16px;
+}
+
+.progressCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.progressUsernameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.progressUsername {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.platformBadge {
+  font-size: 10px;
+  font-weight: 700;
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 4px;
+  padding: 2px 5px;
+  letter-spacing: 0.3px;
+}
+
+.progressPostCount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.progressRealName {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 1px;
+}
+
+.progressTarget {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 14px;
+}
+
+/* ── Day bubbles ── */
+.dayBubbles {
+  display: flex;
+  gap: 8px;
+}
+
+.dayBubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bubble {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bubbleFull {
+  border: 2.5px solid #111827;
+  background: transparent;
+  color: #111827;
+}
+
+.bubblePartial {
+  border: 2px solid #9ca3af;
+  background: transparent;
+  color: #6b7280;
+}
+
+.bubbleEmpty {
+  border: 1.5px solid #e5e7eb;
+  background: transparent;
+  color: #d1d5db;
+}
+
+.dayLabel {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* ── Leaderboard ── */
+.leaderboardCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px 24px 8px;
+}
+
+.lbTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.2px;
+  margin-bottom: 20px;
+}
+
+.lbTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lbTh {
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 0 16px 12px 0;
+  border-bottom: 1px solid #f3f4f6;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lbTh:last-child {
+  cursor: default;
+}
+
+.lbThInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.lbTh:hover .lbThInner {
+  color: #111827;
+}
+
+.lbRow {
+  border-bottom: 1px solid #f9fafb;
+  transition: background-color 0.1s;
+}
+
+.lbRow:last-child {
+  border-bottom: none;
+}
+
+.lbRow:hover {
+  background-color: #fafafa;
+}
+
+.lbTd {
+  font-size: 13.5px;
+  color: #374151;
+  padding: 14px 16px 14px 0;
+  white-space: nowrap;
+}
+
+.lbCreator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lbAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.lbName {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Tier badges */
+.tierBadge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 3px 9px;
+}
+
+.tierGold   { color: #b45309; background: #fef3c7; }
+.tierSilver { color: #3b82f6; background: #eff6ff; }
+.tierBronze { color: #ea580c; background: #fff7ed; }
+
+.lbEmpty {
+  text-align: center;
+  font-size: 14px;
+  color: #9ca3af;
+  padding: 40px 0;
+}
+
+/* ── State / placeholders ── */
+.stateMsg {
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+.comingSoon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #9ca3af;
+  font-size: 15px;
+}

@@ -13,6 +13,7 @@ def _account_to_dict(a):
         "id": a.id,
         "campaign_id": a.campaign_id,
         "creator_id": a.creator_id,
+        "creator_name": a.creator.name if a.creator else None,
         "channel_id": a.channel_id,
         "channel_name": a.channel.name if a.channel else None,
         "platform_account_id": a.platform_account_id,
