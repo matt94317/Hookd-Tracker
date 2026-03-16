@@ -34,7 +34,7 @@ class TikTokService(PlatformService):
     def get_oauth_url(self, state: str, channel: str) -> str:
         params = {
             'client_key': self.client_key,
-            'scope': 'user.info.basic,video.list',
+            'scope': 'user.info.profile,video.list',
             'response_type': 'code',
             'redirect_uri': self.redirect_uri,
             'state': state,
