@@ -13,12 +13,16 @@ Platform for content creators to measure campaign performance and display portfo
 ## Entity Relationships
 
 ```
-User (creator) ──N:M──> Campaigns  (via campaign_creators)
+User (creator) ──N:M──> Campaigns      (via campaign_creators)
 User (company) ──1:N──> Campaigns
 Campaign       ──1:N──> Accounts
 Channel        ──1:N──> Accounts
 User (creator) ──1:N──> Accounts
 Account        ──1:N──> Posts
+User (company) ──1:1──> Subscription
+User (company) ──1:N──> Payouts
+User (creator) ──1:N──> Payouts
+Campaign       ──1:N──> Payouts
 ```
 
 ## User Roles
@@ -35,15 +39,18 @@ Account        ──1:N──> Posts
 
 ### users
 
-| Column     | Type                          | Notes            |
-| ---------- | ----------------------------- | ---------------- |
-| id         | BIGINT PK                     | Auto increment   |
-| name       | VARCHAR(255)                  | NOT NULL         |
-| email      | VARCHAR(255)                  | NOT NULL, unique |
-| password   | VARCHAR(255)                  | NOT NULL         |
-| role       | ENUM(admin, creator, company) | NOT NULL         |
-| created_at | TIMESTAMP                     |                  |
-| updated_at | TIMESTAMP                     |                  |
+| Column                      | Type                          | Notes                                              |
+| --------------------------- | ----------------------------- | -------------------------------------------------- |
+| id                          | BIGINT PK                     | Auto increment                                     |
+| name                        | VARCHAR(255)                  | NOT NULL                                           |
+| email                       | VARCHAR(255)                  | NOT NULL, unique                                   |
+| password                    | VARCHAR(255)                  | NOT NULL                                           |
+| role                        | ENUM(admin, creator, company) | NOT NULL                                           |
+| stripe_customer_id          | VARCHAR(255)                  | Stripe Customer ID (company users only)            |
+| stripe_connect_account_id   | VARCHAR(255)                  | Stripe Connect Express account ID (creators only)  |
+| payout_enabled              | BOOLEAN                       | Default false. True once Connect onboarding done   |
+| created_at                  | TIMESTAMP                     |                                                    |
+| updated_at                  | TIMESTAMP                     |                                                    |
 
 ### channels
 
@@ -92,6 +99,36 @@ Account        ──1:N──> Posts
 | monthly_target      | INT          | Default 0. Expected posts per month. |
 | created_at          | TIMESTAMP    |                                      |
 | updated_at          | TIMESTAMP    |                                      |
+
+### subscriptions
+
+| Column                  | Type                                          | Notes                        |
+| ----------------------- | --------------------------------------------- | ---------------------------- |
+| id                      | BIGINT PK                                     | Auto increment               |
+| company_id              | BIGINT FK                                     | References users(id)         |
+| stripe_subscription_id  | VARCHAR(255)                                  | NOT NULL, unique             |
+| stripe_price_id         | VARCHAR(255)                                  | Stripe Price ID for the plan |
+| plan                    | ENUM(starter, pro, enterprise)                | NOT NULL                     |
+| status                  | ENUM(active, past_due, cancelled, trialing)   | NOT NULL                     |
+| current_period_start    | TIMESTAMP                                     |                              |
+| current_period_end      | TIMESTAMP                                     |                              |
+| created_at              | TIMESTAMP                                     |                              |
+| updated_at              | TIMESTAMP                                     |                              |
+
+### payouts
+
+| Column              | Type                                    | Notes                          |
+| ------------------- | --------------------------------------- | ------------------------------ |
+| id                  | BIGINT PK                               | Auto increment                 |
+| campaign_id         | BIGINT FK                               | References campaigns(id)       |
+| creator_id          | BIGINT FK                               | References users(id)           |
+| company_id          | BIGINT FK                               | References users(id)           |
+| stripe_transfer_id  | VARCHAR(255)                            | Unique. Stripe Transfer ID     |
+| amount              | INT                                     | In cents (e.g. 5000 = $50.00)  |
+| currency            | VARCHAR(10)                             | Default 'usd'                  |
+| status              | ENUM(pending, processing, paid, failed) | NOT NULL                       |
+| created_at          | TIMESTAMP                               |                                |
+| updated_at          | TIMESTAMP                               |                                |
 
 ### posts
 

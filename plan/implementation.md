@@ -7,6 +7,7 @@
 | Frontend  | React.js                        |
 | Backend   | Python Flask                    |
 | Database  | PostgreSQL                      |
+| Payments  | Stripe (Billing + Connect)      |
 | Server    | AWS EC2                         |
 | CI/CD     | GitHub Actions                  |
 | Container | Docker / Docker Compose (local) |
@@ -97,21 +98,21 @@ hookd/
   - Fetch videos via TikTok API v2 (`/v2/video/list/`)
   - Map response to `posts` table schema
   - Handle pagination
-- [ ] Unit tests with mocked API responses
+- [x] Unit tests with mocked API responses
 
 #### Person B: App Backend + Auth
 
-- [ ] **User authentication**
+- [x] **User authentication**
   - Login / registration endpoints
   - JWT-based session management
   - Role-based access control middleware (admin / company / creator)
-- [ ] **Campaign CRUD API**
+- [x] **Campaign CRUD API**
   - `POST /campaigns` -- create (admin / company)
   - `GET /campaigns` -- list (filtered by role)
   - `GET /campaigns/:id` -- detail
   - `PUT /campaigns/:id` -- update
   - `DELETE /campaigns/:id` -- delete
-- [ ] **Campaign Creators API**
+- [x] **Campaign Creators API**
   - `POST /campaigns/:id/creators` -- add creators
   - `DELETE /campaigns/:id/creators/:creator_id` -- remove
 - [ ] **Account API**
@@ -129,15 +130,15 @@ hookd/
 
 #### Person A: Scheduled Jobs
 
-- [ ] **Post sync job**
+- [x] **Post sync job**
   - Periodic job to fetch new posts for all authorized accounts
   - Upsert posts (avoid duplicates via `platform_post_id`)
   - Update metrics on existing posts
-- [ ] **Token refresh job**
+- [x] **Token refresh job**
   - Check `token_expires_at` for upcoming expirations
   - Auto-refresh tokens
   - Log/alert on refresh failure
-- [ ] **Target achievement check**
+- [x] **Target achievement check**
   - Count posts per account for the current day/month
   - Compare against `daily_target` / `monthly_target` on the account
 - [ ] Set up APScheduler or Celery Beat for job scheduling
@@ -145,24 +146,57 @@ hookd/
 
 #### Person B: Frontend
 
-- [ ] **Auth pages** -- Login, Registration
-- [ ] **Dashboard** -- Campaign list, summary stats
-- [ ] **Campaign detail page**
+- [x] **Auth pages** -- Login, Registration
+- [x] **Dashboard** -- Campaign list, summary stats
+- [x] **Campaign detail page**
   - Creator list
   - Account list with OAuth status
   - Target achievement status (daily/monthly)
   - Posts list with oEmbed
-- [ ] **Campaign management**
+- [x] **Campaign management**
   - Create/edit campaign form
   - Add/remove creators
   - Add/remove accounts
   - Set daily/monthly targets per account
-- [ ] **Performance views**
+- [x] **Performance views**
   - Post-level metrics
   - Aggregation by account / creator / campaign / channel
   - Creator leaderboard (ranked by selected metric)
   - Creator detail view (per-creator breakdown)
   - Campaign comparison (compare creators within a campaign)
+
+---
+
+### Sprint 2b: Stripe Payment Integration (1 week)
+
+#### Person B: Payments
+
+- [ ] **Backend — Stripe setup**
+  - Add `stripe` to `requirements.txt`
+  - Add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY` to `.env` / `docker-compose.yml`
+  - Create `backend/app/services/stripe_service.py` (customer creation, checkout session, portal session, transfer)
+  - Create `backend/app/routes/payments.py` blueprint:
+    - `POST /api/payments/create-checkout-session`
+    - `POST /api/payments/create-portal-session`
+    - `POST /api/payments/create-payout`
+    - `POST /api/stripe/webhook` (signature-verified, unauthenticated)
+  - Webhook handlers for subscription and payout events (idempotent)
+  - Subscription enforcement middleware on company routes
+- [ ] **DB migrations**
+  - Add `stripe_customer_id`, `stripe_connect_account_id`, `payout_enabled` to `users`
+  - Create `subscriptions` table
+  - Create `payouts` table
+- [ ] **Frontend — Billing (Settings page)**
+  - Install `@stripe/stripe-js`, `@stripe/react-stripe-js`
+  - Add `REACT_APP_STRIPE_PUBLISHABLE_KEY` to frontend env
+  - Billing section: plan display, "Upgrade / Manage Billing" button, payment history
+- [ ] **Frontend — Payroll page**
+  - Replace placeholder with payout table per campaign/creator
+  - "Pay Creator" modal with amount input
+  - Payout status badges (pending / processing / paid / failed)
+- [ ] **Frontend — Creator payout onboarding**
+  - "Connect Payout Account" button in Creator Settings
+  - Redirect to Stripe Connect Express onboarding URL
 
 ---
 
@@ -224,11 +258,12 @@ Goal: Deploy to AWS EC2 with CI/CD via GitHub Actions.
 
 ## Timeline Summary
 
-| Sprint   | Duration | Focus                     |
-| -------- | -------- | ------------------------- |
-| Sprint 0 | 1 day    | Project setup (together)  |
-| Sprint 1 | 2 weeks  | Core backend + OAuth      |
-| Sprint 2 | 2 weeks  | Scheduled jobs + Frontend |
-| Sprint 3 | 1 week   | Integration + Polish      |
-| Sprint 4 | 1 week   | AWS infra + CI/CD         |
-| Sprint 5 | 1 week   | Production hardening      |
+| Sprint    | Duration | Focus                          |
+| --------- | -------- | ------------------------------ |
+| Sprint 0  | 1 day    | Project setup (together)       |
+| Sprint 1  | 2 weeks  | Core backend + OAuth           |
+| Sprint 2  | 2 weeks  | Scheduled jobs + Frontend      |
+| Sprint 2b | 1 week   | Stripe payments integration    |
+| Sprint 3  | 1 week   | Integration + Polish           |
+| Sprint 4  | 1 week   | AWS infra + CI/CD              |
+| Sprint 5  | 1 week   | Production hardening           |
