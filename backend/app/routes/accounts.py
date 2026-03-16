@@ -14,6 +14,7 @@ def _account_to_dict(a):
         "campaign_id": a.campaign_id,
         "creator_id": a.creator_id,
         "channel_id": a.channel_id,
+        "channel_name": a.channel.name if a.channel else None,
         "platform_account_id": a.platform_account_id,
         "username": a.username,
         "token_expires_at": str(a.token_expires_at) if a.token_expires_at else None,

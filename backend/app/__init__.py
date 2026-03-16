@@ -1,8 +1,10 @@
 import os
+from datetime import timedelta
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -17,6 +19,7 @@ def create_app(config=None):
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "dev-secret-change-me")
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=8)
 
     if config:
         app.config.update(config)
@@ -24,6 +27,7 @@ def create_app(config=None):
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    CORS(app, origins=["http://localhost:3000"])
 
     # Import models so Alembic can detect them
     from . import models
@@ -32,10 +36,12 @@ def create_app(config=None):
     from .routes.campaigns import campaigns_bp
     from .routes.accounts import accounts_bp
     from .routes.posts import posts_bp
+    from .routes.users import users_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(campaigns_bp)
     app.register_blueprint(accounts_bp)
     app.register_blueprint(posts_bp)
+    app.register_blueprint(users_bp)
 
     # Start scheduled jobs (unless disabled, e.g. during testing)
     if not app.config.get('SCHEDULER_DISABLED'):

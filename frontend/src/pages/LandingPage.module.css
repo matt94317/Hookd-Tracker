@@ -1,0 +1,1147 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+/* Top navbar */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 36px;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.loginBtn {
+  background: transparent;
+  border: 1px solid #C8BEB2;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.loginBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: #a09488;
+}
+
+/* Centered hero */
+.hero {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  box-sizing: border-box;
+}
+
+/* Badge pill */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f3f2ff;
+  color: #5b51f8;
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 28px;
+}
+
+.badgeDiamond {
+  font-size: 10px;
+}
+
+.headline {
+  font-size: 58px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  max-width: 720px;
+  margin-bottom: 24px;
+}
+
+.headlinePurple {
+  color: #5b51f8;
+}
+
+.subtext {
+  font-size: 17px;
+  color: #6b5f52;
+  max-width: 540px;
+  line-height: 1.65;
+  margin-bottom: 40px;
+}
+
+/* CTA buttons row */
+.ctaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 48px;
+}
+
+.ctaBtn {
+  background-color: #5b51f8;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  transition: background-color 0.15s ease;
+}
+
+.ctaBtn:hover {
+  background-color: #4a41e0;
+}
+
+.ctaBtn:active {
+  background-color: #3a32c8;
+}
+
+/* Social proof */
+.socialProof {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: #8a7d72;
+}
+
+.divider {
+  color: #d0c8c0;
+}
+
+/* ── Feature Section ── */
+.featureSection {
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  padding: 80px;
+  background-color: #f5f5f7;
+}
+
+/* Left copy */
+.featureLeft {
+  flex: 0 0 320px;
+  max-width: 340px;
+}
+
+.featureLabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #5b51f8;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.featureHeadline {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.featureSubtext {
+  font-size: 15px;
+  color: #6b5f52;
+  line-height: 1.7;
+}
+
+/* Right card */
+.featureRight {
+  flex: 0 0 340px;
+}
+
+.campaignCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e8e4e0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fieldLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #8a7d72;
+  text-transform: uppercase;
+}
+
+.optional {
+  font-weight: 400;
+  color: #b0a89e;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.infoIcon {
+  font-size: 11px;
+  color: #b0a89e;
+  cursor: default;
+}
+
+.fieldInput {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #e0dbd5;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #ffffff;
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* Toggle */
+.toggle {
+  display: flex;
+  align-items: center;
+}
+
+.toggleTrack {
+  width: 44px;
+  height: 24px;
+  background-color: #5b51f8;
+  border-radius: 100px;
+  position: relative;
+  cursor: default;
+}
+
+.toggleThumb {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+/* Dropzone */
+.dropzone {
+  border: 1.5px dashed #d0c8c0;
+  border-radius: 10px;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #fafafa;
+}
+
+.dropzoneIcon {
+  font-size: 28px;
+}
+
+.dropzoneText {
+  font-size: 12px;
+  color: #8a7d72;
+  margin: 0;
+}
+
+.chooseFileBtn {
+  margin-top: 4px;
+  background: transparent;
+  border: 1px solid #d0c8c0;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 12px;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.chooseFileBtn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Date row */
+.dateRow {
+  display: flex;
+  gap: 8px;
+}
+
+.dateInput {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e0dbd5;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #b0a89e;
+}
+
+.dateIcon {
+  font-size: 13px;
+}
+
+.datePlaceholder {
+  font-size: 13px;
+  color: #b0a89e;
+}
+
+/* Add link */
+.addLinkBtn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  color: #5b51f8;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+
+.addLinkBtn:hover {
+  text-decoration: underline;
+}
+
+/* ── Feature Section 2 — Manage ── */
+.featureSection2 {
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  padding: 80px;
+  background-color: #ffffff;
+}
+
+/* Creator cards column */
+.creatorCards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 0 0 320px;
+}
+
+.creatorCard {
+  background: #ffffff;
+  border: 1px solid #e8e4e0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
+}
+
+.creatorCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.creatorCardTopRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.creatorHandle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.creatorName {
+  font-size: 12px;
+  color: #8a7d72;
+  margin: 0;
+}
+
+.postsBadge {
+  background-color: #eeecff;
+  color: #5b51f8;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 100px;
+  padding: 3px 10px;
+}
+
+.goalLabel {
+  font-size: 11px;
+  color: #b0a89e;
+}
+
+/* Progress bar */
+.progressBarTrack {
+  height: 5px;
+  background-color: #eeecff;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background-color: #5b51f8;
+  border-radius: 100px;
+}
+
+/* Day grid */
+.dayGrid {
+  display: flex;
+  gap: 6px;
+}
+
+.dayCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.dayBoxActive {
+  width: 28px;
+  height: 28px;
+  background-color: #5b51f8;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dayBoxEmpty {
+  width: 28px;
+  height: 28px;
+  background-color: #f0eeec;
+  border-radius: 7px;
+}
+
+.dayCount {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.dayLabel {
+  font-size: 10px;
+  color: #b0a89e;
+  font-weight: 500;
+}
+
+/* Right copy */
+.manageRight {
+  flex: 0 0 300px;
+  max-width: 320px;
+}
+
+.manageHeadline {
+  font-size: 44px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+/* ── Section 3 — Analyze ── */
+.analyzeSection {
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  padding: 80px;
+  background-color: #f5f5f7;
+}
+
+.analyzeRight {
+  flex: 0 0 360px;
+}
+
+.analyzeHeadline {
+  font-size: 44px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.topPostsCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e8e4e0;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.topPostsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0eeec;
+}
+
+.topPostsTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.liveBadge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #edfdf5;
+  color: #1a9e5c;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 100px;
+  padding: 3px 10px;
+}
+
+.liveDot {
+  font-size: 8px;
+  color: #1a9e5c;
+}
+
+.postsTable {
+  display: flex;
+  flex-direction: column;
+}
+
+.postsTableHead {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr 1fr;
+  padding: 10px 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #b0a89e;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #f0eeec;
+}
+
+.postsTableRow {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr 1fr;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f7f5f3;
+  align-items: center;
+}
+
+.postsTableRow:last-child {
+  border-bottom: none;
+}
+
+.postCreator {
+  font-size: 13px;
+  font-weight: 500;
+  color: #5b51f8;
+}
+
+.postPosted {
+  font-size: 12px;
+  color: #8a7d72;
+}
+
+.postViews {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: right;
+}
+
+/* ── Section 4 — Review ── */
+.reviewSection {
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  padding: 80px;
+  background-color: #ffffff;
+}
+
+.reviewCard {
+  flex: 0 0 320px;
+  background: #ffffff;
+  border: 1px solid #e8e4e0;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reviewCardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.reviewCardCampaign {
+  font-size: 12px;
+  color: #8a7d72;
+  margin: 2px 0 0;
+}
+
+.reviewTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reviewTabActive {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: #f0eeec;
+  border-radius: 6px;
+  padding: 5px 10px;
+}
+
+.reviewTab {
+  font-size: 12px;
+  color: #b0a89e;
+  padding: 5px 10px;
+}
+
+.reviewContent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.videoThumb {
+  width: 80px;
+  height: 80px;
+  background: #2a2a3a;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playBtn {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.reviewInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reviewFileName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.reviewUploadDate {
+  font-size: 11px;
+  color: #8a7d72;
+  margin: 0;
+}
+
+.reviewCreatorLink {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5b51f8;
+  margin: 2px 0;
+}
+
+.reviewStatusRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.statusPending {
+  font-size: 11px;
+  font-weight: 600;
+  color: #b45309;
+  background: #fef3c7;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.statusTag {
+  font-size: 11px;
+  color: #8a7d72;
+  background: #f0eeec;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.feedbackArea {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedbackLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.feedbackTextarea {
+  width: 100%;
+  height: 60px;
+  border: 1px solid #e0dbd5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #b0a89e;
+  resize: none;
+  box-sizing: border-box;
+  outline: none;
+  background: #ffffff;
+}
+
+.sendFeedbackBtn {
+  background-color: #5b51f8;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.15s ease;
+}
+
+.sendFeedbackBtn:hover {
+  background-color: #4a41e0;
+}
+
+.reviewRight {
+  flex: 0 0 300px;
+  max-width: 320px;
+}
+
+.reviewHeadline {
+  font-size: 44px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+/* ── Section 5 — Creator Portal ── */
+.portalSection {
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  padding: 80px;
+  background-color: #f5f5f7;
+}
+
+.portalRight {
+  flex: 0 0 300px;
+}
+
+.portalHeadline {
+  font-size: 44px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.portalCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e8e4e0;
+  padding: 20px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.portalCreatorHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.portalIcon {
+  font-size: 22px;
+  background: #f3f2ff;
+  border-radius: 10px;
+  padding: 6px;
+  line-height: 1;
+}
+
+.portalHandle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.portalSubtext {
+  font-size: 12px;
+  color: #8a7d72;
+  margin: 2px 0 0;
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.taskRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.taskCircle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #d0c8c0;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.taskCircleOverdue {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #ef4444;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.taskText {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.taskLink {
+  color: #5b51f8;
+  font-size: 12px;
+}
+
+.taskDue {
+  font-size: 11px;
+  color: #8a7d72;
+  margin: 2px 0 0;
+}
+
+.taskDueOverdue {
+  font-size: 11px;
+  color: #ef4444;
+  margin: 2px 0 0;
+}
+
+/* ── Section 6 — Pricing ── */
+.pricingSection {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  background-color: #ffffff;
+}
+
+.pricingHeadline {
+  font-size: 48px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -1.5px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.pricingSubtext {
+  font-size: 15px;
+  color: #8a7d72;
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.pricingCards {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* Starter card */
+.pricingCard {
+  flex: 0 0 340px;
+  background: #ffffff;
+  border: 1px solid #e0dbd5;
+  border-radius: 20px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.planTier {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #8a7d72;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.planName {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+}
+
+.planDesc {
+  font-size: 13px;
+  color: #8a7d72;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.planPrice {
+  margin: 0 0 20px;
+}
+
+.planAmount {
+  font-size: 52px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -2px;
+}
+
+.planPer {
+  font-size: 16px;
+  color: #8a7d72;
+  font-weight: 500;
+}
+
+.planDivider {
+  border: none;
+  border-top: 1px solid #e8e4e0;
+  margin: 0 0 20px;
+}
+
+.planFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.planFeatures li {
+  font-size: 13px;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkGreen {
+  color: #1a9e5c;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.planBtnOutline {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1.5px solid #d0c8c0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.planBtnOutline:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Pro card */
+.pricingCardPro {
+  flex: 0 0 340px;
+  background: #5b51f8;
+  border-radius: 20px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.mostPopular {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border-radius: 100px;
+  padding: 4px 12px;
+}
+
+.planTierPro {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.planNamePro {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.planDescPro {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.planPricePro {
+  margin: 0 0 20px;
+}
+
+.planAmountPro {
+  font-size: 52px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -2px;
+}
+
+.planPerPro {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.planDividerPro {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 0 0 20px;
+}
+
+.planFeaturesPro {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.planFeaturesPro li {
+  font-size: 13px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkWhite {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.planBtnWhite {
+  width: 100%;
+  padding: 14px;
+  background: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5b51f8;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.planBtnWhite:hover {
+  opacity: 0.92;
+}
