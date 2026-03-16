@@ -34,7 +34,7 @@ class InstagramService(PlatformService):
         params = {
             'client_id': self.app_id,
             'redirect_uri': self.redirect_uri,
-            'scope': 'instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement',
+            'scope': 'instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement,business_management',
             'response_type': 'code',
             'state': state,
         }
