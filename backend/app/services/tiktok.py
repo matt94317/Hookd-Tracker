@@ -43,13 +43,13 @@ class TikTokService(PlatformService):
 
     def handle_oauth_callback(self, channel: str, code: str, state: str = None) -> Dict[str, Any]:
         # Step 1: Exchange code for tokens
-        resp = requests.post(f"{TIKTOK_API_BASE}/oauth/token/", json={
+        resp = requests.post(f"{TIKTOK_API_BASE}/oauth/token/", data={
             'client_key': self.client_key,
             'client_secret': self.client_secret,
             'code': code,
             'grant_type': 'authorization_code',
             'redirect_uri': self.redirect_uri,
-        })
+        }, headers={'Content-Type': 'application/x-www-form-urlencoded'})
         resp.raise_for_status()
         token_data = resp.json()
 
