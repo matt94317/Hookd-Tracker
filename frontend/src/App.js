@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/auth/LoginPage';
@@ -14,15 +14,9 @@ import PlaceholderPage from './pages/PlaceholderPage';
 import AccountsPage from './pages/AccountsPage';
 import OAuthSuccessPage from './pages/OAuthSuccessPage';
 import OAuthErrorPage from './pages/OAuthErrorPage';
-import CreatorHomePage from './pages/CreatorHomePage';
 import CreatorsPage from './pages/CreatorsPage';
 import CreatorAnalyticsPage from './pages/CreatorAnalyticsPage';
 import PlanSelectionPage from './pages/PlanSelectionPage';
-
-function HomeRoute() {
-  const { user } = useAuth();
-  return user?.role === 'creator' ? <CreatorHomePage /> : <DashboardPage />;
-}
 
 function App() {
   return (
