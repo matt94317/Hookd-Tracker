@@ -241,6 +241,127 @@
   color: #111827;
 }
 
+/* ── Accounts section ── */
+.accountsSection {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.accountsHeader {
+  margin-bottom: 16px;
+}
+
+.accountsTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.oauthButtons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.oauthBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 13.5px;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.oauthBtn:hover {
+  background-color: #f5f6f8;
+}
+
+.oauthBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.oauthUrlBox {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.oauthUrlInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #374151;
+  background: #f9fafb;
+  outline: none;
+}
+
+.oauthUrlInput:focus {
+  border-color: #6366f1;
+}
+
+.copyBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 8px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s;
+}
+
+.copyBtn:hover {
+  background-color: #f5f6f8;
+}
+
+.accountsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.accountsTh {
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 0 16px 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.accountsRow {
+  border-bottom: 1px solid #f9fafb;
+}
+
+.accountsRow:last-child {
+  border-bottom: none;
+}
+
+.accountsTd {
+  font-size: 13.5px;
+  color: #374151;
+  padding: 12px 16px 12px 0;
+}
+
 /* ── Creator Progress ── */
 .progressSection {
   margin-bottom: 32px;

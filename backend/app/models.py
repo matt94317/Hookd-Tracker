@@ -61,7 +61,7 @@ class Account(db.Model):
 
     id = db.Column(db.BigInteger, primary_key=True)
     campaign_id = db.Column(db.BigInteger, db.ForeignKey('campaigns.id'), nullable=False)
-    creator_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=False)
+    creator_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=True)
     channel_id = db.Column(db.BigInteger, db.ForeignKey('channels.id'), nullable=False)
     platform_account_id = db.Column(db.String(255), nullable=False)
     username = db.Column(db.String(255))

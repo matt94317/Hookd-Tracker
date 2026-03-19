@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from sqlalchemy import func
 from .. import db
-from ..models import Account, Campaign, CampaignCreator, Post, User
+from ..models import Account, Campaign, Post
 from . import roles_required
 
 campaigns_bp = Blueprint('campaigns', __name__, url_prefix='/campaigns')
@@ -20,16 +20,31 @@ def _campaign_to_dict(c, include_stats=False):
         "updated_at": str(c.updated_at) if c.updated_at else None,
     }
     if include_stats:
-        creator_count = CampaignCreator.query.filter_by(campaign_id=c.id).count()
+        account_count = Account.query.filter_by(campaign_id=c.id).count()
         post_agg = (
-            db.session.query(func.count(Post.id), func.coalesce(func.sum(Post.views), 0))
+            db.session.query(
+                func.count(Post.id),
+                func.coalesce(func.sum(Post.views), 0),
+                func.coalesce(func.sum(Post.likes), 0),
+                func.coalesce(func.sum(Post.comments), 0),
+                func.coalesce(func.sum(Post.shares), 0),
+            )
             .join(Account, Post.account_id == Account.id)
             .filter(Account.campaign_id == c.id)
             .first()
         )
-        d["creator_count"] = creator_count
-        d["post_count"] = post_agg[0] or 0
-        d["total_views"] = int(post_agg[1] or 0)
+        post_count = int(post_agg[0] or 0)
+        total_views = int(post_agg[1] or 0)
+        total_likes = int(post_agg[2] or 0)
+        total_comments = int(post_agg[3] or 0)
+        total_shares = int(post_agg[4] or 0)
+        d["account_count"] = account_count
+        d["post_count"] = post_count
+        d["total_views"] = total_views
+        if total_views > 0:
+            d["avg_engagement"] = round((total_likes + total_comments + total_shares) / total_views * 100, 1)
+        else:
+            d["avg_engagement"] = 0.0
     return d
 
 # a shared helper that checks if a user is allowed to see a campaign. Avoids duplicating the same role-check logic across multiple endpoints
@@ -39,14 +54,10 @@ def _can_access_campaign(campaign, user_id, role):
         return True
     if role == 'company':
         return campaign.company_id == user_id
-    # creator: must be in campaign_creators
-    return CampaignCreator.query.filter_by(
-        campaign_id=campaign.id, creator_id=user_id
-    ).first() is not None
+    return False
 
 
 @campaigns_bp.route('', methods=['POST'])
-# Creators can't create campaigns (a company hires them)
 @roles_required('admin', 'company')
 def create_campaign():
     data = request.get_json()
@@ -77,7 +88,7 @@ def create_campaign():
 
 
 @campaigns_bp.route('', methods=['GET'])
-@jwt_required()
+@roles_required('admin', 'company')
 def list_campaigns():
     claims = get_jwt()
     role = claims['role']
@@ -86,14 +97,8 @@ def list_campaigns():
 
     if role == 'admin':
         query = Campaign.query
-    elif role == 'company':
+    else:  # company
         query = Campaign.query.filter_by(company_id=user_id)
-    else:  # creator
-        query = (
-            Campaign.query
-            .join(CampaignCreator, Campaign.id == CampaignCreator.campaign_id)
-            .filter(CampaignCreator.creator_id == user_id)
-        )
 
     if name_filter:
         query = query.filter(Campaign.name.ilike(f'%{name_filter}%'))
@@ -107,7 +112,6 @@ def get_campaign(campaign_id):
     claims = get_jwt()
     user_id = int(get_jwt_identity())
 
-    # returns 403 if the user has no business seeing that campaign
     campaign = Campaign.query.get_or_404(campaign_id)
 
     if not _can_access_campaign(campaign, user_id, claims['role']):
@@ -153,56 +157,3 @@ def delete_campaign(campaign_id):
     db.session.delete(campaign)
     db.session.commit()
     return jsonify({"message": "Campaign deleted"}), 200
-
-# Company can only add creators to their own campaigns (ownership check)
-@campaigns_bp.route('/<int:campaign_id>/creators', methods=['POST'])
-@roles_required('admin', 'company')
-def add_creator(campaign_id):
-    claims = get_jwt()
-    user_id = int(get_jwt_identity())
-
-    campaign = Campaign.query.get_or_404(campaign_id)
-
-    if claims['role'] == 'company' and campaign.company_id != user_id:
-        return jsonify({"error": "Access forbidden"}), 403
-
-    data = request.get_json()
-    creator_id = data.get('creator_id')
-    if not creator_id:
-        return jsonify({"error": "creator_id is required"}), 400
-
-    creator = User.query.get_or_404(creator_id)
-    if creator.role != 'creator':
-        return jsonify({"error": "User is not a creator"}), 400
-
-    existing = CampaignCreator.query.filter_by(
-        campaign_id=campaign_id, creator_id=creator_id
-    ).first()
-    if existing:
-        return jsonify({"error": "Creator already in campaign"}), 409
-
-    entry = CampaignCreator(campaign_id=campaign_id, creator_id=creator_id)
-    db.session.add(entry)
-    db.session.commit()
-
-    return jsonify({"campaign_id": campaign_id, "creator_id": creator_id}), 201
-
-# Company can only remove creators from their own campaigns (ownership check)
-@campaigns_bp.route('/<int:campaign_id>/creators/<int:creator_id>', methods=['DELETE'])
-@roles_required('admin', 'company')
-def remove_creator(campaign_id, creator_id):
-    claims = get_jwt()
-    user_id = int(get_jwt_identity())
-
-    campaign = Campaign.query.get_or_404(campaign_id)
-
-    if claims['role'] == 'company' and campaign.company_id != user_id:
-        return jsonify({"error": "Access forbidden"}), 403
-
-    entry = CampaignCreator.query.filter_by(
-        campaign_id=campaign_id, creator_id=creator_id
-    ).first_or_404()
-
-    db.session.delete(entry)
-    db.session.commit()
-    return jsonify({"message": "Creator removed from campaign"}), 200

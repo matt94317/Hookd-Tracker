@@ -116,11 +116,20 @@ function minsAgo(date) {
   return mins < 1 ? 'just now' : `${mins} min ago`;
 }
 
+/* ── Copy icon ── */
+const CopyIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+  </svg>
+);
+
 /* ── Component ── */
 export default function CampaignDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   const [campaign, setCampaign] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -133,6 +142,9 @@ export default function CampaignDetailsPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [lbSortCol, setLbSortCol] = useState('views');
   const [lbSortDir, setLbSortDir] = useState('desc');
+  const [oauthUrl, setOauthUrl] = useState('');
+  const [oauthLoading, setOauthLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -259,15 +271,42 @@ export default function CampaignDetailsPage() {
 
   /* ── Metric cards config ── */
   const metricCards = [
-    { label: 'Videos',          value: formatMetric(metrics.videos) },
-    { label: 'Likes',           value: formatMetric(metrics.likes) },
-    { label: 'Saves',           value: '0' },
-    { label: 'Shares',          value: formatMetric(metrics.shares) },
+    { label: 'Posts',            value: formatMetric(metrics.videos) },
     { label: 'Views',           value: formatMetric(metrics.views) },
+    { label: 'Likes',           value: formatMetric(metrics.likes) },
     { label: 'Comments',        value: formatMetric(metrics.comments) },
-    { label: 'Engagement rate', value: Math.round(metrics.engagementRate) + '%', info: true },
-    { label: 'Comment rate',    value: Math.round(metrics.commentRate) + '%',    info: true },
+    { label: 'Shares',          value: formatMetric(metrics.shares) },
+    { label: 'Saves',           value: '0' },
+    { label: 'Engagement Rate', value: Math.round(metrics.engagementRate) + '%', info: true },
+    { label: 'Comment Rate',    value: Math.round(metrics.commentRate) + '%',    info: true },
   ];
+
+  const isAdminOrCompany = user?.role === 'admin' || user?.role === 'company';
+
+  async function generateOAuthUrl(platform) {
+    setOauthLoading(true);
+    setOauthUrl('');
+    setCopied(false);
+    try {
+      // Find channel_id for the platform
+      const channelId = platform === 'instagram' ? 1 : 2;
+      const res = await apiFetch(`/campaigns/${id}/oauth-url`, {
+        method: 'POST',
+        body: JSON.stringify({ channel_id: channelId }),
+      }, token);
+      setOauthUrl(res.oauth_url);
+    } catch (err) {
+      console.error('Failed to generate OAuth URL', err);
+    } finally {
+      setOauthLoading(false);
+    }
+  }
+
+  function copyOAuthUrl() {
+    navigator.clipboard.writeText(oauthUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   const useMonthlyAxis = timePeriod === null || timePeriod >= 90;
 
@@ -330,7 +369,7 @@ export default function CampaignDetailsPage() {
                 value={selectedAccount}
                 onChange={e => setSelectedAccount(e.target.value)}
               >
-                <option value="all">Creators: All creators</option>
+                <option value="all">Accounts: All accounts</option>
                 {accounts.map(a => (
                   <option key={a.id} value={a.id}>
                     {a.username || `Account ${a.id}`}
@@ -420,6 +459,69 @@ export default function CampaignDetailsPage() {
             </ResponsiveContainer>
           </div>
 
+          {/* Accounts section */}
+          {isAdminOrCompany && (
+            <div className={styles.accountsSection}>
+              <div className={styles.accountsHeader}>
+                <h2 className={styles.accountsTitle}>Accounts</h2>
+              </div>
+              <div className={styles.oauthButtons}>
+                <button
+                  className={styles.oauthBtn}
+                  onClick={() => generateOAuthUrl('instagram')}
+                  disabled={oauthLoading}
+                >
+                  Generate Instagram OAuth URL
+                </button>
+                <button
+                  className={styles.oauthBtn}
+                  onClick={() => generateOAuthUrl('tiktok')}
+                  disabled={oauthLoading}
+                >
+                  Generate TikTok OAuth URL
+                </button>
+              </div>
+              {oauthUrl && (
+                <div className={styles.oauthUrlBox}>
+                  <input
+                    className={styles.oauthUrlInput}
+                    type="text"
+                    value={oauthUrl}
+                    readOnly
+                    onClick={e => e.target.select()}
+                  />
+                  <button className={styles.copyBtn} onClick={copyOAuthUrl}>
+                    <CopyIcon /> {copied ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+              )}
+              {accounts.length > 0 && (
+                <table className={styles.accountsTable}>
+                  <thead>
+                    <tr>
+                      <th className={styles.accountsTh}>Platform</th>
+                      <th className={styles.accountsTh}>Username</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {accounts.map(a => (
+                      <tr key={a.id} className={styles.accountsRow}>
+                        <td className={styles.accountsTd}>
+                          <span className={styles.platformBadge}>{platformLabel(a.channel_name)}</span>
+                          {' '}{a.channel_name || '—'}
+                        </td>
+                        <td className={styles.accountsTd}>@{a.username || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {accounts.length === 0 && (
+                <p className={styles.stateMsg}>No accounts linked yet. Generate an OAuth URL and share it with a creator.</p>
+              )}
+            </div>
+          )}
+
           {/* Creator Progress */}
           <div className={styles.progressSection}>
             <div className={styles.progressHeader}>
@@ -488,7 +590,7 @@ export default function CampaignDetailsPage() {
                 {[
                   { key: 'name',     label: 'Creator' },
                   { key: 'tier',     label: 'Tier' },
-                  { key: 'videos',   label: 'Videos' },
+                  { key: 'videos',   label: 'Posts' },
                   { key: 'views',    label: 'Views' },
                   { key: 'avgViews', label: 'Avg. views' },
                   { key: 'likes',    label: 'Likes' },

@@ -33,6 +33,17 @@ const UsersIcon = ({ size = 22 }) => (
   </svg>
 );
 
+const FileTextIcon = ({ size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/>
+    <line x1="16" y1="17" x2="8" y2="17"/>
+    <polyline points="10 9 9 9 8 9"/>
+  </svg>
+);
+
 const EyeIcon = ({ size = 22 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -153,7 +164,7 @@ export default function CampaignsPage() {
 
   const totalCampaigns = campaigns.length;
   const activeCampaigns = campaigns.filter(isActive).length;
-  const totalCreators = campaigns.reduce((sum, c) => sum + (c.creator_count || 0), 0);
+  const totalAccounts = campaigns.reduce((sum, c) => sum + (c.account_count || 0), 0);
   const totalViews = campaigns.reduce((sum, c) => sum + (c.total_views || 0), 0);
 
   const handleDelete = async (id) => {
@@ -200,8 +211,8 @@ export default function CampaignsPage() {
         </div>
         <div className={`${styles.statCard} ${styles.statPurple}`}>
           <span className={styles.statIcon}><UsersIcon size={22} /></span>
-          <span className={styles.statValue}>{totalCreators}</span>
-          <span className={styles.statLabel}>Total Creators</span>
+          <span className={styles.statValue}>{totalAccounts}</span>
+          <span className={styles.statLabel}>Total Accounts</span>
         </div>
         <div className={`${styles.statCard} ${styles.statLight}`}>
           <span className={styles.statIcon}><EyeIcon size={22} /></span>
@@ -265,10 +276,11 @@ export default function CampaignsPage() {
                 <div className={styles.cardStats}>
                   <div className={styles.cardStat}>
                     <span className={styles.cardStatIcon}><UsersIcon size={14} /></span>
-                    <span className={styles.cardStatValue}>{c.creator_count ?? 0}</span>
-                    <span className={styles.cardStatLabel}>Creators</span>
+                    <span className={styles.cardStatValue}>{c.account_count ?? 0}</span>
+                    <span className={styles.cardStatLabel}>Accounts</span>
                   </div>
                   <div className={styles.cardStat}>
+                    <span className={styles.cardStatIcon}><FileTextIcon size={14} /></span>
                     <span className={styles.cardStatValue}>{c.post_count ?? 0}</span>
                     <span className={styles.cardStatLabel}>Posts</span>
                   </div>

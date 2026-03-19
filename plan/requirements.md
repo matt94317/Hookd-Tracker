@@ -12,7 +12,6 @@
 | ------------------- | ------------------------------------------------------------------------- |
 | **admin**           | Platform administrator. Full access to all data.                          |
 | **company/ client** | Brand / sponsor. Creates and manages their own campaigns.                 |
-| **creator**         | Content creator. Views their own campaigns and authorises account access. |
 
 ---
 
@@ -20,16 +19,16 @@
 
 ### Overview
 
-> Company/ Admin users able to create campaigns, assign creators, link social accounts (limited to accounts owned by creators assigned to the campaign), and automatically collect post performance data.
+> Admin/ Company users create campaigns, generate OAuth URLs to share with external creators, and automatically collect post performance data from authorised accounts.
 
 ### Flow
 
 1. **Admin/ Company** creates a Campaign (name, start_date, end_date). If created by a Company, the campaign is automatically linked to that Company.
-2. **Admin/ Company** adds Creator users to the Campaign
-3. **Creator** opens the Campaign detail page and clicks "Connect Instagram" or "Connect TikTok" to initiate OAuth 2.0
-4. **Creator** completes the OAuth authorisation flow. The Account is then automatically created and linked to the Campaign.
-5. **Collecting data** fetches post data and metrics automatically
-6. **Token refresh job** renews tokens before expiry
+2. **Admin/ Company** opens the Campaign detail page and generates an Instagram or TikTok OAuth URL.
+3. **Admin/ Company** shares the OAuth URL externally with a creator (e.g. via email or DM).
+4. **Creator** (not a platform user) clicks the OAuth URL and completes the authorisation flow. The Account is then automatically created and linked to the Campaign.
+5. **Collecting data** fetches post data and metrics automatically.
+6. **Token refresh job** renews tokens before expiry.
 
 ### Data Collection
 
@@ -63,7 +62,6 @@ Performance data can be aggregated at the following levels:
 | **Post**     | Individual post metrics                          |
 | **Account**  | All posts from a single Instagram/TikTok account |
 | **Campaign** | All accounts/posts within a campaign             |
-| **Creator**  | All accounts/posts belonging to a creator        |
 | **Company**  | All campaigns owned by a company                 |
 | **Channel**  | Filtered by platform (Instagram or TikTok)       |
 
