@@ -14,6 +14,7 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const registered = location.state?.registered;
+  const redirectTo = location.state?.redirectTo;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +26,7 @@ function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       login(data.access_token);
-      navigate('/campaigns');
+      navigate(redirectTo || '/campaigns');
     } catch (err) {
       setError(err.message);
     } finally {
