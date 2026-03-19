@@ -42,10 +42,8 @@ Campaign       ──1:N──> Payouts
 | name                        | VARCHAR(255)                  | NOT NULL                                           |
 | email                       | VARCHAR(255)                  | NOT NULL, unique                                   |
 | password                    | VARCHAR(255)                  | NOT NULL                                           |
-| role                        | ENUM(admin, creator, company) | NOT NULL                                           |
+| role                        | ENUM(admin, company)          | NOT NULL                                           |
 | stripe_customer_id          | VARCHAR(255)                  | Stripe Customer ID (company users only)            |
-| stripe_connect_account_id   | VARCHAR(255)                  | Stripe Connect Express account ID (creators only)  |
-| payout_enabled              | BOOLEAN                       | Default false. True once Connect onboarding done   |
 | created_at                  | TIMESTAMP                     |                                                    |
 | updated_at                  | TIMESTAMP                     |                                                    |
 
@@ -68,24 +66,12 @@ Campaign       ──1:N──> Payouts
 | created_at | TIMESTAMP    |                      |
 | updated_at | TIMESTAMP    |                      |
 
-### campaign_creators (deprecated)
-
-> This table is no longer used by the application. Creators are now external users who connect accounts via shared OAuth URLs.
-
-| Column      | Type      | Notes                    |
-| ----------- | --------- | ------------------------ |
-| id          | BIGINT PK | Auto increment           |
-| campaign_id | BIGINT FK | References campaigns(id) |
-| creator_id  | BIGINT FK | References users(id)     |
-| created_at  | TIMESTAMP |                          |
-
 ### accounts
 
 | Column              | Type         | Notes                                |
 | ------------------- | ------------ | ------------------------------------ |
 | id                  | BIGINT PK    | Auto increment                       |
 | campaign_id         | BIGINT FK    | References campaigns(id)             |
-| creator_id          | BIGINT FK    | References users(id), nullable       |
 | channel_id          | BIGINT FK    | References channels(id)              |
 | platform_account_id | VARCHAR(255) | NOT NULL                             |
 | username            | VARCHAR(255) |                                      |
@@ -96,6 +82,23 @@ Campaign       ──1:N──> Payouts
 | monthly_target      | INT          | Default 0. Expected posts per month. |
 | created_at          | TIMESTAMP    |                                      |
 | updated_at          | TIMESTAMP    |                                      |
+
+### posts
+
+| Column           | Type         | Notes                   |
+| ---------------- | ------------ | ----------------------- |
+| id               | BIGINT PK    | Auto increment          |
+| account_id       | BIGINT FK    | References accounts(id) |
+| platform_post_id | VARCHAR(255) | NOT NULL                |
+| post_url         | TEXT         | NOT NULL (for oEmbed)   |
+| caption          | TEXT         |                         |
+| posted_at        | TIMESTAMP    |                         |
+| likes            | INT          | Default 0               |
+| comments         | INT          | Default 0               |
+| views            | INT          | Default 0               |
+| shares           | INT          | Default 0               |
+| created_at       | TIMESTAMP    |                         |
+| updated_at       | TIMESTAMP    |                         |
 
 ### subscriptions
 
@@ -127,19 +130,4 @@ Campaign       ──1:N──> Payouts
 | created_at          | TIMESTAMP                               |                                |
 | updated_at          | TIMESTAMP                               |                                |
 
-### posts
 
-| Column           | Type         | Notes                   |
-| ---------------- | ------------ | ----------------------- |
-| id               | BIGINT PK    | Auto increment          |
-| account_id       | BIGINT FK    | References accounts(id) |
-| platform_post_id | VARCHAR(255) | NOT NULL                |
-| post_url         | TEXT         | NOT NULL (for oEmbed)   |
-| caption          | TEXT         |                         |
-| posted_at        | TIMESTAMP    |                         |
-| likes            | INT          | Default 0               |
-| comments         | INT          | Default 0               |
-| views            | INT          | Default 0               |
-| shares           | INT          | Default 0               |
-| created_at       | TIMESTAMP    |                         |
-| updated_at       | TIMESTAMP    |                         |

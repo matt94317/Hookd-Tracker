@@ -11,7 +11,7 @@ os.environ.setdefault('OAUTH_REDIRECT_BASE_URL', 'http://localhost:5001')
 os.environ.setdefault('TOKEN_ENCRYPTION_KEY', base64.b64encode(os.urandom(32)).decode())
 
 from app import create_app, db
-from app.models import Account, Post, Channel, User, Campaign, CampaignCreator
+from app.models import Account, Post, Channel, User, Campaign
 from app.services.tiktok import TikTokService
 
 
@@ -27,21 +27,16 @@ class TestTikTokService(unittest.TestCase):
 
         # Seed test data
         company = User(id=1, name='Company', email='co@test.com', password='x', role='company')
-        creator = User(id=2, name='Creator', email='cr@test.com', password='x', role='creator')
         channel = Channel(id=2, name='tiktok')
-        db.session.add_all([company, creator, channel])
+        db.session.add_all([company, channel])
         db.session.flush()
 
         campaign = Campaign(id=1, name='Test Campaign', company_id=1)
         db.session.add(campaign)
         db.session.flush()
 
-        cc = CampaignCreator(campaign_id=1, creator_id=2)
-        db.session.add(cc)
-        db.session.flush()
-
         account = Account(
-            id=1, campaign_id=1, creator_id=2, channel_id=2,
+            id=1, campaign_id=1, channel_id=2,
             platform_account_id='tt_placeholder', username='ttuser',
         )
         db.session.add(account)
@@ -100,7 +95,7 @@ class TestTikTokService(unittest.TestCase):
                 'videos': [{
                     'id': 'vid1',
                     'title': 'My TikTok',
-                    'create_time': 1705312800,  # 2024-01-15T10:00:00 UTC
+                    'create_time': 1705312800,
                     'share_url': 'https://www.tiktok.com/@user/video/vid1',
                     'like_count': 500,
                     'comment_count': 30,

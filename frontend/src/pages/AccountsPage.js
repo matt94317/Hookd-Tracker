@@ -118,8 +118,7 @@ export default function AccountsPage() {
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
-        a => (a.username && a.username.toLowerCase().includes(q)) ||
-             (a.creator_name && a.creator_name.toLowerCase().includes(q))
+        a => (a.username && a.username.toLowerCase().includes(q))
       );
     }
     if (platformFilter !== 'all') {
