@@ -7,6 +7,23 @@ import styles from './SettingsPage.module.css';
 
 const PREF_KEY = 'hookd_settings';
 
+const PLANS = [
+  {
+    key: 'starter',
+    name: 'Starter',
+    price: '$150',
+    period: '/mo',
+    features: ['5 creators', '3 campaigns', 'Basic analytics'],
+  },
+  {
+    key: 'pro',
+    name: 'Pro',
+    price: '$270',
+    period: '/mo',
+    features: ['20 creators', '10 campaigns', 'Advanced analytics', 'Priority support'],
+  },
+];
+
 function loadPrefs() {
   try { return JSON.parse(localStorage.getItem(PREF_KEY)) || {}; }
   catch { return {}; }
@@ -22,12 +39,59 @@ function Toggle({ checked, onChange }) {
 }
 
 export default function SettingsPage() {
-  const { token, logout } = useAuth();
+  const { token, logout, user } = useAuth();
   const navigate = useNavigate();
 
   function handleSignOut() {
     logout();
     navigate('/login');
+  }
+
+  // ── Billing ──────────────────────────────────────────────────────────────
+  const [subscription, setSubscription] = useState(null);
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingMsg, setBillingMsg] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('billing') === 'success') setBillingMsg('Subscription activated! Welcome aboard.');
+    if (params.get('billing') === 'cancel') setBillingMsg('Checkout cancelled. No charges were made.');
+  }, []);
+
+  useEffect(() => {
+    if (user?.role !== 'company' && user?.role !== 'admin') return;
+    apiFetch('/payments/subscription', {}, token)
+      .then(d => setSubscription(d.subscription))
+      .catch(() => {});
+  }, [token, user]);
+
+  async function handleSubscribe(plan) {
+    setBillingLoading(true);
+    setBillingMsg('');
+    try {
+      const { checkout_url } = await apiFetch('/payments/create-checkout-session', {
+        method: 'POST',
+        body: JSON.stringify({ plan }),
+      }, token);
+      window.location.href = checkout_url;
+    } catch (err) {
+      setBillingMsg(err.message || 'Failed to start checkout.');
+      setBillingLoading(false);
+    }
+  }
+
+  async function handleManageBilling() {
+    setBillingLoading(true);
+    setBillingMsg('');
+    try {
+      const { portal_url } = await apiFetch('/payments/create-portal-session', {
+        method: 'POST',
+      }, token);
+      window.location.href = portal_url;
+    } catch (err) {
+      setBillingMsg(err.message || 'Failed to open billing portal.');
+      setBillingLoading(false);
+    }
   }
 
   const [prefs, setPrefs] = useState(() => ({
@@ -216,6 +280,68 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+
+      {/* Billing — visible to company/admin only */}
+      {(user?.role === 'company' || user?.role === 'admin') && (
+        <div className={styles.card}>
+          <div className={`${styles.iconWrap} ${styles.iconBlue}`}>💳</div>
+          <div className={styles.cardBody}>
+            <div className={styles.cardTitle} style={{ marginBottom: 12 }}>Billing &amp; Subscription</div>
+
+            {billingMsg && (
+              <p className={`${styles.syncMsg} ${billingMsg.includes('activated') ? styles.billingSuccess : styles.billingError}`}>
+                {billingMsg}
+              </p>
+            )}
+
+            {subscription ? (
+              <div className={styles.currentPlan}>
+                <div className={styles.planBadgeRow}>
+                  <span className={styles.planBadge}>{subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)}</span>
+                  <span className={`${styles.planStatus} ${subscription.status === 'active' ? styles.statusActive : styles.statusInactive}`}>
+                    {subscription.status}
+                  </span>
+                </div>
+                {subscription.current_period_end && (
+                  <p className={styles.cardDesc} style={{ marginTop: 6 }}>
+                    Renews {new Date(subscription.current_period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </p>
+                )}
+                <button
+                  className={styles.primaryBtn}
+                  style={{ marginTop: 16 }}
+                  onClick={handleManageBilling}
+                  disabled={billingLoading}
+                >
+                  {billingLoading ? 'Loading…' : 'Manage Billing'}
+                </button>
+              </div>
+            ) : (
+              <div className={styles.planGrid}>
+                {PLANS.map(plan => (
+                  <div key={plan.key} className={styles.planCard}>
+                    <div className={styles.planName}>{plan.name}</div>
+                    <div className={styles.planPrice}>
+                      {plan.price}<span className={styles.planPeriod}>{plan.period}</span>
+                    </div>
+                    <ul className={styles.planFeatures}>
+                      {plan.features.map(f => <li key={f}>{f}</li>)}
+                    </ul>
+                    <button
+                      className={styles.primaryBtn}
+                      style={{ width: '100%' }}
+                      onClick={() => handleSubscribe(plan.key)}
+                      disabled={billingLoading}
+                    >
+                      {billingLoading ? 'Loading…' : `Subscribe`}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Sign Out */}
       <div className={styles.card}>

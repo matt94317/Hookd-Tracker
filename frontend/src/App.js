@@ -14,6 +14,7 @@ import PlaceholderPage from './pages/PlaceholderPage';
 import CreatorHomePage from './pages/CreatorHomePage';
 import CreatorsPage from './pages/CreatorsPage';
 import CreatorAnalyticsPage from './pages/CreatorAnalyticsPage';
+import PlanSelectionPage from './pages/PlanSelectionPage';
 
 function HomeRoute() {
   const { user } = useAuth();
@@ -38,6 +39,7 @@ function App() {
           <Route path="/analytics" element={<ProtectedRoute><CreatorAnalyticsPage /></ProtectedRoute>} />
           <Route path="/payroll" element={<ProtectedRoute><PlaceholderPage title="Payroll" /></ProtectedRoute>} />
           <Route path="/creators" element={<ProtectedRoute><CreatorsPage /></ProtectedRoute>} />
+          <Route path="/plan-selection" element={<ProtectedRoute><PlanSelectionPage /></ProtectedRoute>} />
           <Route path="/posts" element={<ProtectedRoute><PlaceholderPage title="Posts" /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
