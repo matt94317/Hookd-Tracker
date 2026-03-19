@@ -134,7 +134,7 @@ export default function DashboardPage() {
   }, [filteredPosts, chartMode]);
 
   const metricCards = [
-    { label: 'Videos',          value: formatNumber(metrics.videos) },
+    { label: 'Posts',            value: formatNumber(metrics.videos) },
     { label: 'Views',           value: formatNumber(metrics.views) },
     { label: 'Likes',           value: formatNumber(metrics.likes) },
     { label: 'Comments',        value: formatNumber(metrics.comments) },

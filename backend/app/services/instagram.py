@@ -102,12 +102,10 @@ class InstagramService(PlatformService):
             raise ValueError("Missing state in OAuth callback")
         state_data = json.loads(state)
         campaign_id = state_data['campaign_id']
-        creator_id = state_data['creator_id']
         channel_id = state_data['channel_id']
 
         account = Account(
             campaign_id=campaign_id,
-            creator_id=creator_id,
             channel_id=channel_id,
             platform_account_id=ig_user_id,
             username=ig_username,

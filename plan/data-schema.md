@@ -13,15 +13,12 @@ Platform for content creators to measure campaign performance and display portfo
 ## Entity Relationships
 
 ```
-User (creator) ──N:M──> Campaigns      (via campaign_creators)
 User (company) ──1:N──> Campaigns
 Campaign       ──1:N──> Accounts
 Channel        ──1:N──> Accounts
-User (creator) ──1:N──> Accounts
 Account        ──1:N──> Posts
 User (company) ──1:1──> Subscription
 User (company) ──1:N──> Payouts
-User (creator) ──1:N──> Payouts
 Campaign       ──1:N──> Payouts
 ```
 
@@ -30,10 +27,10 @@ Campaign       ──1:N──> Payouts
 | Role        | Description            | Access                                       |
 | ----------- | ---------------------- | -------------------------------------------- |
 | **admin**   | Platform administrator | All campaigns, accounts, posts               |
-| **creator** | Content creator        | Campaigns via `campaign_creators` join table |
 | **company** | Brand / sponsor        | Campaigns where `company_id = user.id`       |
 
-- Each Campaign has **multiple creators** and **at most one company** (NULL when created by Admin)
+- Each Campaign has **at most one company** (NULL when created by Admin)
+- Accounts are linked to Campaigns via OAuth (creators are external, not platform users)
 
 ## Tables
 
@@ -71,7 +68,9 @@ Campaign       ──1:N──> Payouts
 | created_at | TIMESTAMP    |                      |
 | updated_at | TIMESTAMP    |                      |
 
-### campaign_creators (join table)
+### campaign_creators (deprecated)
+
+> This table is no longer used by the application. Creators are now external users who connect accounts via shared OAuth URLs.
 
 | Column      | Type      | Notes                    |
 | ----------- | --------- | ------------------------ |
@@ -80,15 +79,13 @@ Campaign       ──1:N──> Payouts
 | creator_id  | BIGINT FK | References users(id)     |
 | created_at  | TIMESTAMP |                          |
 
-- Unique constraint on (campaign_id, creator_id)
-
 ### accounts
 
 | Column              | Type         | Notes                                |
 | ------------------- | ------------ | ------------------------------------ |
 | id                  | BIGINT PK    | Auto increment                       |
 | campaign_id         | BIGINT FK    | References campaigns(id)             |
-| creator_id          | BIGINT FK    | References users(id)                 |
+| creator_id          | BIGINT FK    | References users(id), nullable       |
 | channel_id          | BIGINT FK    | References channels(id)              |
 | platform_account_id | VARCHAR(255) | NOT NULL                             |
 | username            | VARCHAR(255) |                                      |

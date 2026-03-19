@@ -1,10 +1,15 @@
 import json
+import os
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
-from ..models import Account, Campaign, CampaignCreator, Channel
+from .. import db
+from ..models import Account, Campaign, Channel, Post
+from . import roles_required
 
 accounts_bp = Blueprint('accounts', __name__)
+
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 
 
 # a shared helper that formats an account into JSON. Used by every endpoint so the response format is consistent
@@ -16,6 +21,7 @@ def _account_to_dict(a):
         "creator_name": a.creator.name if a.creator else None,
         "channel_id": a.channel_id,
         "channel_name": a.channel.name if a.channel else None,
+        "campaign_name": a.campaign.name if a.campaign else None,
         "platform_account_id": a.platform_account_id,
         "username": a.username,
         "token_expires_at": str(a.token_expires_at) if a.token_expires_at else None,
@@ -25,6 +31,7 @@ def _account_to_dict(a):
         "updated_at": str(a.updated_at) if a.updated_at else None,
     }
 
+
 # a shared helper that checks if a user is allowed to see a campaign. Avoids duplicating the same role-check logic across multiple endpoints
 def _can_access_campaign(campaign, user_id, role):
     """Check if the current user is allowed to view this campaign."""
@@ -32,48 +39,35 @@ def _can_access_campaign(campaign, user_id, role):
         return True
     if role == 'company':
         return campaign.company_id == user_id
-    # creator: must be in campaign_creators
-    return CampaignCreator.query.filter_by(
-        campaign_id=campaign.id, creator_id=user_id
-    ).first() is not None
+    return False
 
 
-# ── OAuth URL generation (Admin/Company → Creator) ─────────────────────────
+# ── OAuth URL generation (Admin/Company generates URL for external sharing) ──
 
 @accounts_bp.route('/campaigns/<int:campaign_id>/oauth-url', methods=['POST'])
-@jwt_required()
+@roles_required('admin', 'company')
 def generate_oauth_url(campaign_id):
-    """Creator initiates OAuth from the campaign detail page.
-    Generates an OAuth URL for Instagram or TikTok."""
+    """Admin/Company generates an OAuth URL to share with external creators."""
     claims = get_jwt()
     user_id = int(get_jwt_identity())
     role = claims['role']
 
-    Campaign.query.get_or_404(campaign_id)
+    campaign = Campaign.query.get_or_404(campaign_id)
+
+    if role == 'company' and campaign.company_id != user_id:
+        return jsonify({"error": "Access forbidden"}), 403
 
     data = request.get_json()
     channel_id = data.get('channel_id')
     if not channel_id:
         return jsonify({"error": "channel_id is required"}), 400
 
-    # Creator: can only generate for themselves, must be assigned to campaign
-    if role == 'creator':
-        creator_id = user_id
-        in_campaign = CampaignCreator.query.filter_by(
-            campaign_id=campaign_id, creator_id=creator_id
-        ).first()
-        if not in_campaign:
-            return jsonify({"error": "You are not assigned to this campaign"}), 403
-    else:
-        return jsonify({"error": "Only creators can initiate OAuth"}), 403
-
     # Validate channel exists
     channel = Channel.query.get_or_404(channel_id)
 
-    # Encode state for OAuth callback
+    # Encode state for OAuth callback (no creator_id)
     state = json.dumps({
         'campaign_id': campaign_id,
-        'creator_id': creator_id,
         'channel_id': channel_id,
     })
 
@@ -89,25 +83,23 @@ def generate_oauth_url(campaign_id):
 def oauth_callback(channel):
     code = request.args.get('code')
     if not code:
-        return jsonify({"error": "Missing code parameter"}), 400
+        return redirect(f"{FRONTEND_URL}/oauth/error")
 
     state = request.args.get('state')
     from ..services import get_platform_service
     try:
         service = get_platform_service(channel)
-        result = service.handle_oauth_callback(channel, code, state=state)
-        return jsonify({"message": "OAuth connected", "data": result}), 200
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        return jsonify({"error": "OAuth callback failed"}), 500
+        service.handle_oauth_callback(channel, code, state=state)
+        return redirect(f"{FRONTEND_URL}/oauth/success")
+    except Exception:
+        return redirect(f"{FRONTEND_URL}/oauth/error")
 
 
 # ── Campaign-nested account routes ──────────────────────────────────────────
 
 @accounts_bp.route('/campaigns/<int:campaign_id>/accounts', methods=['GET'])
 @jwt_required()
-def list_accounts(campaign_id):
+def list_campaign_accounts(campaign_id):
     claims = get_jwt()
     user_id = int(get_jwt_identity())
 
@@ -120,19 +112,66 @@ def list_accounts(campaign_id):
     return jsonify([_account_to_dict(a) for a in accounts]), 200
 
 
-# ── Standalone account routes ────────────────────────────────────────────────
+# ── Top-level account routes ────────────────────────────────────────────────
+
+@accounts_bp.route('/accounts', methods=['GET'])
+@roles_required('admin', 'company')
+def list_accounts():
+    """Return all accounts visible to the current user."""
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+    role = claims['role']
+
+    if role == 'admin':
+        query = Account.query
+    else:  # company — only accounts in their campaigns
+        query = (
+            Account.query
+            .join(Campaign, Account.campaign_id == Campaign.id)
+            .filter(Campaign.company_id == user_id)
+        )
+
+    platform_filter = request.args.get('platform', '').strip()
+    if platform_filter:
+        query = query.join(Channel, Account.channel_id == Channel.id).filter(Channel.name == platform_filter)
+
+    campaign_filter = request.args.get('campaign_id', '').strip()
+    if campaign_filter:
+        query = query.filter(Account.campaign_id == int(campaign_filter))
+
+    accounts = query.order_by(Account.created_at.desc()).all()
+    return jsonify([_account_to_dict(a) for a in accounts]), 200
+
+
+@accounts_bp.route('/accounts/<int:account_id>', methods=['DELETE'])
+@roles_required('admin', 'company')
+def delete_account(account_id):
+    """Delete an account and all its posts."""
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+    role = claims['role']
+
+    account = Account.query.get_or_404(account_id)
+
+    if role == 'company':
+        campaign = Campaign.query.get(account.campaign_id)
+        if campaign.company_id != user_id:
+            return jsonify({"error": "Access forbidden"}), 403
+
+    Post.query.filter_by(account_id=account_id).delete()
+    db.session.delete(account)
+    db.session.commit()
+    return jsonify({"message": "Account deleted"}), 200
+
 
 @accounts_bp.route('/accounts/<int:account_id>/fetch-posts', methods=['POST'])
-@jwt_required()
+@roles_required('admin', 'company')
 def trigger_fetch_posts(account_id):
     claims = get_jwt()
     user_id = int(get_jwt_identity())
 
     account = Account.query.get_or_404(account_id)
 
-    # Access control
-    if claims['role'] == 'creator' and account.creator_id != user_id:
-        return jsonify({"error": "Access forbidden"}), 403
     if claims['role'] == 'company':
         campaign = Campaign.query.get(account.campaign_id)
         if campaign.company_id != user_id:

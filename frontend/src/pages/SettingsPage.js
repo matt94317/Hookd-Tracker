@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { useAuth } from '../context/AuthContext';
@@ -37,8 +37,6 @@ export default function SettingsPage() {
     ...loadPrefs(),
   }));
 
-  const [platformAccounts, setPlatformAccounts] = useState({ instagram: [], tiktok: [] });
-  const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState('');
 
@@ -50,43 +48,18 @@ export default function SettingsPage() {
     });
   }
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const campaigns = await apiFetch('/campaigns', {}, token);
-        const map = { instagram: [], tiktok: [] };
-        for (const camp of campaigns) {
-          const accounts = await apiFetch(`/campaigns/${camp.id}/accounts`, {}, token);
-          for (const acct of accounts) {
-            const name = acct.channel_name;
-            if (name && map[name] !== undefined) {
-              map[name].push(acct);
-            }
-          }
-        }
-        setPlatformAccounts(map);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, [token]);
-
   async function handleManualSync() {
     setSyncing(true);
     setSyncMsg('');
-    let count = 0;
     try {
-      for (const accounts of Object.values(platformAccounts)) {
-        for (const acct of accounts) {
-          if (acct.token_expires_at) {
-            try {
-              await apiFetch(`/accounts/${acct.id}/fetch-posts`, { method: 'POST' }, token);
-              count++;
-            } catch {}
-          }
+      const accounts = await apiFetch('/accounts', {}, token);
+      let count = 0;
+      for (const acct of accounts) {
+        if (acct.token_expires_at) {
+          try {
+            await apiFetch(`/accounts/${acct.id}/fetch-posts`, { method: 'POST' }, token);
+            count++;
+          } catch {}
         }
       }
       setSyncMsg(
@@ -101,53 +74,28 @@ export default function SettingsPage() {
     }
   }
 
-  async function handleConnect(accountId) {
-    try {
-      const { oauth_url } = await apiFetch(`/accounts/${accountId}/oauth-url`, {}, token);
-      window.location.href = oauth_url;
-    } catch (err) {
-      console.error('Failed to get OAuth URL', err);
-    }
-  }
-
-  function getPlatformStatus(platform) {
-    const accounts = platformAccounts[platform];
-    if (!accounts || accounts.length === 0) return { connected: false, connectId: null };
-    const connected = accounts.find(a => a.token_expires_at);
-    const unconnected = accounts.find(a => !a.token_expires_at);
-    return {
-      connected: !!connected,
-      connectId: unconnected?.id ?? null,
-    };
-  }
-
-  const platforms = [
-    { key: 'instagram', label: 'Instagram' },
-    { key: 'tiktok', label: 'TikTok' },
-  ];
-
   return (
     <AppLayout>
       <div className={styles.header}>
         <h1 className={styles.title}>Settings</h1>
-        <p className={styles.subtitle}>Manage your app preferences and integrations</p>
+        <p className={styles.subtitle}>Manage your app preferences</p>
       </div>
 
       {/* Auto Sync */}
       <div className={styles.card}>
-        <div className={`${styles.iconWrap} ${styles.iconPurple}`}>⚡</div>
+        <div className={`${styles.iconWrap} ${styles.iconPurple}`}>&#9889;</div>
         <div className={styles.cardBody}>
           <div className={styles.cardRow}>
             <div>
               <div className={styles.cardTitle}>Automatic Sync</div>
               <div className={styles.cardDesc}>
-                Automatically fetch new posts and update metrics for all tracked creators
+                Automatically fetch new posts and update metrics for all tracked accounts
               </div>
             </div>
             <Toggle checked={prefs.autoSync} onChange={v => setPref('autoSync', v)} />
           </div>
           <button className={styles.primaryBtn} onClick={handleManualSync} disabled={syncing}>
-            {syncing ? 'Syncing…' : 'Run Manual Sync Now'}
+            {syncing ? 'Syncing\u2026' : 'Run Manual Sync Now'}
           </button>
           {syncMsg && <p className={styles.syncMsg}>{syncMsg}</p>}
         </div>
@@ -155,7 +103,7 @@ export default function SettingsPage() {
 
       {/* Notifications */}
       <div className={styles.card}>
-        <div className={`${styles.iconWrap} ${styles.iconBell}`}>🔔</div>
+        <div className={`${styles.iconWrap} ${styles.iconBell}`}>&#128276;</div>
         <div className={styles.cardBody}>
           <div className={styles.cardTitle} style={{ marginBottom: 16 }}>Notifications</div>
           <div className={styles.notifRow}>
@@ -175,51 +123,9 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Connected Platforms */}
-      <div className={styles.card}>
-        <div className={`${styles.iconWrap} ${styles.iconGreen}`}>🔗</div>
-        <div className={styles.cardBody}>
-          <div className={styles.cardTitle} style={{ marginBottom: 12 }}>Connected Platforms</div>
-          <div className={styles.platformNote}>
-            <span className={styles.noteWarn}>⚠ Important:</span>{' '}
-            Platform connections are tied to your campaign accounts. Use the Connect button below
-            to authorize an account that has been added to your campaign.
-          </div>
-          {loading ? (
-            <p className={styles.loadingText}>Loading accounts…</p>
-          ) : (
-            platforms.map(({ key, label }) => {
-              const status = getPlatformStatus(key);
-              return (
-                <div key={key} className={styles.platformRow}>
-                  {key === 'tiktok' ? (
-                    <div className={styles.tiktokBadge}>TT</div>
-                  ) : (
-                    <div className={styles.igBadge} />
-                  )}
-                  <span className={styles.platformLabel}>{label}</span>
-                  {status.connected ? (
-                    <span className={styles.statusConnected}>Connected</span>
-                  ) : status.connectId ? (
-                    <button
-                      className={styles.connectBtn}
-                      onClick={() => handleConnect(status.connectId)}
-                    >
-                      Connect
-                    </button>
-                  ) : (
-                    <span className={styles.statusNotConnected}>Not Connected</span>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-
       {/* Sign Out */}
       <div className={styles.card}>
-        <div className={`${styles.iconWrap} ${styles.iconRed}`}>🚪</div>
+        <div className={`${styles.iconWrap} ${styles.iconRed}`}>&#128682;</div>
         <div className={styles.cardBody}>
           <div className={styles.cardRow}>
             <div>

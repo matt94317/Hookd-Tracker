@@ -23,15 +23,11 @@ const BASE_NAV_ITEMS = [
     icon: <Icon><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></Icon>,
   },
   {
-    label: 'Analytics', path: '/analytics', creatorOnly: true,
-    icon: <Icon><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></Icon>,
-  },
-  {
     label: 'Payroll', path: '/payroll',
     icon: <Icon><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></Icon>,
   },
   {
-    label: 'Creators', path: '/creators',
+    label: 'Accounts', path: '/accounts',
     icon: <Icon><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></Icon>,
   },
   {
@@ -68,7 +64,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const navItems = BASE_NAV_ITEMS.filter((item) => !item.creatorOnly || user?.role === 'creator');
+  const navItems = BASE_NAV_ITEMS;
 
   return (
     <aside className={styles.sidebar}>
