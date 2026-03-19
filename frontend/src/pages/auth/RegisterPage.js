@@ -18,18 +18,11 @@ const FREE_EMAIL_DOMAINS = new Set([
 function RegisterPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [step, setStep] = useState('select'); // 'select' | 'form'
-  const [role, setRole] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const handleRoleSelect = (selected) => {
-    setRole(selected);
-    setStep('form');
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,14 +38,14 @@ function RegisterPage() {
     try {
       await apiFetch('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password, role: 'company' }),
       });
       const data = await apiFetch('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
       login(data.access_token);
-      navigate(role === 'company' ? '/plan-selection' : '/campaigns');
+      navigate('/plan-selection');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -64,105 +57,63 @@ function RegisterPage() {
     <div className={styles.pageWrapper}>
       <div className={styles.logo} onClick={() => navigate('/')}>Hookd Tracker</div>
 
-      {step === 'select' ? (
-        <div className={styles.selectCard}>
-          <h1 className={styles.selectHeading}>Who are you?</h1>
-          <p className={styles.selectSubtext}>Choose how you'll be using Hookd Tracker</p>
+      <div className={styles.card}>
+        <h1 className={styles.heading}>Create account</h1>
 
-          <div className={styles.roleGrid}>
-            <button
-              className={`${styles.roleBtn} ${styles.roleCreator}`}
-              onClick={() => handleRoleSelect('creator')}
-            >
-              <span className={styles.roleIcon}>🎬</span>
-              <span className={styles.roleTitle}>I'm a Creator</span>
-              <span className={styles.roleDesc}>I create content and want to manage my campaigns</span>
-            </button>
-
-            <button
-              className={`${styles.roleBtn} ${styles.roleCompany}`}
-              onClick={() => handleRoleSelect('company')}
-            >
-              <span className={styles.roleIcon}>🏢</span>
-              <span className={styles.roleTitle}>I'm Looking for Talent</span>
-              <span className={styles.roleDesc}>I represent a brand and want to manage UGC creators</span>
-            </button>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="name">Full name</label>
+            <input
+              className={styles.input}
+              id="name"
+              type="text"
+              placeholder="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
           </div>
 
-          <p className={styles.loginPrompt}>
-            Already have an account?{' '}
-            <a className={styles.linkPrimary} onClick={() => navigate('/login')}>
-              Sign in
-            </a>
-          </p>
-        </div>
-      ) : (
-        <div className={styles.card}>
-          <button className={styles.backBtn} onClick={() => setStep('select')}>
-            ← Back
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="email">Work email address</label>
+            <input
+              className={styles.input}
+              id="email"
+              type="email"
+              placeholder="you@yourcompany.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="password">Password</label>
+            <input
+              className={styles.input}
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && <p className={styles.errorMsg}>{error}</p>}
+
+          <button className={styles.signUpBtn} type="submit" disabled={loading}>
+            {loading ? 'Creating account...' : 'Sign up'}
           </button>
-          <h1 className={styles.heading}>Create account</h1>
-          <p className={styles.subheading}>
-            Signing up as a <strong>{role === 'creator' ? 'Creator' : 'Company'}</strong>
-          </p>
+        </form>
 
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="name">Full name</label>
-              <input
-                className={styles.input}
-                id="name"
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="email">
-                {role === 'company' ? 'Work email address' : 'Email address'}
-              </label>
-              <input
-                className={styles.input}
-                id="email"
-                type="email"
-                placeholder={role === 'company' ? 'you@yourcompany.com' : 'name@example.com'}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="password">Password</label>
-              <input
-                className={styles.input}
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            {error && <p className={styles.errorMsg}>{error}</p>}
-
-            <button className={styles.signUpBtn} type="submit" disabled={loading}>
-              {loading ? 'Creating account...' : 'Sign up'}
-            </button>
-          </form>
-
-          <p className={styles.loginPrompt}>
-            Already have an account?{' '}
-            <a className={styles.linkPrimary} onClick={() => navigate('/login')}>
-              Sign in
-            </a>
-          </p>
-        </div>
-      )}
+        <p className={styles.loginPrompt}>
+          Already have an account?{' '}
+          <a className={styles.linkPrimary} onClick={() => navigate('/login')}>
+            Sign in
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

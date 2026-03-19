@@ -18,8 +18,8 @@ def register():
     if not all([name, email, password, role]):
         return jsonify({"error": "All fields are required"}), 400
 
-    if role not in ('admin', 'creator', 'company'):
-        return jsonify({"error": "Role must be admin, creator, or company"}), 400
+    if role not in ('admin', 'company'):
+        return jsonify({"error": "Role must be admin or company"}), 400
 
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "Email already registered"}), 409
