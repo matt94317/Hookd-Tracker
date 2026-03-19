@@ -37,11 +37,14 @@ def create_app(config=None):
     from .routes.accounts import accounts_bp
     from .routes.posts import posts_bp
     from .routes.users import users_bp
+    from .routes.payments import payments_bp, stripe_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(campaigns_bp)
     app.register_blueprint(accounts_bp)
     app.register_blueprint(posts_bp)
     app.register_blueprint(users_bp)
+    app.register_blueprint(payments_bp)
+    app.register_blueprint(stripe_bp)
 
     # Start scheduled jobs (unless disabled, e.g. during testing)
     if not app.config.get('SCHEDULER_DISABLED'):

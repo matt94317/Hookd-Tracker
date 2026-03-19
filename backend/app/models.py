@@ -12,6 +12,7 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Enum('admin', 'creator', 'company', name='user_roles'), nullable=False)
+    stripe_customer_id = db.Column(db.String(255), unique=True, nullable=True)
     created_at = db.Column(db.DateTime, server_default=func.now())
     updated_at = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -19,6 +20,7 @@ class User(db.Model):
     campaigns_owned = db.relationship('Campaign', backref='company', lazy=True)
     accounts = db.relationship('Account', backref='creator', lazy=True)
     participating_campaigns = db.relationship('Campaign', secondary='campaign_creators', back_populates='creators')
+    subscription = db.relationship('Subscription', backref='company', uselist=False, lazy=True)
 
 class Channel(db.Model):
     __tablename__ = 'channels'
@@ -87,5 +89,20 @@ class Post(db.Model):
     comments = db.Column(db.Integer, default=0)
     views = db.Column(db.Integer, default=0)
     shares = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, server_default=func.now())
+    updated_at = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class Subscription(db.Model):
+    __tablename__ = 'subscriptions'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    company_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), unique=True, nullable=False)
+    stripe_subscription_id = db.Column(db.String(255), unique=True, nullable=True)
+    stripe_customer_id = db.Column(db.String(255), nullable=True)
+    plan = db.Column(db.Enum('starter', 'pro', 'enterprise', name='subscription_plans'), nullable=False)
+    status = db.Column(db.String(50), nullable=False, default='active')
+    current_period_start = db.Column(db.DateTime, nullable=True)
+    current_period_end = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, server_default=func.now())
     updated_at = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())

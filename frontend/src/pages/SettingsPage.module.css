@@ -43,6 +43,7 @@
 .iconBell   { background: #f0fdf4; }
 .iconGreen  { background: #f0fdf4; }
 .iconRed    { background: #fff1f2; }
+.iconBlue   { background: #eff6ff; }
 
 .cardBody {
   flex: 1;
@@ -246,6 +247,107 @@
   font-size: 14px;
   color: #9ca3af;
   margin: 8px 0;
+}
+
+/* ── Billing ── */
+.billingSuccess {
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.billingError {
+  color: #dc2626;
+  background: #fff1f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.currentPlan {}
+
+.planBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.planBadge {
+  background: #111827;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.planStatus {
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.statusActive  { color: #16a34a; }
+.statusInactive { color: #9ca3af; }
+
+.planGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.planCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.planName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.planPrice {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+}
+
+.planPeriod {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.planFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.planFeatures li {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.planFeatures li::before {
+  content: '✓ ';
+  color: #16a34a;
+  font-weight: 600;
 }
 
 .signOutBtn {

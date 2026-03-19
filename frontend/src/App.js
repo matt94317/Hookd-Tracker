@@ -14,6 +14,15 @@ import PlaceholderPage from './pages/PlaceholderPage';
 import AccountsPage from './pages/AccountsPage';
 import OAuthSuccessPage from './pages/OAuthSuccessPage';
 import OAuthErrorPage from './pages/OAuthErrorPage';
+import CreatorHomePage from './pages/CreatorHomePage';
+import CreatorsPage from './pages/CreatorsPage';
+import CreatorAnalyticsPage from './pages/CreatorAnalyticsPage';
+import PlanSelectionPage from './pages/PlanSelectionPage';
+
+function HomeRoute() {
+  const { user } = useAuth();
+  return user?.role === 'creator' ? <CreatorHomePage /> : <DashboardPage />;
+}
 
 function App() {
   return (
@@ -34,6 +43,8 @@ function App() {
           <Route path="/home" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/payroll" element={<ProtectedRoute><PlaceholderPage title="Payroll" /></ProtectedRoute>} />
           <Route path="/accounts" element={<ProtectedRoute><AccountsPage /></ProtectedRoute>} />
+          <Route path="/creators" element={<ProtectedRoute><CreatorsPage /></ProtectedRoute>} />
+          <Route path="/plan-selection" element={<ProtectedRoute><PlanSelectionPage /></ProtectedRoute>} />
           <Route path="/posts" element={<ProtectedRoute><PlaceholderPage title="Posts" /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>

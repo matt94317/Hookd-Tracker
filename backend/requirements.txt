@@ -10,3 +10,4 @@ requests==2.31.0
 cryptography==41.0.7
 Flask-APScheduler==1.13.1
 pytest==7.4.4
+stripe==11.4.1

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
 import styles from './RegisterPage.module.css';
 
@@ -16,8 +17,10 @@ const FREE_EMAIL_DOMAINS = new Set([
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [step, setStep] = useState('select'); // 'select' | 'form'
   const [role, setRole] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -42,9 +45,14 @@ function RegisterPage() {
     try {
       await apiFetch('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ name, email, password, role }),
       });
-      navigate('/login', { state: { registered: true } });
+      const data = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      login(data.access_token);
+      navigate(role === 'company' ? '/plan-selection' : '/campaigns');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -99,6 +107,19 @@ function RegisterPage() {
           </p>
 
           <form className={styles.form} onSubmit={handleSubmit}>
+            <div className={styles.inputGroup}>
+              <label className={styles.label} htmlFor="name">Full name</label>
+              <input
+                className={styles.input}
+                id="name"
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+
             <div className={styles.inputGroup}>
               <label className={styles.label} htmlFor="email">
                 {role === 'company' ? 'Work email address' : 'Email address'}
