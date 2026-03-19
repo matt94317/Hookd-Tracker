@@ -17,8 +17,6 @@ def _account_to_dict(a):
     return {
         "id": a.id,
         "campaign_id": a.campaign_id,
-        "creator_id": a.creator_id,
-        "creator_name": a.creator.name if a.creator else None,
         "channel_id": a.channel_id,
         "channel_name": a.channel.name if a.channel else None,
         "campaign_name": a.campaign.name if a.campaign else None,
@@ -65,7 +63,7 @@ def generate_oauth_url(campaign_id):
     # Validate channel exists
     channel = Channel.query.get_or_404(channel_id)
 
-    # Encode state for OAuth callback (no creator_id)
+    # Encode state for OAuth callback
     state = json.dumps({
         'campaign_id': campaign_id,
         'channel_id': channel_id,

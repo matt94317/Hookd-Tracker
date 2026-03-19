@@ -1,15 +1,14 @@
 """
-Seed script: creates mock company + creator with campaigns, accounts, and posts.
+Seed script: creates mock company user with campaigns, accounts, and posts.
 
 Credentials:
   Company:  company@test.com  / Test1234!
-  Creator:  creator@test.com  / Test1234!
 """
 import random
 from datetime import datetime, timedelta, date
 import bcrypt
 from app import create_app, db
-from app.models import User, Channel, Campaign, CampaignCreator, Account, Post
+from app.models import User, Channel, Campaign, Account, Post
 
 app = create_app()
 
@@ -24,7 +23,7 @@ def make_posts(account_id, count=15):
             account_id=account_id,
             platform_post_id=f"mock_{account_id}_{i}",
             post_url=f"https://example.com/post/{account_id}/{i}",
-            caption=f"Mock post #{i + 1} – testing Hookd Tracker 🚀",
+            caption=f"Mock post #{i + 1} – testing Hookd Tracker",
             posted_at=datetime.utcnow() - timedelta(days=days_ago, hours=random.randint(0, 23)),
             likes=random.randint(50, 5000),
             comments=random.randint(5, 500),
@@ -62,21 +61,6 @@ with app.app_context():
     else:
         print("Company already exists, skipping creation.")
 
-    # ── creator user ─────────────────────────────────────────────────────────
-    creator = User.query.filter_by(email="creator@test.com").first()
-    if not creator:
-        creator = User(
-            name="Alex Creator",
-            email="creator@test.com",
-            password=hash_pw("Test1234!"),
-            role="creator",
-        )
-        db.session.add(creator)
-        db.session.flush()
-        print("Created creator: creator@test.com")
-    else:
-        print("Creator already exists, skipping creation.")
-
     # ── campaigns ────────────────────────────────────────────────────────────
     campaigns_data = [
         ("Summer Launch 2026", date(2026, 6, 1), date(2026, 8, 31)),
@@ -95,15 +79,6 @@ with app.app_context():
             print(f"Campaign '{cname}' already exists, skipping.")
         campaigns.append(c)
 
-    # ── link creator → campaigns ──────────────────────────────────────────────
-    for c in campaigns:
-        exists = CampaignCreator.query.filter_by(campaign_id=c.id, creator_id=creator.id).first()
-        if not exists:
-            db.session.add(CampaignCreator(campaign_id=c.id, creator_id=creator.id))
-            print(f"Linked creator to campaign: {c.name}")
-
-    db.session.flush()
-
     # ── accounts (one IG + one TikTok per campaign) ───────────────────────────
     account_specs = [
         (ig.id, "ig_mock_001", "@alexcreator_ig"),
@@ -114,12 +89,11 @@ with app.app_context():
     for campaign in campaigns:
         for ch_id, plat_id, uname in account_specs:
             acct = Account.query.filter_by(
-                campaign_id=campaign.id, creator_id=creator.id, channel_id=ch_id
+                campaign_id=campaign.id, channel_id=ch_id, platform_account_id=plat_id
             ).first()
             if not acct:
                 acct = Account(
                     campaign_id=campaign.id,
-                    creator_id=creator.id,
                     channel_id=ch_id,
                     platform_account_id=plat_id,
                     username=uname,
@@ -144,7 +118,6 @@ with app.app_context():
 
     db.session.commit()
     print("\nSeed complete!")
-    print("─" * 40)
+    print("-" * 40)
     print("Company login:  company@test.com  /  Test1234!")
-    print("Creator login:  creator@test.com  /  Test1234!")
-    print("─" * 40)
+    print("-" * 40)

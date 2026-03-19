@@ -229,7 +229,7 @@ export default function CampaignDetailsPage() {
         id:           acc.id,
         username:     acc.username || `Account ${acc.id}`,
         channelName:  acc.channel_name || '',
-        creatorName:  acc.creator_name || '',
+        creatorName:  '',
         totalPosts:   accPosts.length,
         monthlyTarget,
         weeklyTarget,
@@ -251,8 +251,8 @@ export default function CampaignDetailsPage() {
       const breakouts = accPosts.filter(p => (p.views || 0) > avgViews * 2).length;
       return {
         id:   acc.id,
-        name: abbreviateName(acc.creator_name || acc.username),
-        fullName: acc.creator_name || acc.username || `Account ${acc.id}`,
+        name: abbreviateName(acc.username),
+        fullName: acc.username || `Account ${acc.id}`,
         videos, views, avgViews, likes, breakouts,
       };
     });

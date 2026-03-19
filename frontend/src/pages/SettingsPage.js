@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { useAuth } from '../context/AuthContext';
@@ -184,48 +184,6 @@ export default function SettingsPage() {
             </div>
             <Toggle checked={prefs.viralAlerts} onChange={v => setPref('viralAlerts', v)} />
           </div>
-        </div>
-      </div>
-
-      {/* Connected Platforms */}
-      <div className={styles.card}>
-        <div className={`${styles.iconWrap} ${styles.iconGreen}`}>🔗</div>
-        <div className={styles.cardBody}>
-          <div className={styles.cardTitle} style={{ marginBottom: 12 }}>Connected Platforms</div>
-          <div className={styles.platformNote}>
-            <span className={styles.noteWarn}>⚠ Important:</span>{' '}
-            Platform connections are tied to your campaign accounts. Use the Connect button below
-            to authorize an account that has been added to your campaign.
-          </div>
-          {loading ? (
-            <p className={styles.loadingText}>Loading accounts…</p>
-          ) : (
-            platforms.map(({ key, label }) => {
-              const status = getPlatformStatus(key);
-              return (
-                <div key={key} className={styles.platformRow}>
-                  {key === 'tiktok' ? (
-                    <div className={styles.tiktokBadge}>TT</div>
-                  ) : (
-                    <div className={styles.igBadge} />
-                  )}
-                  <span className={styles.platformLabel}>{label}</span>
-                  {status.connected ? (
-                    <span className={styles.statusConnected}>Connected</span>
-                  ) : status.connectId ? (
-                    <button
-                      className={styles.connectBtn}
-                      onClick={() => handleConnect(status.connectId)}
-                    >
-                      Connect
-                    </button>
-                  ) : (
-                    <span className={styles.statusNotConnected}>Not Connected</span>
-                  )}
-                </div>
-              );
-            })
-          )}
         </div>
       </div>
 

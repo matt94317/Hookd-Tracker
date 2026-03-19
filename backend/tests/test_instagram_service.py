@@ -11,7 +11,7 @@ os.environ.setdefault('OAUTH_REDIRECT_BASE_URL', 'http://localhost:5001')
 os.environ.setdefault('TOKEN_ENCRYPTION_KEY', base64.b64encode(os.urandom(32)).decode())
 
 from app import create_app, db
-from app.models import Account, Post, Channel, User, Campaign, CampaignCreator
+from app.models import Account, Post, Channel, User, Campaign
 from app.services.instagram import InstagramService
 
 
@@ -27,21 +27,16 @@ class TestInstagramService(unittest.TestCase):
 
         # Seed test data
         company = User(id=1, name='Company', email='co@test.com', password='x', role='company')
-        creator = User(id=2, name='Creator', email='cr@test.com', password='x', role='creator')
         channel = Channel(id=1, name='instagram')
-        db.session.add_all([company, creator, channel])
+        db.session.add_all([company, channel])
         db.session.flush()
 
         campaign = Campaign(id=1, name='Test Campaign', company_id=1)
         db.session.add(campaign)
         db.session.flush()
 
-        cc = CampaignCreator(campaign_id=1, creator_id=2)
-        db.session.add(cc)
-        db.session.flush()
-
         account = Account(
-            id=1, campaign_id=1, creator_id=2, channel_id=1,
+            id=1, campaign_id=1, channel_id=1,
             platform_account_id='ig_placeholder', username='testuser',
         )
         db.session.add(account)
@@ -91,7 +86,6 @@ class TestInstagramService(unittest.TestCase):
 
     @patch('app.services.instagram.requests.get')
     def test_fetch_posts(self, mock_get):
-        # First, set up an authorized account with encrypted token
         account = Account.query.get(1)
         account.access_token = self.service.encryption.encrypt('test-token')
         account.token_expires_at = datetime(2099, 1, 1, tzinfo=timezone.utc)
@@ -130,7 +124,6 @@ class TestInstagramService(unittest.TestCase):
 
     @patch('app.services.instagram.requests.get')
     def test_fetch_posts_upsert(self, mock_get):
-        # Pre-existing post
         account = Account.query.get(1)
         account.access_token = self.service.encryption.encrypt('test-token')
         account.token_expires_at = datetime(2099, 1, 1, tzinfo=timezone.utc)
@@ -165,9 +158,9 @@ class TestInstagramService(unittest.TestCase):
         self.service.fetch_posts(1)
 
         db_post = Post.query.filter_by(platform_post_id='media1').first()
-        self.assertEqual(db_post.likes, 200)  # updated
+        self.assertEqual(db_post.likes, 200)
         self.assertEqual(db_post.views, 10000)
-        self.assertEqual(Post.query.count(), 1)  # no duplicate
+        self.assertEqual(Post.query.count(), 1)
 
     @patch('app.services.instagram.requests.get')
     def test_refresh_token_skips_when_fresh(self, mock_get):

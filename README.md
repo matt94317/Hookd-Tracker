@@ -69,6 +69,45 @@ docker-compose build frontend
 docker-compose build --no-cache
 ```
 
+### Full Rebuild (reset DB + schema)
+
+```bash
+# Stop containers and delete all data (volumes)
+docker compose down -v
+
+# Remove old migration files
+rm -rf backend/migrations/versions/*.py
+
+# Build and start all containers
+docker compose up -d --build
+
+# Generate new migration from current models
+docker compose exec backend flask db migrate -m "initial schema"
+
+# Apply migration to database
+docker compose exec backend flask db upgrade
+
+# Populate with seed data
+docker compose exec backend python seed.py
+```
+
+### Connect ngrok (for OAuth callbacks)
+
+```bash
+# Expose backend to the internet
+ngrok http 5001
+
+# Update .env with the ngrok URL
+# OAUTH_REDIRECT_BASE_URL=https://xxxx.ngrok-free.app
+
+# Restart backend to pick up new env
+docker compose up -d backend
+
+# Register the callback URL in Meta/TikTok Developer Console
+# https://xxxx.ngrok-free.app/oauth/callback/instagram
+# https://xxxx.ngrok-free.app/oauth/callback/tiktok
+```
+
 ### Ports
 
 | Service  | URL                   |
@@ -92,16 +131,12 @@ The script is idempotent — safe to run multiple times (skips existing records)
 | Role    | Email               | Password  |
 | ------- | ------------------- | --------- |
 | Company | company@test.com    | Test1234! |
-| Creator | creator@test.com    | Test1234! |
 
 ### What Gets Created
 
 **Company — Acme Brands**
 - Campaign: Summer Launch 2026 (Jun 1 – Aug 31, 2026)
 - Campaign: Back to School 2026 (Aug 15 – Sep 15, 2026)
-
-**Creator — Alex Creator**
-- Assigned to both campaigns
 - Instagram account (`@alexcreator_ig`) linked to each campaign
 - TikTok account (`@alexcreator_tt`) linked to each campaign
 - 15 mock posts per account (60 posts total) with randomized engagement metrics

@@ -10,7 +10,7 @@ class PlatformService(ABC):
     @abstractmethod
     def get_oauth_url(self, state: str, channel: str) -> str:
         """Generate the OAuth authorization URL. state is a JSON-encoded string
-        containing campaign_id, creator_id, and channel_id."""
+        containing campaign_id and channel_id."""
         pass
 
     @abstractmethod
