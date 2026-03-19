@@ -5,22 +5,22 @@
 .title {
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text);
   letter-spacing: -0.4px;
   margin: 0 0 4px;
 }
 
 .subtitle {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
 /* ── Card ── */
 .card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 24px;
   margin-bottom: 16px;
   display: flex;
@@ -42,7 +42,7 @@
 .iconPurple { background: #ede9fe; }
 .iconBell   { background: #f0fdf4; }
 .iconGreen  { background: #f0fdf4; }
-.iconRed    { background: #fff1f2; }
+.iconRed    { background: var(--color-error-bg-light); }
 .iconBlue   { background: #eff6ff; }
 
 .cardBody {
@@ -61,40 +61,40 @@
 .cardTitle {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
   margin-bottom: 4px;
 }
 
 .cardDesc {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   line-height: 1.5;
 }
 
 /* ── Primary button ── */
 .primaryBtn {
   padding: 9px 18px;
-  background: #111827;
-  color: #ffffff;
+  background: var(--color-text);
+  color: var(--color-white);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .primaryBtn:hover:not(:disabled) { background: #1f2937; }
 
 .primaryBtn:disabled {
-  background: #9ca3af;
+  background: var(--color-text-tertiary);
   cursor: not-allowed;
 }
 
 .syncMsg {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin: 10px 0 0;
 }
 
@@ -105,7 +105,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 12px 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .notifRow:last-child { border-bottom: none; }
@@ -113,13 +113,13 @@
 .notifLabel {
   font-size: 14px;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text);
   margin-bottom: 2px;
 }
 
 .notifDesc {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 /* ── Toggle switch ── */
@@ -141,7 +141,7 @@
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background-color: #d1d5db;
+  background-color: var(--color-border-dark);
   border-radius: 24px;
   transition: background-color 0.2s ease;
 }
@@ -153,19 +153,19 @@
   height: 18px;
   left: 3px;
   bottom: 3px;
-  background-color: #ffffff;
+  background-color: var(--color-white);
   border-radius: 50%;
   transition: transform 0.2s ease;
 }
 
-.toggle input:checked + .slider { background-color: #111827; }
+.toggle input:checked + .slider { background-color: var(--color-text); }
 .toggle input:checked + .slider::before { transform: translateX(20px); }
 
 /* ── Connected Platforms ── */
 .platformNote {
   background: #fefce8;
   border: 1px solid #fef08a;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 10px 14px;
   font-size: 13px;
   color: #713f12;
@@ -180,7 +180,7 @@
   align-items: center;
   gap: 12px;
   padding: 14px 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .platformRow:last-child { border-bottom: none; }
@@ -188,28 +188,28 @@
 .platformLabel {
   font-size: 14px;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text);
   flex: 1;
 }
 
 .tiktokBadge {
   width: 36px;
   height: 36px;
-  background: #111827;
-  border-radius: 8px;
+  background: var(--color-text);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-white);
   flex-shrink: 0;
 }
 
 .igBadge {
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: linear-gradient(135deg, #f9a825 0%, #e91e8c 50%, #9c27b0 100%);
   flex-shrink: 0;
 }
@@ -217,53 +217,53 @@
 .statusConnected {
   font-size: 13px;
   font-weight: 500;
-  color: #16a34a;
+  color: var(--color-success);
 }
 
 .statusNotConnected {
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
 }
 
 .connectBtn {
   padding: 6px 16px;
   background: transparent;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   font-size: 13px;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text);
   cursor: pointer;
   font-family: inherit;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
 }
 
 .connectBtn:hover {
-  background: #f5f6f8;
-  border-color: #d1d5db;
+  background: var(--color-bg);
+  border-color: var(--color-border-dark);
 }
 
 .loadingText {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
   margin: 8px 0;
 }
 
 /* ── Billing ── */
 .billingSuccess {
-  color: #16a34a;
+  color: var(--color-success);
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 8px 12px;
   margin-bottom: 12px;
 }
 
 .billingError {
-  color: #dc2626;
-  background: #fff1f2;
+  color: var(--color-error);
+  background: var(--color-error-bg-light);
   border: 1px solid #fecaca;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 8px 12px;
   margin-bottom: 12px;
 }
@@ -277,12 +277,12 @@
 }
 
 .planBadge {
-  background: #111827;
+  background: var(--color-text);
   color: #fff;
   font-size: 13px;
   font-weight: 600;
   padding: 4px 12px;
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
 }
 
 .planStatus {
@@ -291,8 +291,8 @@
   text-transform: capitalize;
 }
 
-.statusActive  { color: #16a34a; }
-.statusInactive { color: #9ca3af; }
+.statusActive  { color: var(--color-success); }
+.statusInactive { color: var(--color-text-tertiary); }
 
 .planGrid {
   display: grid;
@@ -302,7 +302,7 @@
 }
 
 .planCard {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 20px;
   display: flex;
@@ -313,20 +313,20 @@
 .planName {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .planPrice {
   font-size: 28px;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text);
   line-height: 1;
 }
 
 .planPeriod {
   font-size: 14px;
   font-weight: 400;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .planFeatures {
@@ -341,12 +341,12 @@
 
 .planFeatures li {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .planFeatures li::before {
   content: '✓ ';
-  color: #16a34a;
+  color: var(--color-success);
   font-weight: 600;
 }
 
@@ -354,17 +354,17 @@
   padding: 8px 18px;
   background: transparent;
   border: 1px solid #fca5a5;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 500;
   font-family: inherit;
-  color: #dc2626;
+  color: var(--color-error);
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
   white-space: nowrap;
 }
 
 .signOutBtn:hover {
-  background: #fff1f2;
+  background: var(--color-error-bg-light);
   border-color: #f87171;
 }

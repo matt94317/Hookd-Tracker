@@ -12,31 +12,31 @@
   cursor: pointer;
   font-size: 14px;
   font-family: inherit;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   padding: 0;
   transition: color 0.15s;
 }
 
 .breadcrumbLink:hover {
-  color: #111827;
+  color: var(--color-text);
 }
 
 .breadcrumbSep {
   display: flex;
   align-items: center;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
 }
 
 .breadcrumbCurrent {
   font-size: 14px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
 }
 
 /* ── Tabs ── */
 .tabs {
   display: flex;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 24px;
   gap: 0;
 }
@@ -49,19 +49,19 @@
   font-size: 14px;
   font-family: inherit;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   cursor: pointer;
   margin-bottom: -1px;
   transition: color 0.15s, border-color 0.15s;
 }
 
 .tab:hover {
-  color: #111827;
+  color: var(--color-text);
 }
 
 .tabActive {
-  color: #111827;
-  border-bottom-color: #111827;
+  color: var(--color-text);
+  border-bottom-color: var(--color-text);
   font-weight: 600;
 }
 
@@ -84,12 +84,12 @@
   appearance: none;
   -webkit-appearance: none;
   padding: 7px 32px 7px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   font-size: 13.5px;
   font-family: inherit;
-  color: #111827;
-  background-color: #ffffff;
+  color: var(--color-text);
+  background-color: var(--color-white);
   outline: none;
   cursor: pointer;
   transition: border-color 0.15s;
@@ -101,14 +101,14 @@
 }
 
 .filterSelect:focus {
-  border-color: #9ca3af;
+  border-color: var(--color-text-tertiary);
 }
 
 .selectChevron {
   position: absolute;
   right: 10px;
   pointer-events: none;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
 }
@@ -117,7 +117,7 @@
   position: absolute;
   left: 10px;
   pointer-events: none;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
 }
@@ -126,10 +126,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #111827;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-text);
   font-size: 13.5px;
   font-family: inherit;
   font-weight: 500;
@@ -140,12 +140,12 @@
 }
 
 .refreshBtn:hover {
-  background-color: #f5f6f8;
+  background-color: var(--color-bg);
 }
 
 .updateInfo {
   font-size: 12.5px;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
   display: flex;
   align-items: center;
   gap: 3px;
@@ -154,7 +154,7 @@
 
 .infoIcon {
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
   cursor: default;
 }
 
@@ -162,26 +162,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 7px 10px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   cursor: pointer;
   margin-left: auto;
   transition: background-color 0.15s;
 }
 
 .moreBtn:hover {
-  background-color: #f5f6f8;
-  color: #111827;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 /* ── Metrics card ── */
 .metricsCard {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   margin-bottom: 20px;
@@ -193,8 +193,8 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  border-right: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .metricCell:nth-child(4n) {
@@ -208,14 +208,14 @@
 .metricValue {
   font-size: 26px;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text);
   letter-spacing: -0.8px;
   line-height: 1;
 }
 
 .metricLabel {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-weight: 400;
   display: flex;
   align-items: center;
@@ -224,9 +224,9 @@
 
 /* ── Chart card ── */
 .chartCard {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 24px 24px 16px;
   margin-bottom: 28px;
 }
@@ -238,14 +238,14 @@
 .chartTitle {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
 }
 
 /* ── Accounts section ── */
 .accountsSection {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 24px;
   margin-bottom: 28px;
 }
@@ -257,7 +257,7 @@
 .accountsTitle {
   font-size: 15px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .oauthButtons {
@@ -270,10 +270,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #111827;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-text);
   font-size: 13.5px;
   font-family: inherit;
   font-weight: 500;
@@ -283,7 +283,7 @@
 }
 
 .oauthBtn:hover {
-  background-color: #f5f6f8;
+  background-color: var(--color-bg);
 }
 
 .oauthBtn:disabled {
@@ -300,27 +300,27 @@
 .oauthUrlInput {
   flex: 1;
   padding: 8px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   font-size: 13px;
   font-family: inherit;
-  color: #374151;
-  background: #f9fafb;
+  color: var(--color-text-dark);
+  background: var(--color-bg-hover);
   outline: none;
 }
 
 .oauthUrlInput:focus {
-  border-color: #6366f1;
+  border-color: var(--color-primary);
 }
 
 .copyBtn {
   display: flex;
   align-items: center;
   gap: 5px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #111827;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-text);
   font-size: 13px;
   font-family: inherit;
   font-weight: 500;
@@ -331,7 +331,7 @@
 }
 
 .copyBtn:hover {
-  background-color: #f5f6f8;
+  background-color: var(--color-bg);
 }
 
 .accountsTable {
@@ -343,13 +343,13 @@
   text-align: left;
   font-size: 12.5px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   padding: 0 16px 10px 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .accountsRow {
-  border-bottom: 1px solid #f9fafb;
+  border-bottom: 1px solid var(--color-bg-hover);
 }
 
 .accountsRow:last-child {
@@ -358,7 +358,7 @@
 
 .accountsTd {
   font-size: 13.5px;
-  color: #374151;
+  color: var(--color-text-dark);
   padding: 12px 16px 12px 0;
 }
 
@@ -377,25 +377,25 @@
 .progressTitle {
   font-size: 17px;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text);
   letter-spacing: -0.2px;
 }
 
 .seeAllBtn {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   padding: 8px 16px;
   font-size: 13.5px;
   font-family: inherit;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text);
   cursor: pointer;
   transition: background-color 0.15s;
 }
 
 .seeAllBtn:hover {
-  background-color: #f5f6f8;
+  background-color: var(--color-bg);
 }
 
 .progressGrid {
@@ -405,9 +405,9 @@
 }
 
 .progressCard {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 18px 18px 16px;
 }
 
@@ -427,14 +427,14 @@
 .progressUsername {
   font-size: 14px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .platformBadge {
   font-size: 10px;
   font-weight: 700;
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-dark);
   border-radius: 4px;
   padding: 2px 5px;
   letter-spacing: 0.3px;
@@ -443,19 +443,19 @@
 .progressPostCount {
   font-size: 13px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text);
   white-space: nowrap;
 }
 
 .progressRealName {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin-bottom: 1px;
 }
 
 .progressTarget {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin-bottom: 14px;
 }
 
@@ -484,41 +484,41 @@
 }
 
 .bubbleFull {
-  border: 2.5px solid #111827;
+  border: 2.5px solid var(--color-text);
   background: transparent;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .bubblePartial {
-  border: 2px solid #9ca3af;
+  border: 2px solid var(--color-text-tertiary);
   background: transparent;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .bubbleEmpty {
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-border);
   background: transparent;
-  color: #d1d5db;
+  color: var(--color-border-dark);
 }
 
 .dayLabel {
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
   font-weight: 500;
 }
 
 /* ── Leaderboard ── */
 .leaderboardCard {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 24px 24px 8px;
 }
 
 .lbTitle {
   font-size: 16px;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text);
   letter-spacing: -0.2px;
   margin-bottom: 20px;
 }
@@ -532,9 +532,9 @@
   text-align: left;
   font-size: 12.5px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   padding: 0 16px 12px 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-border-light);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -551,11 +551,11 @@
 }
 
 .lbTh:hover .lbThInner {
-  color: #111827;
+  color: var(--color-text);
 }
 
 .lbRow {
-  border-bottom: 1px solid #f9fafb;
+  border-bottom: 1px solid var(--color-bg-hover);
   transition: background-color 0.1s;
 }
 
@@ -569,7 +569,7 @@
 
 .lbTd {
   font-size: 13.5px;
-  color: #374151;
+  color: var(--color-text-dark);
   padding: 14px 16px 14px 0;
   white-space: nowrap;
 }
@@ -589,14 +589,14 @@
   justify-content: center;
   font-size: 12px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-white);
   flex-shrink: 0;
 }
 
 .lbName {
   font-size: 13.5px;
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text);
 }
 
 /* Tier badges */
@@ -604,24 +604,24 @@
   display: inline-block;
   font-size: 12px;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 3px 9px;
 }
 
 .tierGold   { color: #b45309; background: #fef3c7; }
-.tierSilver { color: #3b82f6; background: #eff6ff; }
+.tierSilver { color: var(--color-blue); background: #eff6ff; }
 .tierBronze { color: #ea580c; background: #fff7ed; }
 
 .lbEmpty {
   text-align: center;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
   padding: 40px 0;
 }
 
 /* ── State / placeholders ── */
 .stateMsg {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-size: 14px;
   margin-top: 20px;
 }
@@ -631,6 +631,6 @@
   align-items: center;
   justify-content: center;
   height: 200px;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
   font-size: 15px;
 }

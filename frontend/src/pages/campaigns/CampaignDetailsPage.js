@@ -6,69 +6,18 @@ import AppLayout from '../../components/AppLayout';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
+import {
+  ChevronRightIcon, CalendarIcon, RefreshIcon, ChevronDownIcon, MoreIcon, CopyIcon, TableSortIcon,
+} from '../../components/Icons';
+import { formatMetric } from '../../utils/format';
+import { TIME_PERIODS } from '../../utils/constants';
 import styles from './CampaignDetailsPage.module.css';
-
-/* ── SVG icons ── */
-const ChevronRightIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6"/>
-  </svg>
-);
-
-const CalendarIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-    <line x1="16" y1="2" x2="16" y2="6"/>
-    <line x1="8" y1="2" x2="8" y2="6"/>
-    <line x1="3" y1="10" x2="21" y2="10"/>
-  </svg>
-);
-
-const RefreshIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="23 4 23 10 17 10"/>
-    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-  </svg>
-);
-
-const ChevronDownIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="6 9 12 15 18 9"/>
-  </svg>
-);
-
-const MoreIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>
-  </svg>
-);
-
-/* ── Constants ── */
-const TIME_PERIODS = [
-  { label: 'Last 7 Days',    days: 7 },
-  { label: 'Last 30 Days',   days: 30 },
-  { label: 'Last 90 Days',   days: 90 },
-  { label: 'Last 12 Months', days: 365 },
-  { label: 'All Time',       days: null },
-];
 
 const TABS = ['Overview', 'Rank', 'Notifications', 'Tasks', 'Uploads'];
 const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F'];
 const AVATAR_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6', '#3b82f6', '#10b981'];
 
 /* ── Helpers ── */
-function formatMetric(n) {
-  if (n == null || isNaN(n)) return '0';
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
-  if (n >= 10_000)    return (n / 1_000).toFixed(1) + 'K';
-  return n.toLocaleString();
-}
-
 function abbreviateName(name) {
   if (!name) return '—';
   const parts = name.trim().split(' ');
@@ -91,12 +40,6 @@ function assignTier(rows) {
   });
 }
 
-const SortIcon = ({ col, sortCol, sortDir }) => (
-  <svg width="9" height="11" viewBox="0 0 9 11" fill="none" style={{ marginLeft: 4, flexShrink: 0 }}>
-    <path d="M4.5 0L0 3.5h9L4.5 0z"   fill={sortCol === col && sortDir === 'asc'  ? '#111827' : '#d1d5db'}/>
-    <path d="M4.5 11L0 7.5h9L4.5 11z" fill={sortCol === col && sortDir === 'desc' ? '#111827' : '#d1d5db'}/>
-  </svg>
-);
 
 function getCurrentWeekDays() {
   const today = new Date();
@@ -115,15 +58,6 @@ function minsAgo(date) {
   const mins = Math.floor((Date.now() - date) / 60000);
   return mins < 1 ? 'just now' : `${mins} min ago`;
 }
-
-/* ── Copy icon ── */
-const CopyIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-  </svg>
-);
 
 /* ── Component ── */
 export default function CampaignDetailsPage() {
@@ -598,7 +532,7 @@ export default function CampaignDetailsPage() {
                   <th key={key} className={styles.lbTh} onClick={() => handleLbSort(key)}>
                     <span className={styles.lbThInner}>
                       {label}
-                      <SortIcon col={key} sortCol={lbSortCol} sortDir={lbSortDir} />
+                      <TableSortIcon col={key} sortCol={lbSortCol} sortDir={lbSortDir} />
                     </span>
                   </th>
                 ))}

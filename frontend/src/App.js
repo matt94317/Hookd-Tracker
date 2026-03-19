@@ -1,22 +1,20 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import LandingPage from './pages/LandingPage';
+import LandingPage from './pages/landing/LandingPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import CampaignsPage from './pages/campaigns/CampaignsPage';
 import NewCampaignPage from './pages/campaigns/NewCampaignPage';
 import EditCampaignPage from './pages/campaigns/EditCampaignPage';
 import CampaignDetailsPage from './pages/campaigns/CampaignDetailsPage';
-import DashboardPage from './pages/DashboardPage';
-import SettingsPage from './pages/SettingsPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import SettingsPage from './pages/settings/SettingsPage';
 import PlaceholderPage from './pages/PlaceholderPage';
-import AccountsPage from './pages/AccountsPage';
-import OAuthSuccessPage from './pages/OAuthSuccessPage';
-import OAuthErrorPage from './pages/OAuthErrorPage';
-import CreatorsPage from './pages/CreatorsPage';
-import CreatorAnalyticsPage from './pages/CreatorAnalyticsPage';
-import PlanSelectionPage from './pages/PlanSelectionPage';
+import AccountsPage from './pages/accounts/AccountsPage';
+import OAuthSuccessPage from './pages/oauth/OAuthSuccessPage';
+import OAuthErrorPage from './pages/oauth/OAuthErrorPage';
+import PlanSelectionPage from './pages/settings/PlanSelectionPage';
 
 function App() {
   return (
@@ -37,7 +35,6 @@ function App() {
           <Route path="/home" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/payroll" element={<ProtectedRoute><PlaceholderPage title="Payroll" /></ProtectedRoute>} />
           <Route path="/accounts" element={<ProtectedRoute><AccountsPage /></ProtectedRoute>} />
-          <Route path="/creators" element={<ProtectedRoute><CreatorsPage /></ProtectedRoute>} />
           <Route path="/plan-selection" element={<ProtectedRoute><PlanSelectionPage /></ProtectedRoute>} />
           <Route path="/posts" element={<ProtectedRoute><PlaceholderPage title="Posts" /></ProtectedRoute>} />
         </Routes>
