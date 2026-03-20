@@ -1,19 +1,18 @@
 .container {
-  max-width: 640px;
+  max-width: 520px;
   margin: 0 auto;
 }
 
 .pageHeader {
-  margin-bottom: 40px;
-  text-align: center;
+  margin-bottom: 28px;
 }
 
 .title {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
   color: #1a1a1a;
   letter-spacing: -0.4px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .subtitle {
@@ -24,35 +23,122 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
-.block {
+/* Single unified card */
+.card {
   background-color: #ffffff;
   border: 1px solid #E2D9CC;
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
-.label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 12px;
+.section {
+  padding: 18px 20px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #f0ece7;
+  margin: 0;
+}
+
+/* Row with label + live toggle */
+.sectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.liveRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Small uppercase field labels */
+.fieldLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  color: #8a7d72;
+  text-transform: uppercase;
   display: block;
+  margin-bottom: 10px;
 }
 
+.sectionHeaderRow .fieldLabel {
+  margin-bottom: 0;
+}
+
+.liveRow .fieldLabel {
+  margin-bottom: 0;
+}
+
+.optional {
+  font-weight: 400;
+  color: #b0a89e;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.infoIcon {
+  font-size: 11px;
+  color: #b0a89e;
+  cursor: default;
+}
+
+/* Toggle */
+.toggle {
+  width: 42px;
+  height: 24px;
+  background-color: #d0c8c0;
+  border-radius: 100px;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.toggleOn {
+  background-color: #5b51f8;
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  display: block;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.toggleOn .toggleThumb {
+  transform: translateX(18px);
+}
+
+/* Text inputs */
 .input {
   width: 100%;
   padding: 10px 14px;
   border: 1px solid #D4C9BA;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   color: #1a1a1a;
   background-color: #FDFBF8;
   outline: none;
   transition: border-color 0.15s ease;
   box-sizing: border-box;
+  font-family: inherit;
 }
 
 .input::placeholder {
@@ -60,17 +146,72 @@
 }
 
 .input:focus {
-  border-color: #1a1a1a;
+  border-color: #5b51f8;
   background-color: #ffffff;
 }
 
+/* Dropzone */
+.dropzone {
+  border: 1.5px dashed #D4C9BA;
+  border-radius: 10px;
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #fafaf9;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dropzone:hover {
+  border-color: #5b51f8;
+  background-color: #f7f6ff;
+}
+
+.dropzoneIcon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.dropzoneText {
+  font-size: 13px;
+  color: #8a7d72;
+  margin: 0;
+}
+
+.dropzoneFileName {
+  font-size: 13px;
+  color: #1a1a1a;
+  font-weight: 500;
+  margin: 0;
+}
+
+.chooseFileBtn {
+  margin-top: 4px;
+  background: #ffffff;
+  border: 1px solid #D4C9BA;
+  border-radius: 7px;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: #1a1a1a;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.chooseFileBtn:hover {
+  background-color: #f6f4f0;
+}
+
+/* Date row */
 .dateRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 10px;
 }
 
-.dateField {
+.dateCol {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -79,7 +220,78 @@
 .dateLabel {
   font-size: 12px;
   font-weight: 500;
-  color: #7a6f63;
+  color: #8a7d72;
+}
+
+.dateInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #D4C9BA;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background-color: #FDFBF8;
+  position: relative;
+  cursor: pointer;
+}
+
+.dateIcon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.dateInputField {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: #1a1a1a;
+  font-family: inherit;
+  width: 100%;
+}
+
+.dateInputField::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+
+/* Brief links */
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.removeLinkBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #b0a89e;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.removeLinkBtn:hover {
+  color: #ef4444;
+}
+
+.addLinkBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  color: #5b51f8;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.addLinkBtn:hover {
+  text-decoration: underline;
 }
 
 .errorMsg {
@@ -89,9 +301,8 @@
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: flex-end;
-  padding-top: 8px;
 }
 
 .cancelBtn {
@@ -102,6 +313,7 @@
   font-size: 14px;
   color: #1a1a1a;
   cursor: pointer;
+  font-family: inherit;
   transition: background-color 0.15s ease;
 }
 
@@ -110,7 +322,7 @@
 }
 
 .createBtn {
-  background-color: #1a1a1a;
+  background-color: #5b51f8;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -118,11 +330,12 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  font-family: inherit;
   transition: background-color 0.15s ease;
 }
 
 .createBtn:hover {
-  background-color: #333333;
+  background-color: #4a41e0;
 }
 
 .createBtn:disabled {

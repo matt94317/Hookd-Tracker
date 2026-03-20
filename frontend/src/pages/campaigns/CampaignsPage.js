@@ -11,12 +11,16 @@ import { formatNumber } from '../../utils/format';
 import styles from './CampaignsPage.module.css';
 
 /* ── Helpers ── */
+function isCompleted(campaign) {
+  if (!campaign.end_date) return false;
+  return new Date() > new Date(campaign.end_date);
+}
+
 function isActive(campaign) {
+  if (isCompleted(campaign)) return false;
   const today = new Date();
   const start = campaign.start_date ? new Date(campaign.start_date) : null;
-  const end = campaign.end_date ? new Date(campaign.end_date) : null;
   if (start && today < start) return false;
-  if (end && today > end) return false;
   return true;
 }
 
@@ -60,6 +64,7 @@ export default function CampaignsPage() {
         const start = c.start_date ? new Date(c.start_date) : null;
         if (!start || start <= new Date()) return false;
       }
+      if (statusFilter === 'completed' && !isCompleted(c)) return false;
       return true;
     });
   }, [campaigns, search, statusFilter]);
@@ -144,6 +149,7 @@ export default function CampaignsPage() {
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="upcoming">Upcoming</option>
+            <option value="completed">Completed</option>
           </select>
           <span className={styles.selectChevron}><ChevronDownIcon /></span>
         </div>
@@ -171,6 +177,7 @@ export default function CampaignsPage() {
                   <div className={styles.cardTitleRow}>
                     <span className={styles.cardName}>{c.name}</span>
                     {isActive(c) && <span className={styles.badge}>active</span>}
+                    {isCompleted(c) && <span className={`${styles.badge} ${styles.badgeCompleted}`}>completed</span>}
                   </div>
                   <span className={styles.cardTargetIcon}><TargetIcon size={20} /></span>
                 </div>

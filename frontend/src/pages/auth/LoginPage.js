@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
 import styles from './LoginPage.module.css';
+import logo from '../../assets/logo.png';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -41,7 +42,10 @@ function LoginPage() {
           Your account has been created. Sign in to get started.
         </div>
       )}
-      <div className={styles.logo} onClick={() => navigate('/')}>Hookd Tracker</div>
+      <div className={styles.logo} onClick={() => navigate('/')}>
+        <img src={logo} alt="Hookd" className={styles.logoImg} />
+        Hookd Tracker
+      </div>
       <div className={styles.card}>
         <h1 className={styles.heading}>Welcome back</h1>
 

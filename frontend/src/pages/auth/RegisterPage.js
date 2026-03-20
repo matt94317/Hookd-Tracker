@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
 import styles from './RegisterPage.module.css';
+import logo from '../../assets/logo.png';
 
 const FREE_EMAIL_DOMAINS = new Set([
   'gmail.com', 'googlemail.com',
@@ -55,7 +56,10 @@ function RegisterPage() {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.logo} onClick={() => navigate('/')}>Hookd Tracker</div>
+      <div className={styles.logo} onClick={() => navigate('/')}>
+        <img src={logo} alt="Hookd" className={styles.logoImg} />
+        Hookd Tracker
+      </div>
 
       <div className={styles.card}>
         <h1 className={styles.heading}>Create account</h1>

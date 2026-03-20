@@ -12,11 +12,21 @@
   position: fixed;
   top: 28px;
   left: 36px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 22px;
   font-weight: 800;
   color: #1a1a1a;
   letter-spacing: -0.5px;
   cursor: pointer;
+}
+
+.logoImg {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  display: block;
 }
 
 /* ── Role selection ── */

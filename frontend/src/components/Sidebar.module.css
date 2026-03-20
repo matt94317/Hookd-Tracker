@@ -24,10 +24,12 @@
   color: #111827;
 }
 
-.logoIcon {
-  display: flex;
-  align-items: center;
-  color: #111827;
+.logoImg {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: block;
+  flex-shrink: 0;
 }
 
 .logoText {

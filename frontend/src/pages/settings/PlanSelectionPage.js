@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
 import { PLANS } from '../../utils/constants';
 import styles from './PlanSelectionPage.module.css';
+import logo from '../../assets/logo.png';
 
 const PLANS_WITH_HIGHLIGHT = PLANS.map(p =>
   p.key === 'pro' ? { ...p, highlighted: true } : p
@@ -32,7 +33,10 @@ export default function PlanSelectionPage() {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.logo} onClick={() => navigate('/')}>Hookd Tracker</div>
+      <div className={styles.logo} onClick={() => navigate('/')}>
+        <img src={logo} alt="Hookd" className={styles.logoImg} />
+        Hookd Tracker
+      </div>
       <div className={styles.container}>
         <h1 className={styles.heading}>Choose your plan</h1>
         <p className={styles.subheading}>Start growing your creator network today. Cancel anytime.</p>

@@ -1,40 +1,44 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './LandingPage.module.css';
+import logo from '../../assets/logo.png';
 
 function LandingPage() {
   const navigate = useNavigate();
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.logo}>Hookd Tracker</div>
+      <header className={`${styles.header} ${styles.blurUp1}`}>
+        <div className={styles.logo}>
+          <img src={logo} alt="Hookd" className={styles.logoImg} />
+          Hookd Tracker
+        </div>
         <button className={styles.loginBtn} onClick={() => navigate('/login')}>
           Log in →
         </button>
       </header>
 
       <main className={styles.hero}>
-        <div className={styles.badge}>
+        <div className={`${styles.badge} ${styles.blurUp2}`}>
           <span className={styles.badgeDiamond}>✦</span> Built for in-house UGC teams
         </div>
 
-        <h1 className={styles.headline}>
+        <h1 className={`${styles.headline} ${styles.blurUp3}`}>
           Run your UGC program<br />
           <span className={styles.headlinePurple}>without the spreadsheets</span>
         </h1>
 
-        <p className={styles.subtext}>
+        <p className={`${styles.subtext} ${styles.blurUp4}`}>
           Hookd Tracker keeps your creators accountable, your content<br />
           on brand, and your results clear.
         </p>
 
-        <div className={styles.ctaRow}>
+        <div className={`${styles.ctaRow} ${styles.blurUp5}`}>
           <button className={styles.ctaBtn} onClick={() => navigate('/register')}>
             Try for free
           </button>
         </div>
 
-        <div className={styles.socialProof}>
+        <div className={`${styles.socialProof} ${styles.blurUp6}`}>
           <span>👥 100+ creators tracked</span>
           <span className={styles.divider}>|</span>
           <span>📊 TikTok &amp; Instagram</span>

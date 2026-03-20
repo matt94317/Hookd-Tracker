@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -20,6 +20,11 @@ def create_app(config=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "dev-secret-change-me")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=8)
+
+    upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'uploads')
+    os.makedirs(upload_folder, exist_ok=True)
+    app.config["UPLOAD_FOLDER"] = os.path.abspath(upload_folder)
+    app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB limit
 
     if config:
         app.config.update(config)
@@ -45,6 +50,10 @@ def create_app(config=None):
     app.register_blueprint(users_bp)
     app.register_blueprint(payments_bp)
     app.register_blueprint(stripe_bp)
+
+    @app.route('/uploads/<path:filename>')
+    def serve_upload(filename):
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
     # Start scheduled jobs (unless disabled, e.g. during testing)
     if not app.config.get('SCHEDULER_DISABLED'):

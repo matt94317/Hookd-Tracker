@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from './Sidebar.module.css';
+import logo from '../assets/logo.png';
 
 const Icon = ({ d, children, viewBox = '0 0 24 24' }) => (
   <svg
@@ -43,15 +44,6 @@ const SettingsIcon = () => (
   </Icon>
 );
 
-const LogoIcon = () => (
-  <svg width="34" height="34" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="3" width="7" height="7" rx="1"/>
-    <rect x="14" y="3" width="7" height="7" rx="1"/>
-    <rect x="14" y="14" width="7" height="7" rx="1"/>
-    <rect x="3" y="14" width="7" height="7" rx="1"/>
-  </svg>
-);
 
 const UserIcon = () => (
   <Icon>
@@ -69,7 +61,7 @@ function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logoRow} onClick={() => navigate('/dashboard')}>
-        <span className={styles.logoIcon}><LogoIcon /></span>
+        <img src={logo} alt="Hookd" className={styles.logoImg} />
         <span className={styles.logoText}>Hookd Tracker</span>
       </div>
 

@@ -258,12 +258,12 @@ Goal: Deploy to AWS EC2 with CI/CD via GitHub Actions.
 
 ## Timeline Summary
 
-| Sprint    | Duration | Focus                          |
-| --------- | -------- | ------------------------------ |
-| Sprint 0  | 1 day    | Project setup (together)       |
-| Sprint 1  | 2 weeks  | Core backend + OAuth           |
-| Sprint 2  | 2 weeks  | Scheduled jobs + Frontend      |
-| Sprint 2b | 1 week   | Stripe payments integration    |
-| Sprint 3  | 1 week   | Integration + Polish           |
-| Sprint 4  | 1 week   | AWS infra + CI/CD              |
-| Sprint 5  | 1 week   | Production hardening           |
+| Sprint    | Duration | Focus                       |
+| --------- | -------- | --------------------------- |
+| Sprint 0  | 1 day    | Project setup (together)    |
+| Sprint 1  | 2 weeks  | Core backend + OAuth        |
+| Sprint 2  | 2 weeks  | Scheduled jobs + Frontend   |
+| Sprint 2b | 1 week   | Stripe payments integration |
+| Sprint 3  | 1 week   | Integration + Polish        |
+| Sprint 4  | 1 week   | AWS infra + CI/CD           |
+| Sprint 5  | 1 week   | Production hardening        |

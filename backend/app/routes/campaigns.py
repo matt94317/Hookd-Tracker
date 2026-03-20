@@ -1,9 +1,17 @@
-from flask import Blueprint, request, jsonify
+import os
+import uuid
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from sqlalchemy import func
+from werkzeug.utils import secure_filename
 from .. import db
 from ..models import Account, Campaign, Post
 from . import roles_required
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def _allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 campaigns_bp = Blueprint('campaigns', __name__, url_prefix='/campaigns')
 
@@ -14,6 +22,9 @@ def _campaign_to_dict(c, include_stats=False):
         "id": c.id,
         "name": c.name,
         "company_id": c.company_id,
+        "cover_image_url": c.cover_image_url,
+        "hashtags": c.hashtags,
+        "brief_links": c.brief_links or [],
         "start_date": str(c.start_date) if c.start_date else None,
         "end_date": str(c.end_date) if c.end_date else None,
         "created_at": str(c.created_at) if c.created_at else None,
@@ -57,6 +68,27 @@ def _can_access_campaign(campaign, user_id, role):
     return False
 
 
+@campaigns_bp.route('/upload-image', methods=['POST'])
+@roles_required('admin', 'company')
+def upload_campaign_image():
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    if not _allowed_file(file.filename):
+        return jsonify({"error": "File type not allowed. Use PNG, JPG, GIF, or WEBP"}), 400
+
+    ext = file.filename.rsplit('.', 1)[1].lower()
+    filename = f"{uuid.uuid4().hex}.{ext}"
+    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+
+    url = f"{request.host_url}uploads/{filename}"
+    return jsonify({"url": url}), 201
+
+
 @campaigns_bp.route('', methods=['POST'])
 @roles_required('admin', 'company')
 def create_campaign():
@@ -78,6 +110,9 @@ def create_campaign():
     campaign = Campaign(
         name=name,
         company_id=company_id,
+        cover_image_url=data.get('cover_image_url'),
+        hashtags=data.get('hashtags'),
+        brief_links=data.get('brief_links'),
         start_date=data.get('start_date'),
         end_date=data.get('end_date'),
     )
@@ -134,6 +169,12 @@ def update_campaign(campaign_id):
     data = request.get_json()
     if 'name' in data:
         campaign.name = data['name']
+    if 'cover_image_url' in data:
+        campaign.cover_image_url = data['cover_image_url']
+    if 'hashtags' in data:
+        campaign.hashtags = data['hashtags']
+    if 'brief_links' in data:
+        campaign.brief_links = data['brief_links']
     if 'start_date' in data:
         campaign.start_date = data['start_date']
     if 'end_date' in data:
