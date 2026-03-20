@@ -1,0 +1,25 @@
+aws_region  = "us-east-1"
+app_name    = "hookd"
+environment = "production"
+
+# Database
+db_password = "CHANGE_ME_use_a_strong_password"
+
+# OAuth
+instagram_app_id        = ""
+instagram_app_secret    = ""
+tiktok_client_key       = ""
+tiktok_client_secret    = ""
+
+# App
+token_encryption_key = ""
+
+# Stripe
+stripe_secret_key       = ""
+stripe_webhook_secret   = ""
+stripe_starter_price_id = ""
+stripe_pro_price_id     = ""
+
+# URLs — update after first deploy with your ALB DNS or custom domain
+oauth_redirect_base_url = "http://your-alb-dns.us-east-1.elb.amazonaws.com"
+frontend_url            = "http://your-alb-dns.us-east-1.elb.amazonaws.com"
