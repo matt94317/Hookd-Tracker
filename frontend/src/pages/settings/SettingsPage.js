@@ -1,28 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AppLayout from '../components/AppLayout';
-import { useAuth } from '../context/AuthContext';
-import { apiFetch } from '../utils/api';
+import AppLayout from '../../components/AppLayout';
+import { useAuth } from '../../context/AuthContext';
+import { apiFetch } from '../../utils/api';
+import { PLANS } from '../../utils/constants';
 import styles from './SettingsPage.module.css';
 
 const PREF_KEY = 'hookd_settings';
-
-const PLANS = [
-  {
-    key: 'starter',
-    name: 'Starter',
-    price: '$150',
-    period: '/mo',
-    features: ['5 creators', '3 campaigns', 'Basic analytics'],
-  },
-  {
-    key: 'pro',
-    name: 'Pro',
-    price: '$270',
-    period: '/mo',
-    features: ['20 creators', '10 campaigns', 'Advanced analytics', 'Priority support'],
-  },
-];
 
 function loadPrefs() {
   try { return JSON.parse(localStorage.getItem(PREF_KEY)) || {}; }

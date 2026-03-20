@@ -1,55 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { apiFetch } from '../utils/api';
-import AppLayout from '../components/AppLayout';
+import { useAuth } from '../../context/AuthContext';
+import { apiFetch } from '../../utils/api';
+import AppLayout from '../../components/AppLayout';
+import { SearchIcon, ChevronDownIcon, UserIcon } from '../../components/Icons';
+import { getPlatformIcon } from '../../utils/format';
 import styles from './AccountsPage.module.css';
-
-/* ── Icons ── */
-const SearchIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/>
-    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-  </svg>
-);
-
-const ChevronDownIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="6 9 12 15 18 9"/>
-  </svg>
-);
-
-const TikTokIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.77 1.52V6.78a4.85 4.85 0 0 1-1-.09z"/>
-  </svg>
-);
-
-const InstagramIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-    <circle cx="12" cy="12" r="4"/>
-    <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
-  </svg>
-);
-
-const UserIcon = ({ size = 22 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-    <circle cx="12" cy="7" r="4"/>
-  </svg>
-);
-
-function getPlatformIcon(platform) {
-  if (!platform) return null;
-  const lower = platform.toLowerCase();
-  if (lower === 'tiktok') return { label: 'TikTok', Icon: TikTokIcon };
-  if (lower === 'instagram') return { label: 'Instagram', Icon: InstagramIcon };
-  return { label: platform.charAt(0).toUpperCase() + platform.slice(1), Icon: null };
-}
 
 /* ── Account Card ── */
 function AccountCard({ account }) {

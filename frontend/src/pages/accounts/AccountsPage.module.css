@@ -1,0 +1,101 @@
+/* ── Page header ── */
+.pageHeader {
+  composes: pageHeader from '../../styles/shared.module.css';
+}
+
+.title {
+  composes: pageTitle from '../../styles/shared.module.css';
+}
+
+.subtitle {
+  composes: pageSubtitle from '../../styles/shared.module.css';
+}
+
+/* ── Filter bar ── */
+.filterBar {
+  composes: filterBar from '../../styles/shared.module.css';
+}
+
+.searchWrap {
+  composes: searchWrap from '../../styles/shared.module.css';
+}
+
+.searchIcon {
+  composes: searchIcon from '../../styles/shared.module.css';
+}
+
+.searchInput {
+  composes: searchInput from '../../styles/shared.module.css';
+}
+
+.filterSelectWrap {
+  composes: filterSelectWrap from '../../styles/shared.module.css';
+}
+
+.filterSelect {
+  composes: filterSelect from '../../styles/shared.module.css';
+}
+
+.filterSelectChevron {
+  composes: filterSelectChevron from '../../styles/shared.module.css';
+}
+
+/* ── Grid ── */
+.grid {
+  composes: grid from '../../styles/shared.module.css';
+}
+
+/* ── Account card ── */
+.card {
+  composes: card from '../../styles/shared.module.css';
+}
+
+.cardTop {
+  composes: cardTop from '../../styles/shared.module.css';
+}
+
+.accountInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.avatar {
+  composes: avatar from '../../styles/shared.module.css';
+}
+
+.accountMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.accountUsername {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accountCampaign {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.platformBadge {
+  composes: platformBadge from '../../styles/shared.module.css';
+}
+
+/* ── State messages ── */
+.stateMsg {
+  composes: stateMsg from '../../styles/shared.module.css';
+}
+
+.errorMsg {
+  composes: errorMsg from '../../styles/shared.module.css';
+}

@@ -1,26 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { apiFetch } from '../utils/api';
+import { useAuth } from '../../context/AuthContext';
+import { apiFetch } from '../../utils/api';
+import { PLANS } from '../../utils/constants';
 import styles from './PlanSelectionPage.module.css';
 
-const PLANS = [
-  {
-    key: 'starter',
-    name: 'Starter',
-    price: '$150',
-    period: '/mo',
-    features: ['5 creators', '3 campaigns', 'Basic analytics'],
-  },
-  {
-    key: 'pro',
-    name: 'Pro',
-    price: '$270',
-    period: '/mo',
-    features: ['20 creators', '10 campaigns', 'Advanced analytics', 'Priority support'],
-    highlighted: true,
-  },
-];
+const PLANS_WITH_HIGHLIGHT = PLANS.map(p =>
+  p.key === 'pro' ? { ...p, highlighted: true } : p
+);
 
 export default function PlanSelectionPage() {
   const { token } = useAuth();
@@ -53,7 +40,7 @@ export default function PlanSelectionPage() {
         {error && <p className={styles.errorMsg}>{error}</p>}
 
         <div className={styles.planGrid}>
-          {PLANS.map(plan => (
+          {PLANS_WITH_HIGHLIGHT.map(plan => (
             <div
               key={plan.key}
               className={`${styles.planCard} ${plan.highlighted ? styles.planCardHighlighted : ''}`}
