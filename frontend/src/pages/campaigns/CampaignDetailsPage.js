@@ -13,7 +13,7 @@ import { formatMetric } from '../../utils/format';
 import { TIME_PERIODS } from '../../utils/constants';
 import styles from './CampaignDetailsPage.module.css';
 
-const TABS = ['Overview', 'Rank', 'Notifications', 'Tasks', 'Uploads'];
+const TABS = ['Overview', 'Accounts', 'Rank', 'Notifications', 'Tasks', 'Uploads'];
 const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F'];
 const AVATAR_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6', '#3b82f6', '#10b981'];
 
@@ -268,7 +268,7 @@ export default function CampaignDetailsPage() {
 
       {/* Tabs */}
       <div className={styles.tabs}>
-        {TABS.map(tab => (
+        {TABS.filter(tab => tab !== 'Accounts' || isAdminOrCompany).map(tab => (
           <button
             key={tab}
             className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
@@ -393,69 +393,6 @@ export default function CampaignDetailsPage() {
             </ResponsiveContainer>
           </div>
 
-          {/* Accounts section */}
-          {isAdminOrCompany && (
-            <div className={styles.accountsSection}>
-              <div className={styles.accountsHeader}>
-                <h2 className={styles.accountsTitle}>Accounts</h2>
-              </div>
-              <div className={styles.oauthButtons}>
-                <button
-                  className={styles.oauthBtn}
-                  onClick={() => generateOAuthUrl('instagram')}
-                  disabled={oauthLoading}
-                >
-                  Generate Instagram OAuth URL
-                </button>
-                <button
-                  className={styles.oauthBtn}
-                  onClick={() => generateOAuthUrl('tiktok')}
-                  disabled={oauthLoading}
-                >
-                  Generate TikTok OAuth URL
-                </button>
-              </div>
-              {oauthUrl && (
-                <div className={styles.oauthUrlBox}>
-                  <input
-                    className={styles.oauthUrlInput}
-                    type="text"
-                    value={oauthUrl}
-                    readOnly
-                    onClick={e => e.target.select()}
-                  />
-                  <button className={styles.copyBtn} onClick={copyOAuthUrl}>
-                    <CopyIcon /> {copied ? 'Copied!' : 'Copy'}
-                  </button>
-                </div>
-              )}
-              {accounts.length > 0 && (
-                <table className={styles.accountsTable}>
-                  <thead>
-                    <tr>
-                      <th className={styles.accountsTh}>Platform</th>
-                      <th className={styles.accountsTh}>Username</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {accounts.map(a => (
-                      <tr key={a.id} className={styles.accountsRow}>
-                        <td className={styles.accountsTd}>
-                          <span className={styles.platformBadge}>{platformLabel(a.channel_name)}</span>
-                          {' '}{a.channel_name || '—'}
-                        </td>
-                        <td className={styles.accountsTd}>@{a.username || '—'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-              {accounts.length === 0 && (
-                <p className={styles.stateMsg}>No accounts linked yet. Generate an OAuth URL and share it with a creator.</p>
-              )}
-            </div>
-          )}
-
           {/* Creator Progress */}
           <div className={styles.progressSection}>
             <div className={styles.progressHeader}>
@@ -572,7 +509,69 @@ export default function CampaignDetailsPage() {
         </div>
       )}
 
-      {activeTab !== 'Overview' && activeTab !== 'Rank' && (
+      {activeTab === 'Accounts' && isAdminOrCompany && (
+        <div className={styles.accountsSection}>
+          <div className={styles.accountsHeader}>
+            <h2 className={styles.accountsTitle}>Accounts</h2>
+            <div className={styles.oauthButtons}>
+              <button
+                className={styles.oauthBtn}
+                onClick={() => generateOAuthUrl('instagram')}
+                disabled={oauthLoading}
+              >
+                Generate Instagram OAuth URL
+              </button>
+              <button
+                className={styles.oauthBtn}
+                onClick={() => generateOAuthUrl('tiktok')}
+                disabled={oauthLoading}
+              >
+                Generate TikTok OAuth URL
+              </button>
+            </div>
+          </div>
+          {oauthUrl && (
+            <div className={styles.oauthUrlBox}>
+              <input
+                className={styles.oauthUrlInput}
+                type="text"
+                value={oauthUrl}
+                readOnly
+                onClick={e => e.target.select()}
+              />
+              <button className={styles.copyBtn} onClick={copyOAuthUrl}>
+                <CopyIcon /> {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          )}
+          {accounts.length > 0 && (
+            <table className={styles.accountsTable}>
+              <thead>
+                <tr>
+                  <th className={styles.accountsTh}>Platform</th>
+                  <th className={styles.accountsTh}>Username</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accounts.map(a => (
+                  <tr key={a.id} className={styles.accountsRow}>
+                    <td className={styles.accountsTd}>
+                      <span className={styles.platformBadge}>{platformLabel(a.channel_name)}</span>
+                      {' '}{a.channel_name || '—'}
+                    </td>
+                    <td className={styles.accountsTd}>@{a.username || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {accounts.length === 0 && (
+            <p className={styles.stateMsg}>No accounts linked yet. Generate an OAuth URL and share it with a creator.</p>
+          )}
+        </div>
+      )}
+
+      {activeTab !== 'Overview' && activeTab !== 'Rank' && activeTab !== 'Accounts' && (
         <div className={styles.comingSoon}>
           <p>{activeTab} — coming soon</p>
         </div>

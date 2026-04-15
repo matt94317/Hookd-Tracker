@@ -12,258 +12,192 @@
 | CI/CD     | GitHub Actions                  |
 | Container | Docker / Docker Compose (local) |
 
-## Team Split
+---
 
-| Person | Role            | Scope                                                     |
-| ------ | --------------- | --------------------------------------------------------- |
-| **A**  | API Integration | OAuth flows, Instagram/TikTok API clients, scheduled jobs |
-| **B**  | App Development | DB schema, REST API, frontend, infrastructure             |
+## Completed (as of Apr 16, 2026)
 
-### Interface Contract
-
-Both developers agree on these shared boundaries upfront before starting work:
-
-1. **Database schema** -- Person B creates migrations; Person A follows the schema
-2. **Internal service interface** -- a shared Python module (`app/services/platform.py`) that Person A implements:
-
-```python
-# Person A implements these; Person B calls them from API routes
-class PlatformService:
-    def get_oauth_url(account_id, channel) -> str
-    def handle_oauth_callback(channel, code) -> tokens
-    def fetch_posts(account_id) -> list[dict]
-    def refresh_token(account_id) -> bool
-```
-
-3. **API response format** -- agreed JSON structure for posts data
-
-This allows both to work independently. Person B builds routes/UI using mock data, Person A implements the real platform integrations behind the same interface.
+- [x] Git repo, branching strategy, project structure
+- [x] Docker Compose (PostgreSQL + Flask + React)
+- [x] DB migrations (all base tables from data-schema.md)
+- [x] `PlatformService` interface defined
+- [x] User authentication (login/register, JWT, RBAC middleware)
+- [x] Campaign CRUD API (`POST`, `GET`, `PUT`, `DELETE /campaigns`)
+- [x] Campaign Creators API (add/remove creators)
+- [x] Unit tests with mocked API responses
+- [x] Post sync job, token refresh job, target achievement check (logic only — scheduler not wired)
+- [x] Auth pages (Login, Registration)
+- [x] Dashboard (campaign list, summary stats)
+- [x] Campaign detail page (creators, accounts, targets, posts)
+- [x] Campaign management (create/edit, add/remove creators & accounts, targets)
+- [x] Performance views (metrics, aggregation, leaderboard, creator detail, campaign comparison)
 
 ---
 
-## Phase 1: Local Development
-
-**Goal: Fully working app running locally via Docker Compose.**
-
-### Sprint 0: Project Setup (Both, 1 day)
-
-Work together to establish the foundation.
-
-- [x] Initialize Git repo and branching strategy (`main`, `dev`, feature branches)
-- [x] Set up project structure:
-
-```
-hookd/
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── models/          # SQLAlchemy models
-│   │   ├── routes/          # Flask blueprints
-│   │   ├── services/        # Business logic
-│   │   │   └── platform.py  # Shared interface (OAuth, fetch)
-│   │   └── jobs/            # Scheduled tasks
-│   ├── migrations/          # Alembic
-│   ├── requirements.txt
-│   └── Dockerfile
-├── frontend/
-│   ├── src/
-│   ├── package.json
-│   └── Dockerfile
-├── docker-compose.yml       # Flask + React + PostgreSQL
-└── plan/
-```
-
-- [x] Set up Docker Compose (PostgreSQL + Flask + React)
-- [x] Define and agree on the `PlatformService` interface
-- [x] Create DB migrations (all tables from data-schema.md)
+## Remaining Work
 
 ---
 
-### Sprint 1: Core Backend + OAuth (2 weeks)
-
-#### Person A: API Integration
+### Week 1: Apr 16–22 — Instagram & TikTok OAuth
 
 - [ ] **Instagram OAuth flow**
-  - Build OAuth URL generation
-  - Handle callback, exchange code for tokens
-  - Store encrypted tokens in `accounts` table
-  - Implement token refresh logic
+  - `get_oauth_url(account_id, "instagram")` — generate Facebook Login URL with correct scopes
+  - `handle_oauth_callback("instagram", code)` — exchange code for long-lived token (60-day)
+  - Store AES-256 encrypted token in `accounts.access_token`; set `token_expires_at`
+  - `refresh_token(account_id)` — refresh before `token_expires_at`
 - [ ] **TikTok OAuth flow**
-  - Same as above for TikTok
-- [ ] **Post fetching -- Instagram**
-  - Fetch posts via Graph API (`/me/media`)
-  - Map response to `posts` table schema
-  - Handle pagination
-- [ ] **Post fetching -- TikTok**
-  - Fetch videos via TikTok API v2 (`/v2/video/list/`)
-  - Map response to `posts` table schema
-  - Handle pagination
-- [x] Unit tests with mocked API responses
-
-#### Person B: App Backend + Auth
-
-- [x] **User authentication**
-  - Login / registration endpoints
-  - JWT-based session management
-  - Role-based access control middleware (admin / company / creator)
-- [x] **Campaign CRUD API**
-  - `POST /campaigns` -- create (admin / company)
-  - `GET /campaigns` -- list (filtered by role)
-  - `GET /campaigns/:id` -- detail
-  - `PUT /campaigns/:id` -- update
-  - `DELETE /campaigns/:id` -- delete
-- [x] **Campaign Creators API**
-  - `POST /campaigns/:id/creators` -- add creators
-  - `DELETE /campaigns/:id/creators/:creator_id` -- remove
-- [ ] **Account API**
-  - `POST /campaigns/:id/accounts` -- add account
-  - `GET /campaigns/:id/accounts` -- list
-  - `GET /accounts/:id/oauth-url` -- calls Person A's `get_oauth_url()`
-  - `GET /oauth/callback/:channel` -- calls Person A's `handle_oauth_callback()`
-- [ ] **Posts API**
-  - `GET /accounts/:id/posts` -- list posts
-  - `GET /campaigns/:id/posts` -- all posts in campaign
+  - `get_oauth_url(account_id, "tiktok")` — generate TikTok Login URL
+  - `handle_oauth_callback("tiktok", code)` — exchange code for access + refresh tokens (24h / 365d)
+  - Store encrypted tokens; set `token_expires_at`
+  - `refresh_token(account_id)` — use refresh token when access token nears expiry
+- [ ] **Account API routes**
+  - `POST /campaigns/:id/accounts` — add account to campaign
+  - `GET /campaigns/:id/accounts` — list accounts with OAuth status
+  - `GET /accounts/:id/oauth-url` — calls `PlatformService.get_oauth_url()`
+  - `GET /oauth/callback/:channel` — calls `PlatformService.handle_oauth_callback()`
 
 ---
 
-### Sprint 2: Scheduled Jobs + Frontend (2 weeks)
+### Week 2: Apr 23–29 — Post Fetching + Job Scheduler
 
-#### Person A: Scheduled Jobs
-
-- [x] **Post sync job**
-  - Periodic job to fetch new posts for all authorized accounts
-  - Upsert posts (avoid duplicates via `platform_post_id`)
-  - Update metrics on existing posts
-- [x] **Token refresh job**
-  - Check `token_expires_at` for upcoming expirations
-  - Auto-refresh tokens
-  - Log/alert on refresh failure
-- [x] **Target achievement check**
-  - Count posts per account for the current day/month
-  - Compare against `daily_target` / `monthly_target` on the account
-- [ ] Set up APScheduler or Celery Beat for job scheduling
-- [ ] Integration tests with sandbox/test accounts
-
-#### Person B: Frontend
-
-- [x] **Auth pages** -- Login, Registration
-- [x] **Dashboard** -- Campaign list, summary stats
-- [x] **Campaign detail page**
-  - Creator list
-  - Account list with OAuth status
-  - Target achievement status (daily/monthly)
-  - Posts list with oEmbed
-- [x] **Campaign management**
-  - Create/edit campaign form
-  - Add/remove creators
-  - Add/remove accounts
-  - Set daily/monthly targets per account
-- [x] **Performance views**
-  - Post-level metrics
-  - Aggregation by account / creator / campaign / channel
-  - Creator leaderboard (ranked by selected metric)
-  - Creator detail view (per-creator breakdown)
-  - Campaign comparison (compare creators within a campaign)
+- [ ] **Instagram post fetching**
+  - Fetch posts via `/me/media` (Graph API)
+  - Fetch insights via `/media/{id}/insights` (likes, comments, views, shares)
+  - Map to `posts` table schema; handle pagination
+- [ ] **TikTok post fetching**
+  - Fetch videos via `/v2/video/list/` and `/v2/video/query/`
+  - Map to `posts` table schema; handle pagination
+- [ ] **Posts API routes**
+  - `GET /accounts/:id/posts` — list posts for an account
+  - `GET /campaigns/:id/posts` — all posts across campaign accounts
+- [ ] **Wire up APScheduler or Celery Beat**
+  - Schedule post sync job (configurable interval, e.g. every 1–6 hours)
+  - Schedule token refresh job (daily check)
+  - Schedule target achievement check
+  - Add scheduler startup to Flask `create_app()`
+- [ ] **Integration tests**
+  - OAuth callback → token stored → posts fetched → posts returned by API
+  - Test with Instagram test user and TikTok sandbox account
 
 ---
 
-### Sprint 2b: Stripe Payment Integration (1 week)
+### Week 3: Apr 30–May 6 — Stripe Backend + DB Migrations
 
-#### Person B: Payments
-
-- [ ] **Backend — Stripe setup**
+- [ ] **DB migrations**
+  - Add to `users`: `stripe_customer_id VARCHAR(255)`, `stripe_connect_account_id VARCHAR(255)`, `payout_enabled BOOLEAN DEFAULT false`
+  - Create `subscriptions` table (id, company_id FK, stripe_subscription_id, stripe_price_id, plan ENUM, status ENUM, period timestamps, created_at, updated_at)
+  - Create `payouts` table (id, campaign_id FK, creator_id FK, company_id FK, stripe_transfer_id, amount INT cents, currency, status ENUM, created_at, updated_at)
+- [ ] **Stripe backend setup**
   - Add `stripe` to `requirements.txt`
-  - Add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY` to `.env` / `docker-compose.yml`
-  - Create `backend/app/services/stripe_service.py` (customer creation, checkout session, portal session, transfer)
+  - Add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY` to `.env` and `docker-compose.yml`
+  - Create `backend/app/services/stripe_service.py`:
+    - `create_customer(user)` — called on company registration
+    - `create_checkout_session(customer_id, price_id)` — subscription flow
+    - `create_portal_session(customer_id)` — billing self-service
+    - `create_transfer(connect_account_id, amount, currency)` — creator payout
   - Create `backend/app/routes/payments.py` blueprint:
     - `POST /api/payments/create-checkout-session`
     - `POST /api/payments/create-portal-session`
     - `POST /api/payments/create-payout`
-    - `POST /api/stripe/webhook` (signature-verified, unauthenticated)
-  - Webhook handlers for subscription and payout events (idempotent)
-  - Subscription enforcement middleware on company routes
-- [ ] **DB migrations**
-  - Add `stripe_customer_id`, `stripe_connect_account_id`, `payout_enabled` to `users`
-  - Create `subscriptions` table
-  - Create `payouts` table
-- [ ] **Frontend — Billing (Settings page)**
-  - Install `@stripe/stripe-js`, `@stripe/react-stripe-js`
-  - Add `REACT_APP_STRIPE_PUBLISHABLE_KEY` to frontend env
-  - Billing section: plan display, "Upgrade / Manage Billing" button, payment history
-- [ ] **Frontend — Payroll page**
-  - Replace placeholder with payout table per campaign/creator
-  - "Pay Creator" modal with amount input
-  - Payout status badges (pending / processing / paid / failed)
-- [ ] **Frontend — Creator payout onboarding**
+    - `POST /api/stripe/webhook` (unauthenticated, signature-verified)
+  - Webhook handlers (idempotent):
+    - `customer.subscription.created/updated/deleted` → upsert `subscriptions` row
+    - `invoice.payment_succeeded/failed` → update subscription status
+    - `account.updated` (charges_enabled) → set `payout_enabled: true` on creator
+    - `transfer.created/paid/failed` → update `payouts.status`
+  - Subscription enforcement middleware on company routes (return `402` if no active subscription)
+
+---
+
+### Week 4: May 7–13 — Stripe Frontend
+
+- [ ] **Install Stripe frontend packages**
+  - `npm install @stripe/stripe-js @stripe/react-stripe-js`
+  - Add `REACT_APP_STRIPE_PUBLISHABLE_KEY` to frontend `.env`
+- [ ] **Settings page — Billing section**
+  - Display current plan name, status, and renewal date
+  - "Upgrade / Manage Billing" button → `/api/payments/create-checkout-session` or `/api/payments/create-portal-session`
+  - Redirect to Stripe-hosted checkout or portal URL
+  - Handle return to `/settings?checkout=success`
+  - Payment history table (invoices from subscription)
+- [ ] **Payroll page** (replace existing placeholder)
+  - Table of payouts per campaign/creator (amount, status badge, date)
+  - "Pay Creator" modal: campaign select, creator select, amount input → `POST /api/payments/create-payout`
+  - Payout status badges: pending / processing / paid / failed
+- [ ] **Creator payout onboarding**
   - "Connect Payout Account" button in Creator Settings
-  - Redirect to Stripe Connect Express onboarding URL
+  - Redirect to Stripe Connect Express onboarding URL (returned from backend)
+  - Show `payout_enabled` status after onboarding completes
 
 ---
 
-### Sprint 3: Integration + Polish (1 week)
+### Week 5: May 14–20 — Integration, E2E Testing & Polish
 
-- [ ] Connect Person A's real implementations to Person B's routes (replace mocks)
-- [ ] End-to-end testing with real OAuth + API calls
-- [ ] Error handling and edge cases
-- [ ] Local demo walkthrough
+- [ ] **Remove all mock data** — wire real `PlatformService` implementations into API routes
+- [ ] **End-to-end testing**
+  - Full OAuth flow: generate URL → creator authorises → token stored → posts fetched → appears in UI
+  - Stripe subscription: checkout → webhook → enforcement active
+  - Creator payout: Connect onboarding → transfer → status update in Payroll page
+- [ ] **Error handling & edge cases**
+  - OAuth token expired / refresh failed — surface error in UI
+  - API rate limits — back-off and retry logic
+  - Stripe webhook retries — idempotency checks
+  - Invalid/missing posts — graceful empty states in UI
+- [ ] **Local demo walkthrough** — full run-through with test accounts
 
 ---
 
-## Phase 2: AWS Deployment
-
-Goal: Deploy to AWS EC2 with CI/CD via GitHub Actions.
-
-### Sprint 4: Infrastructure (1 week)
-
-#### Person A: CI/CD Pipeline
-
-- [ ] **GitHub Actions workflow** (`.github/workflows/deploy.yml`)
-  - Trigger on push to `main`
-  - Run tests (backend + frontend)
-  - Build Docker images
-  - Push to Amazon ECR
-  - SSH deploy to EC2 (or use docker-compose pull + restart)
-- [ ] **Environment management**
-  - Secrets in GitHub Actions (DB credentials, API keys, OAuth secrets)
-  - `.env` template for production config
-
-#### Person B: AWS Setup
+### Week 6: May 21–27 — AWS Infrastructure + CI/CD
 
 - [ ] **EC2 instance**
-  - Provision instance (Ubuntu)
+  - Provision Ubuntu instance (t3.small or t3.medium)
   - Install Docker + Docker Compose
-  - Configure security groups (80/443, SSH)
+  - Configure security groups: port 80, 443 (HTTP/HTTPS), 22 (SSH)
 - [ ] **PostgreSQL**
-  - Option: RDS instance or PostgreSQL in Docker on EC2
-  - Set up production database + run migrations
+  - Set up RDS instance (or PostgreSQL container on EC2)
+  - Run Alembic migrations on production DB
 - [ ] **Networking**
   - Domain setup (Route 53 or external DNS)
-  - Nginx reverse proxy for Flask + React
-  - SSL certificate (Let's Encrypt)
+  - Nginx reverse proxy: React (port 80/443) → Flask (port 5000)
+  - SSL certificate via Let's Encrypt (certbot)
 - [ ] **Environment variables**
-  - Production `.env` on EC2
-  - Encrypted token storage key
-
-### Sprint 5: Production Hardening (1 week)
-
-- [ ] Health check endpoints
-- [ ] Logging (CloudWatch or file-based)
-- [ ] Backup strategy for PostgreSQL
-- [ ] OAuth redirect URIs updated for production domain
-- [ ] Rate limiting on API endpoints
-- [ ] Final end-to-end test on production
-- [ ] Monitoring and alerting (uptime, job failures, token refresh failures)
+  - Create production `.env` on EC2 with real keys
+  - Set `ENCRYPTION_KEY` for encrypted token storage
+- [ ] **GitHub Actions workflow** (`.github/workflows/deploy.yml`)
+  - Trigger on push to `main`
+  - Run backend tests (`pytest`) and frontend build (`npm run build`)
+  - Build Docker images and push to Amazon ECR
+  - SSH deploy to EC2 (docker-compose pull + restart)
+- [ ] **Secrets management**
+  - Store DB credentials, API keys, OAuth secrets, Stripe keys in GitHub Actions secrets
+  - Create `.env.production` template (no real values committed)
 
 ---
 
-## Timeline Summary
+### Week 7: May 28–Jun 3 — Production Hardening
 
-| Sprint    | Duration | Focus                       |
-| --------- | -------- | --------------------------- |
-| Sprint 0  | 1 day    | Project setup (together)    |
-| Sprint 1  | 2 weeks  | Core backend + OAuth        |
-| Sprint 2  | 2 weeks  | Scheduled jobs + Frontend   |
-| Sprint 2b | 1 week   | Stripe payments integration |
-| Sprint 3  | 1 week   | Integration + Polish        |
-| Sprint 4  | 1 week   | AWS infra + CI/CD           |
-| Sprint 5  | 1 week   | Production hardening        |
+- [ ] **Health check endpoint** — `GET /api/health` (returns 200 + DB connectivity check); add to Nginx and deploy workflow
+- [ ] **Logging** — structured JSON logging in Flask; route to CloudWatch Logs or file; log scheduled job events
+- [ ] **Backup strategy** — daily `pg_dump` to S3 with 30-day retention; test restore
+- [ ] **OAuth redirect URIs** — update Instagram and TikTok app settings with production callback URLs; test flows
+- [ ] **Rate limiting** — add `flask-limiter` to API endpoints (auth routes, OAuth callback)
+- [ ] **Monitoring & alerting**
+  - Uptime check (UptimeRobot or CloudWatch alarm on health endpoint)
+  - Alert on scheduled job failures (token refresh, post sync errors)
+  - Alert on Stripe webhook failures
+- [ ] **Final end-to-end test on production** — full flow with real accounts; Stripe test-mode smoke test
+
+---
+
+## Schedule Summary
+
+| Week | Dates        | Focus                                          |
+| ---- | ------------ | ---------------------------------------------- |
+| 1    | Apr 16–22    | Instagram + TikTok OAuth flows; Account API    |
+| 2    | Apr 23–29    | Post fetching; Posts API; APScheduler; tests   |
+| 3    | Apr 30–May 6 | Stripe backend + DB migrations                 |
+| 4    | May 7–13     | Stripe frontend (Billing, Payroll, Onboarding) |
+| 5    | May 14–20    | Integration, E2E testing, error handling       |
+| 6    | May 21–27    | AWS infrastructure + CI/CD                     |
+| 7    | May 28–Jun 3 | Production hardening + monitoring              |
+
+**Target ship date: Jun 3, 2026**

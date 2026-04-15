@@ -251,6 +251,9 @@
 }
 
 .accountsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
 }
 
@@ -263,7 +266,6 @@
 .oauthButtons {
   display: flex;
   gap: 10px;
-  margin-bottom: 16px;
 }
 
 .oauthBtn {

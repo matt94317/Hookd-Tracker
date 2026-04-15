@@ -8,10 +8,10 @@
 
 ## User Roles
 
-| Role                | Description                                                               |
-| ------------------- | ------------------------------------------------------------------------- |
-| **admin**           | Platform administrator. Full access to all data.                          |
-| **company/ client** | Brand / sponsor. Creates and manages their own campaigns.                 |
+| Role                | Description                                               |
+| ------------------- | --------------------------------------------------------- |
+| **admin**           | Platform administrator. Full access to all data.          |
+| **company/ client** | Brand / sponsor. Creates and manages their own campaigns. |
 
 ---
 
@@ -103,11 +103,11 @@ See `daily_target` / `monthly_target` columns on the `accounts` table in [data-s
 
 #### Plans
 
-| Plan           | Creators | Campaigns | Price (monthly) |
-| -------------- | -------- | --------- | --------------- |
-| **Starter**    | Up to 5  | Up to 3   | $49/mo          |
-| **Pro**        | Up to 20 | Up to 10  | $149/mo         |
-| **Enterprise** | Unlimited| Unlimited | Custom          |
+| Plan           | Creators  | Campaigns | Price (monthly) |
+| -------------- | --------- | --------- | --------------- |
+| **Starter**    | Up to 5   | Up to 3   | $49/mo          |
+| **Pro**        | Up to 20  | Up to 10  | $149/mo         |
+| **Enterprise** | Unlimited | Unlimited | Custom          |
 
 Annual billing available at a 20% discount.
 
@@ -122,13 +122,13 @@ Annual billing available at a 20% discount.
 
 #### Webhook Events (Subscriptions)
 
-| Event | Action |
-| ----- | ------ |
+| Event                           | Action                                                  |
+| ------------------------------- | ------------------------------------------------------- |
 | `customer.subscription.created` | Insert/update `subscriptions` row, set `status: active` |
-| `customer.subscription.updated` | Update plan / status |
-| `customer.subscription.deleted` | Set `status: cancelled`, restrict access |
-| `invoice.payment_succeeded` | Record payment in `subscription_invoices` |
-| `invoice.payment_failed` | Set `status: past_due`, email company |
+| `customer.subscription.updated` | Update plan / status                                    |
+| `customer.subscription.deleted` | Set `status: cancelled`, restrict access                |
+| `invoice.payment_succeeded`     | Record payment in `subscription_invoices`               |
+| `invoice.payment_failed`        | Set `status: past_due`, email company                   |
 
 ---
 
@@ -146,12 +146,12 @@ Companies can pay creators directly through the platform. Each creator holds a S
 
 #### Webhook Events (Connect)
 
-| Event | Action |
-| ----- | ------ |
-| `account.updated` | Check `charges_enabled`; set `payout_enabled` flag on creator |
-| `transfer.created` | Update payout row `status: processing` |
-| `transfer.paid` | Update payout row `status: paid` |
-| `transfer.failed` | Update payout row `status: failed`; alert company |
+| Event              | Action                                                        |
+| ------------------ | ------------------------------------------------------------- |
+| `account.updated`  | Check `charges_enabled`; set `payout_enabled` flag on creator |
+| `transfer.created` | Update payout row `status: processing`                        |
+| `transfer.paid`    | Update payout row `status: paid`                              |
+| `transfer.failed`  | Update payout row `status: failed`; alert company             |
 
 ---
 
@@ -159,41 +159,41 @@ Companies can pay creators directly through the platform. Each creator holds a S
 
 #### users (additions)
 
-| Column | Type | Notes |
-| ------ | ---- | ----- |
-| `stripe_customer_id` | VARCHAR(255) | Stripe Customer ID (company users) |
-| `stripe_connect_account_id` | VARCHAR(255) | Stripe Connect Express account ID (creator users) |
-| `payout_enabled` | BOOLEAN | Default false. True once Connect onboarding complete |
+| Column                      | Type         | Notes                                                |
+| --------------------------- | ------------ | ---------------------------------------------------- |
+| `stripe_customer_id`        | VARCHAR(255) | Stripe Customer ID (company users)                   |
+| `stripe_connect_account_id` | VARCHAR(255) | Stripe Connect Express account ID (creator users)    |
+| `payout_enabled`            | BOOLEAN      | Default false. True once Connect onboarding complete |
 
 #### subscriptions (new table)
 
-| Column | Type | Notes |
-| ------ | ---- | ----- |
-| id | BIGINT PK | Auto increment |
-| company_id | BIGINT FK | References users(id) |
-| stripe_subscription_id | VARCHAR(255) | NOT NULL, unique |
-| stripe_price_id | VARCHAR(255) | Plan price ID |
-| plan | ENUM(starter, pro, enterprise) | |
-| status | ENUM(active, past_due, cancelled, trialing) | |
-| current_period_start | TIMESTAMP | |
-| current_period_end | TIMESTAMP | |
-| created_at | TIMESTAMP | |
-| updated_at | TIMESTAMP | |
+| Column                 | Type                                        | Notes                |
+| ---------------------- | ------------------------------------------- | -------------------- |
+| id                     | BIGINT PK                                   | Auto increment       |
+| company_id             | BIGINT FK                                   | References users(id) |
+| stripe_subscription_id | VARCHAR(255)                                | NOT NULL, unique     |
+| stripe_price_id        | VARCHAR(255)                                | Plan price ID        |
+| plan                   | ENUM(starter, pro, enterprise)              |                      |
+| status                 | ENUM(active, past_due, cancelled, trialing) |                      |
+| current_period_start   | TIMESTAMP                                   |                      |
+| current_period_end     | TIMESTAMP                                   |                      |
+| created_at             | TIMESTAMP                                   |                      |
+| updated_at             | TIMESTAMP                                   |                      |
 
 #### payouts (new table)
 
-| Column | Type | Notes |
-| ------ | ---- | ----- |
-| id | BIGINT PK | Auto increment |
-| campaign_id | BIGINT FK | References campaigns(id) |
-| creator_id | BIGINT FK | References users(id) |
-| company_id | BIGINT FK | References users(id) |
-| stripe_transfer_id | VARCHAR(255) | Unique |
-| amount | INT | In cents |
-| currency | VARCHAR(10) | Default 'usd' |
-| status | ENUM(pending, processing, paid, failed) | |
-| created_at | TIMESTAMP | |
-| updated_at | TIMESTAMP | |
+| Column             | Type                                    | Notes                    |
+| ------------------ | --------------------------------------- | ------------------------ |
+| id                 | BIGINT PK                               | Auto increment           |
+| campaign_id        | BIGINT FK                               | References campaigns(id) |
+| creator_id         | BIGINT FK                               | References users(id)     |
+| company_id         | BIGINT FK                               | References users(id)     |
+| stripe_transfer_id | VARCHAR(255)                            | Unique                   |
+| amount             | INT                                     | In cents                 |
+| currency           | VARCHAR(10)                             | Default 'usd'            |
+| status             | ENUM(pending, processing, paid, failed) |                          |
+| created_at         | TIMESTAMP                               |                          |
+| updated_at         | TIMESTAMP                               |                          |
 
 ---
 
@@ -221,12 +221,12 @@ Companies can pay creators directly through the platform. Each creator holds a S
 
 ### Non-Functional Requirements
 
-| Area | Requirement |
-| ---- | ----------- |
-| **Security** | Webhook signature verified with `stripe.webhook.construct_event`. Secret key never exposed to frontend. |
-| **Idempotency** | All Stripe API calls use idempotency keys. Webhook handlers are idempotent (check if event already processed). |
-| **Test mode** | All development uses Stripe test keys and test card numbers. Separate test/live key pairs per environment. |
-| **Error handling** | Failed payments trigger email notifications. Payout failures surface in the Payroll UI with reason. |
+| Area               | Requirement                                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| **Security**       | Webhook signature verified with `stripe.webhook.construct_event`. Secret key never exposed to frontend.        |
+| **Idempotency**    | All Stripe API calls use idempotency keys. Webhook handlers are idempotent (check if event already processed). |
+| **Test mode**      | All development uses Stripe test keys and test card numbers. Separate test/live key pairs per environment.     |
+| **Error handling** | Failed payments trigger email notifications. Payout failures surface in the Payroll UI with reason.            |
 
 ---
 
