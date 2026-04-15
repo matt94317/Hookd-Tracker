@@ -1,19 +1,21 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 
+
 class PlatformService(ABC):
     """
     Interface for platform integrations (Instagram, TikTok).
     """
-    
+
     @abstractmethod
-    def get_oauth_url(self, account_id: int, channel: str) -> str:
-        """Generate the OAuth authorization URL."""
+    def get_oauth_url(self, state: str, channel: str) -> str:
+        """Generate the OAuth authorization URL. state is a JSON-encoded string
+        containing campaign_id and channel_id."""
         pass
 
     @abstractmethod
-    def handle_oauth_callback(self, channel: str, code: str) -> Dict[str, Any]:
-        """Exchange code for access tokens."""
+    def handle_oauth_callback(self, channel: str, code: str, state: str = None) -> Dict[str, Any]:
+        """Exchange code for access tokens and create the Account record."""
         pass
 
     @abstractmethod

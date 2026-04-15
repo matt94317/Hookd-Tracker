@@ -1,21 +1,62 @@
-from flask import Blueprint, request, jsonify
+import os
+import uuid
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
+from sqlalchemy import func
+from werkzeug.utils import secure_filename
 from .. import db
-from ..models import Campaign, CampaignCreator, User
+from ..models import Account, Campaign, Post
 from . import roles_required
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def _allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 campaigns_bp = Blueprint('campaigns', __name__, url_prefix='/campaigns')
 
+
 # a shared helper that formats a campaign into JSON. Used by every endpoint so the response format is consistent
-def _campaign_to_dict(c):
-    return {
+def _campaign_to_dict(c, include_stats=False):
+    d = {
         "id": c.id,
         "name": c.name,
         "company_id": c.company_id,
+        "cover_image_url": c.cover_image_url,
+        "hashtags": c.hashtags,
+        "brief_links": c.brief_links or [],
         "start_date": str(c.start_date) if c.start_date else None,
         "end_date": str(c.end_date) if c.end_date else None,
         "created_at": str(c.created_at) if c.created_at else None,
+        "updated_at": str(c.updated_at) if c.updated_at else None,
     }
+    if include_stats:
+        account_count = Account.query.filter_by(campaign_id=c.id).count()
+        post_agg = (
+            db.session.query(
+                func.count(Post.id),
+                func.coalesce(func.sum(Post.views), 0),
+                func.coalesce(func.sum(Post.likes), 0),
+                func.coalesce(func.sum(Post.comments), 0),
+                func.coalesce(func.sum(Post.shares), 0),
+            )
+            .join(Account, Post.account_id == Account.id)
+            .filter(Account.campaign_id == c.id)
+            .first()
+        )
+        post_count = int(post_agg[0] or 0)
+        total_views = int(post_agg[1] or 0)
+        total_likes = int(post_agg[2] or 0)
+        total_comments = int(post_agg[3] or 0)
+        total_shares = int(post_agg[4] or 0)
+        d["account_count"] = account_count
+        d["post_count"] = post_count
+        d["total_views"] = total_views
+        if total_views > 0:
+            d["avg_engagement"] = round((total_likes + total_comments + total_shares) / total_views * 100, 1)
+        else:
+            d["avg_engagement"] = 0.0
+    return d
 
 # a shared helper that checks if a user is allowed to see a campaign. Avoids duplicating the same role-check logic across multiple endpoints
 def _can_access_campaign(campaign, user_id, role):
@@ -24,14 +65,31 @@ def _can_access_campaign(campaign, user_id, role):
         return True
     if role == 'company':
         return campaign.company_id == user_id
-    # creator: must be in campaign_creators
-    return CampaignCreator.query.filter_by(
-        campaign_id=campaign.id, creator_id=user_id
-    ).first() is not None
+    return False
+
+
+@campaigns_bp.route('/upload-image', methods=['POST'])
+@roles_required('admin', 'company')
+def upload_campaign_image():
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    if not _allowed_file(file.filename):
+        return jsonify({"error": "File type not allowed. Use PNG, JPG, GIF, or WEBP"}), 400
+
+    ext = file.filename.rsplit('.', 1)[1].lower()
+    filename = f"{uuid.uuid4().hex}.{ext}"
+    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+
+    url = f"{request.host_url}uploads/{filename}"
+    return jsonify({"url": url}), 201
 
 
 @campaigns_bp.route('', methods=['POST'])
-# Creators can't create campaigns (a company hires them)
 @roles_required('admin', 'company')
 def create_campaign():
     data = request.get_json()
@@ -43,17 +101,18 @@ def create_campaign():
         return jsonify({"error": "Name is required"}), 400
 
     # company role always owns the campaign they create
-    # admin must supply company_id explicitly
+    # admin-created campaigns have no company association
     if claims['role'] == 'company':
         company_id = user_id
     else:
-        company_id = data.get('company_id')
-        if not company_id:
-            return jsonify({"error": "company_id is required for admin"}), 400
+        company_id = None
 
     campaign = Campaign(
         name=name,
         company_id=company_id,
+        cover_image_url=data.get('cover_image_url'),
+        hashtags=data.get('hashtags'),
+        brief_links=data.get('brief_links'),
         start_date=data.get('start_date'),
         end_date=data.get('end_date'),
     )
@@ -64,25 +123,22 @@ def create_campaign():
 
 
 @campaigns_bp.route('', methods=['GET'])
-@jwt_required()
+@roles_required('admin', 'company')
 def list_campaigns():
     claims = get_jwt()
     role = claims['role']
     user_id = int(get_jwt_identity())
+    name_filter = request.args.get('name', '').strip()
 
     if role == 'admin':
-        campaigns = Campaign.query.all()
-    elif role == 'company':
-        campaigns = Campaign.query.filter_by(company_id=user_id).all()
-    else:  # creator
-        campaigns = (
-            Campaign.query
-            .join(CampaignCreator, Campaign.id == CampaignCreator.campaign_id)
-            .filter(CampaignCreator.creator_id == user_id)
-            .all()
-        )
+        query = Campaign.query
+    else:  # company
+        query = Campaign.query.filter_by(company_id=user_id)
 
-    return jsonify([_campaign_to_dict(c) for c in campaigns]), 200
+    if name_filter:
+        query = query.filter(Campaign.name.ilike(f'%{name_filter}%'))
+
+    return jsonify([_campaign_to_dict(c, include_stats=True) for c in query.all()]), 200
 
 
 @campaigns_bp.route('/<int:campaign_id>', methods=['GET'])
@@ -91,7 +147,6 @@ def get_campaign(campaign_id):
     claims = get_jwt()
     user_id = int(get_jwt_identity())
 
-    # returns 403 if the user has no business seeing that campaign
     campaign = Campaign.query.get_or_404(campaign_id)
 
     if not _can_access_campaign(campaign, user_id, claims['role']):
@@ -114,6 +169,12 @@ def update_campaign(campaign_id):
     data = request.get_json()
     if 'name' in data:
         campaign.name = data['name']
+    if 'cover_image_url' in data:
+        campaign.cover_image_url = data['cover_image_url']
+    if 'hashtags' in data:
+        campaign.hashtags = data['hashtags']
+    if 'brief_links' in data:
+        campaign.brief_links = data['brief_links']
     if 'start_date' in data:
         campaign.start_date = data['start_date']
     if 'end_date' in data:
@@ -137,56 +198,3 @@ def delete_campaign(campaign_id):
     db.session.delete(campaign)
     db.session.commit()
     return jsonify({"message": "Campaign deleted"}), 200
-
-
-@campaigns_bp.route('/<int:campaign_id>/creators', methods=['POST'])
-@roles_required('admin', 'company')
-def add_creator(campaign_id):
-    claims = get_jwt()
-    user_id = int(get_jwt_identity())
-
-    campaign = Campaign.query.get_or_404(campaign_id)
-
-    if claims['role'] == 'company' and campaign.company_id != user_id:
-        return jsonify({"error": "Access forbidden"}), 403
-
-    data = request.get_json()
-    creator_id = data.get('creator_id')
-    if not creator_id:
-        return jsonify({"error": "creator_id is required"}), 400
-
-    creator = User.query.get_or_404(creator_id)
-    if creator.role != 'creator':
-        return jsonify({"error": "User is not a creator"}), 400
-
-    existing = CampaignCreator.query.filter_by(
-        campaign_id=campaign_id, creator_id=creator_id
-    ).first()
-    if existing:
-        return jsonify({"error": "Creator already in campaign"}), 409
-
-    entry = CampaignCreator(campaign_id=campaign_id, creator_id=creator_id)
-    db.session.add(entry)
-    db.session.commit()
-
-    return jsonify({"campaign_id": campaign_id, "creator_id": creator_id}), 201
-
-
-@campaigns_bp.route('/<int:campaign_id>/creators/<int:creator_id>', methods=['DELETE'])
-@roles_required('admin', 'company')
-def remove_creator(campaign_id, creator_id):
-    claims = get_jwt()
-    user_id = int(get_jwt_identity())
-
-    campaign = Campaign.query.get_or_404(campaign_id)
-
-    if claims['role'] == 'company' and campaign.company_id != user_id:
-        return jsonify({"error": "Access forbidden"}), 403
-
-    entry = CampaignCreator.query.filter_by(
-        campaign_id=campaign_id, creator_id=creator_id
-    ).first_or_404()
-
-    db.session.delete(entry)
-    db.session.commit()
-    return jsonify({"message": "Creator removed from campaign"}), 200
