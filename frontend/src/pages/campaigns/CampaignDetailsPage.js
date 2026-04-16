@@ -78,7 +78,10 @@ export default function CampaignDetailsPage() {
   const [lbSortDir, setLbSortDir] = useState('desc');
   const [oauthUrl, setOauthUrl] = useState('');
   const [oauthLoading, setOauthLoading] = useState(false);
+  const [oauthError, setOauthError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [syncingId, setSyncingId] = useState(null);
+  const [syncMsg, setSyncMsg] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -220,19 +223,35 @@ export default function CampaignDetailsPage() {
   async function generateOAuthUrl(platform) {
     setOauthLoading(true);
     setOauthUrl('');
+    setOauthError('');
     setCopied(false);
     try {
       // Find channel_id for the platform
       const channelId = platform === 'instagram' ? 1 : 2;
-      const res = await apiFetch(`/campaigns/${id}/oauth-url`, {
-        method: 'POST',
-        body: JSON.stringify({ channel_id: channelId }),
-      }, token);
+      const res = await apiFetch(`/campaigns/${id}/oauth-url?channel_id=${channelId}`, {}, token);
       setOauthUrl(res.oauth_url);
     } catch (err) {
       console.error('Failed to generate OAuth URL', err);
+      setOauthError(err?.message || 'Failed to generate OAuth URL. Check that your app credentials are configured.');
     } finally {
       setOauthLoading(false);
+    }
+  }
+
+  async function syncAccount(accountId) {
+    setSyncingId(accountId);
+    setSyncMsg('Syncing in background...');
+    try {
+      await apiFetch(`/accounts/${accountId}/fetch-posts`, { method: 'POST' }, token);
+      setSyncMsg('Sync started — data will appear in ~30 seconds');
+      setTimeout(() => {
+        setRefreshKey(k => k + 1);
+        setSyncMsg('');
+      }, 30000);
+    } catch (err) {
+      setSyncMsg('Sync failed');
+    } finally {
+      setSyncingId(null);
     }
   }
 
@@ -530,6 +549,9 @@ export default function CampaignDetailsPage() {
               </button>
             </div>
           </div>
+          {oauthError && (
+            <p style={{ color: 'red', marginTop: 8 }}>{oauthError}</p>
+          )}
           {oauthUrl && (
             <div className={styles.oauthUrlBox}>
               <input
@@ -544,12 +566,16 @@ export default function CampaignDetailsPage() {
               </button>
             </div>
           )}
+          {syncMsg && (
+            <p style={{ marginTop: 8, color: syncMsg.startsWith('Sync failed') ? 'red' : 'green' }}>{syncMsg}</p>
+          )}
           {accounts.length > 0 && (
             <table className={styles.accountsTable}>
               <thead>
                 <tr>
                   <th className={styles.accountsTh}>Platform</th>
                   <th className={styles.accountsTh}>Username</th>
+                  <th className={styles.accountsTh}></th>
                 </tr>
               </thead>
               <tbody>
@@ -560,6 +586,15 @@ export default function CampaignDetailsPage() {
                       {' '}{a.channel_name || '—'}
                     </td>
                     <td className={styles.accountsTd}>@{a.username || '—'}</td>
+                    <td className={styles.accountsTd}>
+                      <button
+                        className={styles.oauthBtn}
+                        onClick={() => syncAccount(a.id)}
+                        disabled={syncingId === a.id}
+                      >
+                        {syncingId === a.id ? 'Syncing...' : 'Sync Posts'}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

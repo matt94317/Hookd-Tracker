@@ -10,7 +10,7 @@ class TokenEncryption:
         raw_key = key or os.environ.get('TOKEN_ENCRYPTION_KEY')
         if not raw_key:
             raise ValueError("TOKEN_ENCRYPTION_KEY environment variable is not set")
-        self._key = base64.b64decode(raw_key)
+        self._key = base64.urlsafe_b64decode(raw_key)
         if len(self._key) != 32:
             raise ValueError("TOKEN_ENCRYPTION_KEY must be 32 bytes (base64-encoded)")
         self._aesgcm = AESGCM(self._key)
