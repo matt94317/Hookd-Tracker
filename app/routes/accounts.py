@@ -1,7 +1,8 @@
 import json
 import os
+import threading
 
-from flask import Blueprint, request, jsonify, redirect
+from flask import Blueprint, request, jsonify, redirect, current_app
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from .. import db
 from ..models import Account, Campaign, Channel, Post
@@ -42,7 +43,7 @@ def _can_access_campaign(campaign, user_id, role):
 
 # ── OAuth URL generation (Admin/Company generates URL for external sharing) ──
 
-@accounts_bp.route('/campaigns/<int:campaign_id>/oauth-url', methods=['POST'])
+@accounts_bp.route('/campaigns/<int:campaign_id>/oauth-url', methods=['GET'])
 @roles_required('admin', 'company')
 def generate_oauth_url(campaign_id):
     """Admin/Company generates an OAuth URL to share with external creators."""
@@ -55,18 +56,17 @@ def generate_oauth_url(campaign_id):
     if role == 'company' and campaign.company_id != user_id:
         return jsonify({"error": "Access forbidden"}), 403
 
-    data = request.get_json()
-    channel_id = data.get('channel_id')
+    channel_id = request.args.get('channel_id')
     if not channel_id:
         return jsonify({"error": "channel_id is required"}), 400
 
     # Validate channel exists
-    channel = Channel.query.get_or_404(channel_id)
+    channel = Channel.query.get_or_404(int(channel_id))
 
     # Encode state for OAuth callback
     state = json.dumps({
         'campaign_id': campaign_id,
-        'channel_id': channel_id,
+        'channel_id': int(channel_id),
     })
 
     from ..services import get_platform_service
@@ -181,5 +181,17 @@ def trigger_fetch_posts(account_id):
     from ..services import get_platform_service
     channel = account.channel
     service = get_platform_service(channel.name)
-    posts = service.fetch_posts(account_id)
-    return jsonify({"fetched": len(posts)}), 200
+
+    app = current_app._get_current_object()
+
+    def run():
+        with app.app_context():
+            try:
+                service.fetch_posts(account_id)
+            except Exception as e:
+                app.logger.error("Background fetch failed for account %s: %s", account_id, e)
+
+    thread = threading.Thread(target=run, daemon=True)
+    thread.start()
+
+    return jsonify({"message": "Sync started"}), 202

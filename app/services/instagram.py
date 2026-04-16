@@ -13,7 +13,10 @@ from ..models import Account, Channel, Post
 
 logger = logging.getLogger(__name__)
 
-GRAPH_API_BASE = 'https://graph.facebook.com/v19.0'
+GRAPH_API_BASE = 'https://graph.instagram.com/v21.0'
+TOKEN_URL = 'https://api.instagram.com/oauth/access_token'
+LONG_LIVED_TOKEN_URL = 'https://graph.instagram.com/access_token'
+REFRESH_TOKEN_URL = 'https://graph.instagram.com/refresh_access_token'
 
 
 class InstagramService(PlatformService):
@@ -34,67 +37,43 @@ class InstagramService(PlatformService):
         params = {
             'client_id': self.app_id,
             'redirect_uri': self.redirect_uri,
-            'scope': 'instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement,business_management',
+            'scope': 'instagram_business_basic,instagram_business_manage_insights',
             'response_type': 'code',
             'state': state,
         }
-        return f"https://www.facebook.com/v19.0/dialog/oauth?{urlencode(params)}"
+        return f"https://www.instagram.com/oauth/authorize?{urlencode(params)}"
 
     def handle_oauth_callback(self, channel: str, code: str, state: str = None) -> Dict[str, Any]:
         # Step 1: Exchange code for short-lived token
-        resp = requests.get(f"{GRAPH_API_BASE}/oauth/access_token", params={
+        resp = requests.post(TOKEN_URL, data={
             'client_id': self.app_id,
             'client_secret': self.app_secret,
+            'grant_type': 'authorization_code',
             'redirect_uri': self.redirect_uri,
             'code': code,
         })
         resp.raise_for_status()
-        short_lived_token = resp.json()['access_token']
+        token_data = resp.json()
+        short_lived_token = token_data['access_token']
+        ig_user_id = str(token_data['user_id'])
 
         # Step 2: Exchange for long-lived token (60 days)
-        resp = requests.get(f"{GRAPH_API_BASE}/oauth/access_token", params={
-            'grant_type': 'fb_exchange_token',
+        resp = requests.get(LONG_LIVED_TOKEN_URL, params={
+            'grant_type': 'ig_exchange_token',
             'client_id': self.app_id,
             'client_secret': self.app_secret,
-            'fb_exchange_token': short_lived_token,
+            'access_token': short_lived_token,
         })
         resp.raise_for_status()
         long_lived_token = resp.json()['access_token']
 
-        # Step 3: Get Instagram Business Account ID via Pages API
-        resp = requests.get(f"{GRAPH_API_BASE}/me/accounts", params={
+        # Step 3: Get Instagram username
+        resp = requests.get(f"{GRAPH_API_BASE}/me", params={
+            'fields': 'username',
             'access_token': long_lived_token,
         })
         resp.raise_for_status()
-        pages = resp.json().get('data', [])
-        if not pages:
-            raise ValueError("No Facebook Pages found. User must have a Page linked to an Instagram Business/Creator account.")
-
-        ig_user_id = None
-        ig_username = None
-        for page in pages:
-            page_resp = requests.get(
-                f"{GRAPH_API_BASE}/{page['id']}",
-                params={
-                    'fields': 'instagram_business_account',
-                    'access_token': long_lived_token,
-                },
-            )
-            page_resp.raise_for_status()
-            ig_account = page_resp.json().get('instagram_business_account')
-            if ig_account:
-                ig_user_id = ig_account['id']
-                # Fetch username
-                user_resp = requests.get(
-                    f"{GRAPH_API_BASE}/{ig_user_id}",
-                    params={'fields': 'username', 'access_token': long_lived_token},
-                )
-                user_resp.raise_for_status()
-                ig_username = user_resp.json().get('username')
-                break
-
-        if not ig_user_id:
-            raise ValueError("No Instagram Business/Creator account found linked to any Facebook Page.")
+        ig_username = resp.json().get('username')
 
         # Step 4: Parse state and create Account
         import json
@@ -152,7 +131,6 @@ class InstagramService(PlatformService):
             data = resp.json()
             media_items.extend(data.get('data', []))
 
-            # Pagination
             url = data.get('paging', {}).get('next')
             params = {}  # next URL already contains params
 
@@ -229,11 +207,9 @@ class InstagramService(PlatformService):
 
         try:
             current_token = self.encryption.decrypt(account.access_token)
-            resp = requests.get(f"{GRAPH_API_BASE}/oauth/access_token", params={
-                'grant_type': 'fb_exchange_token',
-                'client_id': self.app_id,
-                'client_secret': self.app_secret,
-                'fb_exchange_token': current_token,
+            resp = requests.get(REFRESH_TOKEN_URL, params={
+                'grant_type': 'ig_refresh_token',
+                'access_token': current_token,
             })
             resp.raise_for_status()
 
