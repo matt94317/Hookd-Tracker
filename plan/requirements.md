@@ -8,10 +8,11 @@
 
 ## User Roles
 
-| Role                | Description                                               |
-| ------------------- | --------------------------------------------------------- |
-| **admin**           | Platform administrator. Full access to all data.          |
-| **company/ client** | Brand / sponsor. Creates and manages their own campaigns. |
+| Role                | Description                                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------------------------- |
+| **admin**           | Platform administrator. Full access to all data.                                                      |
+| **company/ client** | Brand / sponsor (Enterprise Manager). Creates and manages their own campaigns.                        |
+| **creator**         | Content creator. Signs up via invite link, connects social accounts, submits posts, tracks earnings.  |
 
 ---
 
@@ -227,6 +228,151 @@ Companies can pay creators directly through the platform. Each creator holds a S
 | **Idempotency**    | All Stripe API calls use idempotency keys. Webhook handlers are idempotent (check if event already processed). |
 | **Test mode**      | All development uses Stripe test keys and test card numbers. Separate test/live key pairs per environment.     |
 | **Error handling** | Failed payments trigger email notifications. Payout failures surface in the Payroll UI with reason.            |
+
+---
+
+## Feature 4: Content Review Dashboard (Basic — Enterprise Manager)
+
+### Overview
+
+> Managers have a unified feed of all posts submitted or published by creators, with the ability to approve or reject content.
+
+### Requirements
+
+- View all posts submitted by creators across campaigns in a single feed
+- Filter posts by creator, platform, campaign, or status
+- Approve or reject submitted content with a single action
+- Rejected posts return to the creator with a reason
+
+---
+
+## Feature 5: Post Submission & Approval Workflow (Basic — Creator)
+
+### Overview
+
+> Creators can draft, submit, and track their posts through an approval workflow inside the platform.
+
+### Flow
+
+1. Creator drafts a post (caption, media, platform target) within the app
+2. Creator submits the post for manager review
+3. Manager approves or rejects the submission
+4. Status progresses: **Draft → In Review → Approved → Published**
+
+### Requirements
+
+- Creators can upload or draft posts within the app
+- Submission status visible to both creator and manager
+- Creators receive in-app notifications for approvals and rejections
+
+---
+
+## Feature 6: Creator Management (Basic — Enterprise Manager)
+
+### Overview
+
+> Managers can view and manage all creators across all campaigns from one place.
+
+### Requirements
+
+- View all connected creators across all campaigns in a single list
+- Creator profile shows: name, connected platforms, active campaign, contract status
+- Invite content creators via email link (creators sign up and connect OAuth from that link)
+
+---
+
+## Feature 7: Messaging (Basic)
+
+### Overview
+
+> Direct messaging between creators and their assigned campaign manager.
+
+### Requirements
+
+- Managers and creators can send/receive direct messages within the platform
+- In-app notifications for post approvals, rejections, and payment updates
+- Notification delivered to the relevant party on any status change
+
+---
+
+## Feature 8: Creator Campaign & Payroll Views (Basic — Creator)
+
+### Overview
+
+> Creators can see their enrolled campaigns, track their own progress, and monitor payout status.
+
+### Requirements
+
+- View all campaigns they are currently enrolled in
+- View campaign brief, content guidelines, and key deadlines
+- Track own progress against deliverables (e.g. 2 of 4 posts approved)
+- See earnings per campaign and payout status per milestone: **Pending → Approved → Paid**
+- Receive notification when a payment has been processed
+
+---
+
+## Advanced Features
+
+> These features are planned for a later phase and elevate Hookd Tracker into a full intelligence and automation platform.
+
+### Enterprise Manager — Advanced
+
+| Feature                          | Description                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Multi-Platform Support**       | Extend OAuth to YouTube, Facebook, X (Twitter), LinkedIn, Pinterest. Aggregate cross-platform metrics.       |
+| **Automated Post Publishing**    | Schedule approved posts to auto-publish at a specified time with platform-specific formatting applied.       |
+| **AI Content Quality Review**    | Pre-screen submitted posts against brand guidelines; AI quality score with improvement suggestions.          |
+| **Advanced Campaign Analytics**  | Campaign-level dashboard: total reach, engagement rate, estimated earned media value. Exportable PDF/CSV.    |
+| **Creator ROI Comparison**       | Cost per post vs. engagement delivered per creator.                                                          |
+| **Contract & Milestone Engine**  | Multi-milestone contracts, automated milestone tracking, payment triggers per phase, reusable templates.     |
+| **Automated Payment Processing** | Direct integration with payroll tools (Xero, QuickBooks, Deel). Multi-currency support.                     |
+| **Fraud & Compliance Detection** | Flag suspicious engagement patterns, track post duration live, full audit trail.                             |
+| **Team & Role Management**       | Invite team members (UGC Manager, Campaign Lead, Finance Officer), role-based permissions, activity log.     |
+
+### Creator — Advanced
+
+| Feature                            | Description                                                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Auto-Publish on Approval**       | Approved posts auto-publish to the platform at the scheduled time; creator receives confirmation.        |
+| **Personal Performance Dashboard** | Detailed analytics per post: views, reach, likes, comments, shares, saves, engagement rate over time.   |
+| **Campaign Discovery**             | Browse and apply to available campaigns; view requirements, timeline, and compensation before applying.  |
+| **Content Calendar**               | Visual calendar for deadlines and drafts; drag-and-drop scheduling; sync with Google/Apple Calendar.     |
+| **Approval Feedback Threads**      | Manager feedback attached to rejected posts; creator can revise and resubmit in the same thread.        |
+| **Earnings & Payment History**     | Detailed earnings breakdown per post/milestone/campaign; downloadable statements for tax/invoicing.      |
+| **Performance Benchmarking**       | Performance vs. campaign averages (anonymised); improvement tips; badge system for milestones.           |
+| **Push Notifications (Mobile)**    | Real-time push notifications for approvals, rejections, campaign invites, payments, and messages.        |
+
+---
+
+## Feature Summary Table
+
+| Feature                                   | Manager | Creator | Tier     |
+| ----------------------------------------- | ------- | ------- | -------- |
+| Creator onboarding & OAuth connection     | ✅      | ✅      | Basic    |
+| Content review dashboard                  | ✅      | —       | Basic    |
+| Post submission & approval workflow       | ✅      | ✅      | Basic    |
+| Campaign creation & management            | ✅      | —       | Basic    |
+| Basic performance metrics                 | ✅      | ✅      | Basic    |
+| Payment approval & HR notification        | ✅      | —       | Basic    |
+| Payroll status visibility                 | —       | ✅      | Basic    |
+| Direct messaging                          | ✅      | ✅      | Basic    |
+| Campaign overview & progress tracking     | ✅      | ✅      | Basic    |
+| Creator management                        | ✅      | —       | Basic    |
+| Multi-platform social support             | ✅      | ✅      | Advanced |
+| Auto-publish on approval                  | ✅      | ✅      | Advanced |
+| AI content quality review                 | ✅      | —       | Advanced |
+| Advanced campaign analytics & ROI         | ✅      | —       | Advanced |
+| Multi-milestone contract engine           | ✅      | —       | Advanced |
+| Automated payment processing              | ✅      | ✅      | Advanced |
+| Fraud & compliance detection              | ✅      | —       | Advanced |
+| Team roles & permissions                  | ✅      | —       | Advanced |
+| Personal performance dashboard            | —       | ✅      | Advanced |
+| Campaign discovery & applications         | —       | ✅      | Advanced |
+| Content calendar                          | —       | ✅      | Advanced |
+| Approval feedback threads                 | ✅      | ✅      | Advanced |
+| Earnings history & statements             | —       | ✅      | Advanced |
+| Performance benchmarking & badges         | —       | ✅      | Advanced |
+| Push notifications (mobile)               | ✅      | ✅      | Advanced |
 
 ---
 
