@@ -25,6 +25,7 @@ def _account_to_dict(a):
         "username": a.username,
         "token_expires_at": str(a.token_expires_at) if a.token_expires_at else None,
         "daily_target": a.daily_target,
+        "weekly_target": a.weekly_target,
         "monthly_target": a.monthly_target,
         "created_at": str(a.created_at) if a.created_at else None,
         "updated_at": str(a.updated_at) if a.updated_at else None,
@@ -139,6 +140,34 @@ def list_accounts():
 
     accounts = query.order_by(Account.created_at.desc()).all()
     return jsonify([_account_to_dict(a) for a in accounts]), 200
+
+
+@accounts_bp.route('/accounts/<int:account_id>', methods=['PUT'])
+@roles_required('admin', 'company')
+def update_account(account_id):
+    """Update account targets (daily_target, monthly_target)."""
+    claims = get_jwt()
+    user_id = int(get_jwt_identity())
+    role = claims['role']
+
+    account = Account.query.get_or_404(account_id)
+
+    if role == 'company':
+        campaign = Campaign.query.get(account.campaign_id)
+        if campaign.company_id != user_id:
+            return jsonify({"error": "Access forbidden"}), 403
+
+    data = request.get_json() or {}
+
+    if 'daily_target' in data:
+        account.daily_target = int(data['daily_target']) if data['daily_target'] is not None else 0
+    if 'weekly_target' in data:
+        account.weekly_target = int(data['weekly_target']) if data['weekly_target'] is not None else 0
+    if 'monthly_target' in data:
+        account.monthly_target = int(data['monthly_target']) if data['monthly_target'] is not None else 0
+
+    db.session.commit()
+    return jsonify(_account_to_dict(account)), 200
 
 
 @accounts_bp.route('/accounts/<int:account_id>', methods=['DELETE'])

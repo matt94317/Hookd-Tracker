@@ -58,6 +58,7 @@ class Account(db.Model):
     refresh_token = db.Column(db.Text)
     token_expires_at = db.Column(db.DateTime)
     daily_target = db.Column(db.Integer, default=0)
+    weekly_target = db.Column(db.Integer, default=0)
     monthly_target = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, server_default=func.now())
     updated_at = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
