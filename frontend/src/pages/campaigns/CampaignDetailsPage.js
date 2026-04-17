@@ -59,6 +59,24 @@ function minsAgo(date) {
   return mins < 1 ? 'just now' : `${mins} min ago`;
 }
 
+function currentMonthLabel() {
+  return new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+function currentWeekRange() {
+  const today = new Date();
+  const dow = today.getDay();
+  const mon = new Date(today);
+  mon.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+  mon.setHours(0, 0, 0, 0);
+  const fri = new Date(mon);
+  fri.setDate(mon.getDate() + 4);
+  const opts = { month: 'short', day: 'numeric' };
+  const monStr = mon.toLocaleDateString('en-US', opts);
+  const friStr = fri.toLocaleDateString('en-US', { day: 'numeric' });
+  return `${monStr} – ${friStr}`;
+}
+
 /* ── Component ── */
 export default function CampaignDetailsPage() {
   const { id } = useParams();
@@ -82,6 +100,8 @@ export default function CampaignDetailsPage() {
   const [copied, setCopied] = useState(false);
   const [syncingId, setSyncingId] = useState(null);
   const [syncMsg, setSyncMsg] = useState('');
+  const [editTargetAccount, setEditTargetAccount] = useState(null); // { id, daily_target, monthly_target }
+  const [editTargetSaving, setEditTargetSaving] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -148,6 +168,9 @@ export default function CampaignDetailsPage() {
   const creatorProgress = useMemo(() => {
     if (!accounts.length) return [];
     const weekDays = getCurrentWeekDays();
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
     return accounts.map(acc => {
       const accPosts = posts.filter(p => p.account_id === acc.id);
       const weekPosts = weekDays.map(day => {
@@ -159,15 +182,21 @@ export default function CampaignDetailsPage() {
           return t >= day && t < next;
         }).length;
       });
-      const dailyTarget  = acc.daily_target  || 0;
+      const monthPosts = accPosts.filter(p => {
+        if (!p.posted_at) return false;
+        const t = new Date(p.posted_at);
+        return t >= monthStart && t <= monthEnd;
+      }).length;
+      const dailyTarget   = acc.daily_target   || 0;
+      const weeklyTarget  = acc.weekly_target  || 0;
       const monthlyTarget = acc.monthly_target || 0;
-      const weeklyTarget  = dailyTarget > 0 ? dailyTarget * 5 : monthlyTarget;
       return {
         id:           acc.id,
         username:     acc.username || `Account ${acc.id}`,
         channelName:  acc.channel_name || '',
         creatorName:  '',
         totalPosts:   accPosts.length,
+        monthPosts,
         monthlyTarget,
         weeklyTarget,
         dailyTarget,
@@ -259,6 +288,27 @@ export default function CampaignDetailsPage() {
     navigator.clipboard.writeText(oauthUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function saveTargets() {
+    if (!editTargetAccount) return;
+    setEditTargetSaving(true);
+    try {
+      const updated = await apiFetch(`/accounts/${editTargetAccount.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          daily_target: editTargetAccount.daily_target,
+          weekly_target: editTargetAccount.weekly_target,
+          monthly_target: editTargetAccount.monthly_target,
+        }),
+      }, token);
+      setAccounts(prev => prev.map(a => a.id === updated.id ? { ...a, ...updated } : a));
+      setEditTargetAccount(null);
+    } catch {
+      // keep modal open on error
+    } finally {
+      setEditTargetSaving(false);
+    }
   }
 
   const useMonthlyAxis = timePeriod === null || timePeriod >= 90;
@@ -434,17 +484,46 @@ export default function CampaignDetailsPage() {
                         </span>
                         <span className={styles.platformBadge}>{platformLabel(c.channelName)}</span>
                       </div>
+                      <button
+                        className={styles.editTargetBtn}
+                        onClick={() => setEditTargetAccount({
+                          id: c.id,
+                          username: c.username,
+                          daily_target: c.dailyTarget,
+                          weekly_target: c.weeklyTarget,
+                          monthly_target: c.monthlyTarget,
+                        })}
+                        title="Edit targets"
+                      >
+                        ✏
+                      </button>
+                    </div>
+
+                    <div className={styles.progressPeriodRow}>
+                      <span className={styles.progressPeriodLabel}>{currentMonthLabel()}</span>
                       <span className={styles.progressPostCount}>
-                        {c.totalPosts}/{c.monthlyTarget || '—'} posts
+                        {c.monthPosts}/{c.monthlyTarget || '—'} posts
                       </span>
                     </div>
 
-                    {c.creatorName && (
-                      <p className={styles.progressRealName}>{c.creatorName}</p>
-                    )}
-                    <p className={styles.progressTarget}>
-                      {c.weeklyTarget || '—'} posts/week target
-                    </p>
+                    <div className={styles.progressTargets}>
+                      {c.dailyTarget > 0 && (
+                        <span className={styles.progressTargetChip}>{c.dailyTarget}/day</span>
+                      )}
+                      {c.weeklyTarget > 0 && (
+                        <span className={styles.progressTargetChip}>{c.weeklyTarget}/week</span>
+                      )}
+                      {c.monthlyTarget > 0 && (
+                        <span className={styles.progressTargetChip}>{c.monthlyTarget}/mo</span>
+                      )}
+                      {!c.dailyTarget && !c.weeklyTarget && !c.monthlyTarget && (
+                        <span className={styles.progressTargetChip} style={{ opacity: 0.4 }}>no targets set</span>
+                      )}
+                    </div>
+
+                    <div className={styles.weekHeader}>
+                      <span className={styles.weekRangeLabel}>{currentWeekRange()}</span>
+                    </div>
 
                     <div className={styles.dayBubbles}>
                       {WEEK_LABELS.map((label, i) => {
@@ -609,6 +688,66 @@ export default function CampaignDetailsPage() {
       {activeTab !== 'Overview' && activeTab !== 'Rank' && activeTab !== 'Accounts' && (
         <div className={styles.comingSoon}>
           <p>{activeTab} — coming soon</p>
+        </div>
+      )}
+      {editTargetAccount && (
+        <div className={styles.modalOverlay} onClick={() => setEditTargetAccount(null)}>
+          <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>Edit targets — @{editTargetAccount.username}</h3>
+            <div className={styles.modalFields}>
+              <label className={styles.modalLabel}>
+                Daily target
+                <div className={styles.modalInputRow}>
+                  <input
+                    className={styles.modalInput}
+                    type="number"
+                    min="0"
+                    value={editTargetAccount.daily_target || ''}
+                    placeholder="0"
+                    onChange={e => setEditTargetAccount(prev => ({ ...prev, daily_target: e.target.value === '' ? 0 : parseInt(e.target.value) }))}
+                  />
+                  <span className={styles.modalInputUnit}>posts / day</span>
+                </div>
+              </label>
+              <label className={styles.modalLabel}>
+                Weekly target
+                <div className={styles.modalInputRow}>
+                  <input
+                    className={styles.modalInput}
+                    type="number"
+                    min="0"
+                    value={editTargetAccount.weekly_target || ''}
+                    placeholder="0"
+                    onChange={e => setEditTargetAccount(prev => ({ ...prev, weekly_target: e.target.value === '' ? 0 : parseInt(e.target.value) }))}
+                  />
+                  <span className={styles.modalInputUnit}>posts / week</span>
+                </div>
+              </label>
+              <label className={styles.modalLabel}>
+                Monthly target
+                <div className={styles.modalInputRow}>
+                  <input
+                    className={styles.modalInput}
+                    type="number"
+                    min="0"
+                    value={editTargetAccount.monthly_target || ''}
+                    placeholder="0"
+                    onChange={e => setEditTargetAccount(prev => ({ ...prev, monthly_target: e.target.value === '' ? 0 : parseInt(e.target.value) }))}
+                  />
+                  <span className={styles.modalInputUnit}>posts / month</span>
+                </div>
+              </label>
+            </div>
+            <p className={styles.modalHint}>
+              Set any combination of targets. Leave a field blank (0) to hide it from the card.
+            </p>
+            <div className={styles.modalActions}>
+              <button className={styles.modalCancelBtn} onClick={() => setEditTargetAccount(null)}>Cancel</button>
+              <button className={styles.modalSaveBtn} onClick={saveTargets} disabled={editTargetSaving}>
+                {editTargetSaving ? 'Saving…' : 'Save'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </AppLayout>

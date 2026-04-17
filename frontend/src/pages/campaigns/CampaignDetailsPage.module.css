@@ -417,7 +417,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 
 .progressUsernameRow {
@@ -442,6 +442,42 @@
   letter-spacing: 0.3px;
 }
 
+.editTargetBtn {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  line-height: 1;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.progressCard:hover .editTargetBtn {
+  opacity: 1;
+}
+
+.editTargetBtn:hover {
+  background: var(--color-bg-subtle);
+}
+
+.progressPeriodRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.progressPeriodLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .progressPostCount {
   font-size: 13px;
   font-weight: 600;
@@ -449,16 +485,143 @@
   white-space: nowrap;
 }
 
-.progressRealName {
-  font-size: 12px;
-  color: var(--color-text-secondary);
-  margin-bottom: 1px;
+.progressTargets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 14px;
 }
 
-.progressTarget {
-  font-size: 12px;
+.progressTargetChip {
+  font-size: 11.5px;
+  font-weight: 500;
   color: var(--color-text-secondary);
-  margin-bottom: 14px;
+  background: var(--color-bg-subtle);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.weekHeader {
+  margin-bottom: 6px;
+}
+
+.weekRangeLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Edit target modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 340px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.modalTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 18px;
+}
+
+.modalFields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.modalLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.modalInputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modalInput {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 14px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  outline: none;
+  width: 80px;
+  box-sizing: border-box;
+}
+
+.modalInput:focus {
+  border-color: var(--color-primary, #6366f1);
+}
+
+.modalInputUnit {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+.modalHint {
+  font-size: 11.5px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modalCancelBtn {
+  padding: 7px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--color-white);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.modalSaveBtn {
+  padding: 7px 18px;
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: var(--color-text);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.modalSaveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ── Day bubbles ── */
