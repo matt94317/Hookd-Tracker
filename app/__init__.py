@@ -1,9 +1,11 @@
 import os
 from datetime import timedelta
 from flask import Flask, send_from_directory
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()  # loads backend/.env before anything else reads os.environ
+# Load from the project root .env (two levels up from this file)
+load_dotenv(Path(__file__).parent.parent.parent / '.env')
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
