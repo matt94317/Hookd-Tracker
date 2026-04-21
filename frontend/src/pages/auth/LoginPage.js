@@ -77,7 +77,13 @@ function LoginPage() {
           </div>
 
           <div className={styles.forgotRow}>
-            <a className={styles.linkSmall} href="#">Forgot password?</a>
+            <span
+              className={styles.linkSmall}
+              onClick={() => navigate('/forgot-password')}
+              style={{ cursor: 'pointer' }}
+            >
+              Forgot password?
+            </span>
           </div>
 
           {error && <p className={styles.errorMsg}>{error}</p>}
