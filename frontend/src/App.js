@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/landing/LandingPage';
 import LoginPage from './pages/auth/LoginPage';
@@ -16,9 +17,11 @@ import OAuthSuccessPage from './pages/oauth/OAuthSuccessPage';
 import OAuthErrorPage from './pages/oauth/OAuthErrorPage';
 import PlanSelectionPage from './pages/settings/PlanSelectionPage';
 import PostsPage from './pages/posts/PostsPage';
+import PayrollPage from './pages/payroll/PayrollPage';
 
 function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -34,13 +37,14 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
           <Route path="/home" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/payroll" element={<ProtectedRoute><PlaceholderPage title="Payroll" /></ProtectedRoute>} />
+          <Route path="/payroll" element={<ProtectedRoute><PayrollPage /></ProtectedRoute>} />
           <Route path="/accounts" element={<ProtectedRoute><AccountsPage /></ProtectedRoute>} />
           <Route path="/plan-selection" element={<ProtectedRoute><PlanSelectionPage /></ProtectedRoute>} />
           <Route path="/posts" element={<ProtectedRoute><PostsPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </ThemeProvider>
   );
 }
 

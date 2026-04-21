@@ -222,6 +222,7 @@ export default function CampaignDetailsPage() {
       const dailyTarget   = acc.daily_target   || 0;
       const weeklyTarget  = acc.weekly_target  || 0;
       const monthlyTarget = acc.monthly_target || 0;
+      const payoutAmount  = acc.payout_amount  || 0;
       return {
         id:           acc.id,
         username:     acc.username || `Account ${acc.id}`,
@@ -232,6 +233,7 @@ export default function CampaignDetailsPage() {
         monthlyTarget,
         weeklyTarget,
         dailyTarget,
+        payoutAmount,
         weekPosts,
       };
     });
@@ -332,6 +334,7 @@ export default function CampaignDetailsPage() {
           daily_target: editTargetAccount.daily_target,
           weekly_target: editTargetAccount.weekly_target,
           monthly_target: editTargetAccount.monthly_target,
+          payout_amount: editTargetAccount.payout_amount,
         }),
       }, token);
       setAccounts(prev => prev.map(a => a.id === updated.id ? { ...a, ...updated } : a));
@@ -551,6 +554,7 @@ export default function CampaignDetailsPage() {
                             daily_target: c.dailyTarget,
                             weekly_target: c.weeklyTarget,
                             monthly_target: c.monthlyTarget,
+                            payout_amount: c.payoutAmount,
                           })}
                           title="Edit targets"
                         >
@@ -782,6 +786,21 @@ export default function CampaignDetailsPage() {
                     onChange={e => setEditTargetAccount(prev => ({ ...prev, monthly_target: e.target.value === '' ? 0 : parseInt(e.target.value) }))}
                   />
                   <span className={styles.modalInputUnit}>posts / month</span>
+                </div>
+              </label>
+              <label className={styles.modalLabel}>
+                Monthly payout
+                <div className={styles.modalInputRow}>
+                  <span className={styles.modalInputUnit} style={{ marginRight: 4 }}>$</span>
+                  <input
+                    className={styles.modalInput}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={editTargetAccount.payout_amount || ''}
+                    placeholder="0.00"
+                    onChange={e => setEditTargetAccount(prev => ({ ...prev, payout_amount: e.target.value === '' ? 0 : parseFloat(e.target.value) }))}
+                  />
                 </div>
               </label>
             </div>
