@@ -1,8 +1,8 @@
 .sidebar {
   width: 312px;
   min-height: 100vh;
-  background-color: #ffffff;
-  border-right: 2px solid #e5e7eb;
+  background-color: var(--color-white);
+  border-right: 2px solid var(--color-border);
   display: flex;
   flex-direction: column;
   padding: 24px 17px;
@@ -21,7 +21,7 @@
   gap: 12px;
   padding: 4px 8px 24px;
   cursor: pointer;
-  color: #111827;
+  color: var(--color-text);
 }
 
 .logoImg {
@@ -35,26 +35,8 @@
 .logoText {
   font-size: 18px;
   font-weight: 800;
-  color: #111827;
+  color: var(--color-text);
   letter-spacing: -0.4px;
-}
-
-/* Account row */
-.accountRow {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 10px 13px 18px;
-  color: #6b7280;
-}
-
-.accountEmail {
-  font-size: 14px;
-  font-weight: 500;
-  color: #6b7280;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* Nav */
@@ -73,7 +55,7 @@
   border-radius: 9px;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-size: 16px;
   font-weight: 500;
   font-family: inherit;
@@ -85,8 +67,8 @@
 }
 
 .navItem:hover {
-  background-color: #ede9fe;
-  color: #4f46e5;
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary-dark);
 }
 
 .navItem.active {
@@ -106,4 +88,179 @@
   align-items: center;
   flex-shrink: 0;
   width: 19px;
+}
+
+/* Bottom section: account button + popup menu */
+.bottomSection {
+  position: relative;
+  margin-top: 8px;
+}
+
+.accountBtn {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 13px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.accountBtn:hover {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+.accountBtnActive {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+.accountEmail {
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.chevron {
+  flex-shrink: 0;
+  transition: transform 0.18s ease;
+  transform: rotate(180deg);
+}
+
+.chevronUp {
+  transform: rotate(0deg);
+}
+
+/* Popup menu */
+.accountMenu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--color-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-modal);
+  padding: 6px;
+  z-index: 100;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-dark);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.menuItem:hover {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+.menuItemDanger {
+  color: #dc2626;
+}
+
+.menuItemDanger:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.menuItemIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.menuDivider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 4px 0;
+}
+
+/* Theme picker */
+.themeLabel {
+  padding: 6px 11px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.themeOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.themeOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-dark);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.themeOption:hover {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+.themeOptionActive {
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.themeOptionActive:hover {
+  background-color: var(--color-primary-bg);
+  color: var(--color-primary-dark);
+}
+
+.themeOptionIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.checkmark {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  color: var(--color-primary-dark);
 }
