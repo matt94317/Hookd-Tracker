@@ -27,6 +27,7 @@ def _account_to_dict(a):
         "daily_target": a.daily_target,
         "weekly_target": a.weekly_target,
         "monthly_target": a.monthly_target,
+        "payout_amount": float(a.payout_amount) if a.payout_amount is not None else 0,
         "created_at": str(a.created_at) if a.created_at else None,
         "updated_at": str(a.updated_at) if a.updated_at else None,
     }
@@ -165,6 +166,8 @@ def update_account(account_id):
         account.weekly_target = int(data['weekly_target']) if data['weekly_target'] is not None else 0
     if 'monthly_target' in data:
         account.monthly_target = int(data['monthly_target']) if data['monthly_target'] is not None else 0
+    if 'payout_amount' in data:
+        account.payout_amount = float(data['payout_amount']) if data['payout_amount'] is not None else 0
 
     db.session.commit()
     return jsonify(_account_to_dict(account)), 200

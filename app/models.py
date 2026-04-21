@@ -60,6 +60,7 @@ class Account(db.Model):
     daily_target = db.Column(db.Integer, default=0)
     weekly_target = db.Column(db.Integer, default=0)
     monthly_target = db.Column(db.Integer, default=0)
+    payout_amount = db.Column(db.Numeric(10, 2), default=0)
     created_at = db.Column(db.DateTime, server_default=func.now())
     updated_at = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -81,6 +82,25 @@ class Post(db.Model):
     shares = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, server_default=func.now())
     updated_at = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class PayrollRecord(db.Model):
+    __tablename__ = 'payroll_records'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    account_id = db.Column(db.BigInteger, db.ForeignKey('accounts.id', ondelete='CASCADE'), nullable=False)
+    month = db.Column(db.String(7), nullable=False)          # "YYYY-MM"
+    posts_count = db.Column(db.Integer, default=0)
+    monthly_target = db.Column(db.Integer, default=0)
+    payout_amount = db.Column(db.Numeric(10, 2), default=0)
+    status = db.Column(db.String(20), nullable=False, default='pending')  # 'pending' | 'approved'
+    approved_at = db.Column(db.DateTime, nullable=True)
+    approved_by_id = db.Column(db.BigInteger, db.ForeignKey('users.id'), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=func.now())
+
+    # Relationships
+    account = db.relationship('Account', backref='payroll_records', lazy=True)
+    approved_by = db.relationship('User', foreign_keys=[approved_by_id], lazy=True)
 
 
 class Subscription(db.Model):

@@ -43,6 +43,7 @@ def create_app(config=None):
     from .routes.posts import posts_bp
     from .routes.users import users_bp
     from .routes.payments import payments_bp, stripe_bp
+    from .routes.payroll import payroll_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(campaigns_bp)
     app.register_blueprint(accounts_bp)
@@ -50,6 +51,7 @@ def create_app(config=None):
     app.register_blueprint(users_bp)
     app.register_blueprint(payments_bp)
     app.register_blueprint(stripe_bp)
+    app.register_blueprint(payroll_bp)
 
     @app.route('/uploads/<path:filename>')
     def serve_upload(filename):
