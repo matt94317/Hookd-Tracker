@@ -14,7 +14,7 @@ import { TIME_PERIODS } from '../../utils/constants';
 import styles from './CampaignDetailsPage.module.css';
 
 const TABS = ['Overview', 'Accounts', 'Rank', 'Notifications', 'Tasks', 'Uploads'];
-const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F'];
+const WEEK_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const AVATAR_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6', '#3b82f6', '#10b981'];
 
 /* ── Helpers ── */
@@ -47,7 +47,7 @@ function getCurrentWeekDays() {
   const monday = new Date(today);
   monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
   monday.setHours(0, 0, 0, 0);
-  return Array.from({ length: 5 }, (_, i) => {
+  return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
     return d;
@@ -77,6 +77,14 @@ function currentWeekRange() {
   return `${monStr} – ${friStr}`;
 }
 
+function formatPlatformName(name) {
+  if (!name) return 'Unknown';
+  const n = name.toLowerCase();
+  if (n === 'tiktok')    return 'TikTok';
+  if (n === 'instagram') return 'Instagram';
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 /* ── Component ── */
 export default function CampaignDetailsPage() {
   const { id } = useParams();
@@ -88,6 +96,7 @@ export default function CampaignDetailsPage() {
   const [accounts, setAccounts] = useState([]);
   const [activeTab, setActiveTab] = useState('Overview');
   const [timePeriod, setTimePeriod] = useState(365);
+  const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [selectedAccount, setSelectedAccount] = useState('all');
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -120,9 +129,32 @@ export default function CampaignDetailsPage() {
       .finally(() => setLoading(false));
   }, [id, token, refreshKey]);
 
+  /* ── Platform helpers ── */
+  const availablePlatforms = useMemo(() => {
+    const seen = new Set();
+    return accounts
+      .filter(a => a.channel_name)
+      .filter(a => {
+        const key = a.channel_name.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map(a => ({ value: a.channel_name.toLowerCase(), label: formatPlatformName(a.channel_name) }));
+  }, [accounts]);
+
+  const platformAccounts = useMemo(() => {
+    if (selectedPlatform === 'all') return accounts;
+    return accounts.filter(a => (a.channel_name || '').toLowerCase() === selectedPlatform);
+  }, [accounts, selectedPlatform]);
+
   /* ── Filtered posts ── */
   const filteredPosts = useMemo(() => {
     let result = posts;
+    if (selectedPlatform !== 'all') {
+      const ids = new Set(platformAccounts.map(a => a.id));
+      result = result.filter(p => ids.has(p.account_id));
+    }
     if (selectedAccount !== 'all') {
       const aid = parseInt(selectedAccount);
       result = result.filter(p => p.account_id === aid);
@@ -133,7 +165,7 @@ export default function CampaignDetailsPage() {
       result = result.filter(p => p.posted_at && new Date(p.posted_at) >= cutoff);
     }
     return result;
-  }, [posts, timePeriod, selectedAccount]);
+  }, [posts, timePeriod, selectedAccount, selectedPlatform, platformAccounts]);
 
   /* ── Metrics ── */
   const metrics = useMemo(() => {
@@ -166,12 +198,12 @@ export default function CampaignDetailsPage() {
 
   /* ── Creator progress ── */
   const creatorProgress = useMemo(() => {
-    if (!accounts.length) return [];
+    if (!platformAccounts.length) return [];
     const weekDays = getCurrentWeekDays();
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-    return accounts.map(acc => {
+    return platformAccounts.map(acc => {
       const accPosts = posts.filter(p => p.account_id === acc.id);
       const weekPosts = weekDays.map(day => {
         const next = new Date(day);
@@ -203,12 +235,12 @@ export default function CampaignDetailsPage() {
         weekPosts,
       };
     });
-  }, [accounts, posts]);
+  }, [platformAccounts, posts]);
 
   /* ── Leaderboard data ── */
   const leaderboardData = useMemo(() => {
-    if (!accounts.length) return [];
-    const raw = accounts.map(acc => {
+    if (!platformAccounts.length) return [];
+    const raw = platformAccounts.map(acc => {
       const accPosts = posts.filter(p => p.account_id === acc.id);
       const videos   = accPosts.length;
       const views    = accPosts.reduce((s, p) => s + (p.views || 0), 0);
@@ -228,7 +260,7 @@ export default function CampaignDetailsPage() {
       if (typeof a[lbSortCol] === 'number') return (a[lbSortCol] - b[lbSortCol]) * v;
       return String(a[lbSortCol]).localeCompare(String(b[lbSortCol])) * v;
     });
-  }, [accounts, posts, lbSortCol, lbSortDir]);
+  }, [platformAccounts, posts, lbSortCol, lbSortDir]);
 
   function handleLbSort(col) {
     if (lbSortCol === col) setLbSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -369,11 +401,28 @@ export default function CampaignDetailsPage() {
             <div className={styles.selectWrap}>
               <select
                 className={styles.filterSelect}
+                value={selectedPlatform}
+                onChange={e => {
+                  setSelectedPlatform(e.target.value);
+                  setSelectedAccount('all');
+                }}
+              >
+                <option value="all">All Platforms</option>
+                {availablePlatforms.map(p => (
+                  <option key={p.value} value={p.value}>{p.label}</option>
+                ))}
+              </select>
+              <span className={styles.selectChevron}><ChevronDownIcon /></span>
+            </div>
+
+            <div className={styles.selectWrap}>
+              <select
+                className={styles.filterSelect}
                 value={selectedAccount}
                 onChange={e => setSelectedAccount(e.target.value)}
               >
-                <option value="all">Accounts: All accounts</option>
-                {accounts.map(a => (
+                <option value="all">All Accounts</option>
+                {platformAccounts.map(a => (
                   <option key={a.id} value={a.id}>
                     {a.username || `Account ${a.id}`}
                   </option>
@@ -396,7 +445,6 @@ export default function CampaignDetailsPage() {
               </span>
             )}
 
-            <button className={styles.moreBtn}><MoreIcon /></button>
           </div>
 
           {/* Metrics card */}
@@ -478,51 +526,48 @@ export default function CampaignDetailsPage() {
                 {creatorProgress.map(c => (
                   <div key={c.id} className={styles.progressCard}>
                     <div className={styles.progressCardTop}>
-                      <div className={styles.progressUsernameRow}>
+                      <div className={styles.progressCreatorInfo}>
                         <span className={styles.progressUsername}>
                           @{c.username.replace(/^@/, '')}
                         </span>
-                        <span className={styles.platformBadge}>{platformLabel(c.channelName)}</span>
+                        {c.creatorName && (
+                          <span className={styles.progressCreatorName}>{c.creatorName}</span>
+                        )}
                       </div>
-                      <button
-                        className={styles.editTargetBtn}
-                        onClick={() => setEditTargetAccount({
-                          id: c.id,
-                          username: c.username,
-                          daily_target: c.dailyTarget,
-                          weekly_target: c.weeklyTarget,
-                          monthly_target: c.monthlyTarget,
-                        })}
-                        title="Edit targets"
-                      >
-                        ✏
-                      </button>
+                      <div className={styles.progressCardTopRight}>
+                        <div className={styles.progressBadgeGroup}>
+                          <span className={styles.progressPostsBadge}>
+                            {c.weekPosts.reduce((a, b) => a + b, 0)}/{c.weeklyTarget || '—'} posts
+                          </span>
+                          {c.weeklyTarget > 0 && (
+                            <span className={styles.progressGoalLabel}>{c.weeklyTarget}/week goal</span>
+                          )}
+                        </div>
+                        <button
+                          className={styles.editTargetBtn}
+                          onClick={() => setEditTargetAccount({
+                            id: c.id,
+                            username: c.username,
+                            daily_target: c.dailyTarget,
+                            weekly_target: c.weeklyTarget,
+                            monthly_target: c.monthlyTarget,
+                          })}
+                          title="Edit targets"
+                        >
+                          ✏
+                        </button>
+                      </div>
                     </div>
 
-                    <div className={styles.progressPeriodRow}>
-                      <span className={styles.progressPeriodLabel}>{currentMonthLabel()}</span>
-                      <span className={styles.progressPostCount}>
-                        {c.monthPosts}/{c.monthlyTarget || '—'} posts
-                      </span>
-                    </div>
-
-                    <div className={styles.progressTargets}>
-                      {c.dailyTarget > 0 && (
-                        <span className={styles.progressTargetChip}>{c.dailyTarget}/day</span>
-                      )}
-                      {c.weeklyTarget > 0 && (
-                        <span className={styles.progressTargetChip}>{c.weeklyTarget}/week</span>
-                      )}
-                      {c.monthlyTarget > 0 && (
-                        <span className={styles.progressTargetChip}>{c.monthlyTarget}/mo</span>
-                      )}
-                      {!c.dailyTarget && !c.weeklyTarget && !c.monthlyTarget && (
-                        <span className={styles.progressTargetChip} style={{ opacity: 0.4 }}>no targets set</span>
-                      )}
-                    </div>
-
-                    <div className={styles.weekHeader}>
-                      <span className={styles.weekRangeLabel}>{currentWeekRange()}</span>
+                    <div className={styles.progressBarTrack}>
+                      <div
+                        className={styles.progressBarFill}
+                        style={{
+                          width: c.weeklyTarget > 0
+                            ? `${Math.min(100, (c.weekPosts.reduce((a, b) => a + b, 0) / c.weeklyTarget) * 100)}%`
+                            : '0%'
+                        }}
+                      />
                     </div>
 
                     <div className={styles.dayBubbles}>
@@ -536,7 +581,9 @@ export default function CampaignDetailsPage() {
                           : styles.bubbleEmpty;
                         return (
                           <div key={i} className={styles.dayBubble}>
-                            <div className={`${styles.bubble} ${bubbleClass}`}>{count}</div>
+                            <div className={`${styles.bubble} ${bubbleClass}`}>
+                              {count > 0 ? count : ''}
+                            </div>
                             <span className={styles.dayLabel}>{label}</span>
                           </div>
                         );

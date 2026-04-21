@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
 import { PLANS } from '../../utils/constants';
 import styles from './PlanSelectionPage.module.css';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/Hookd-Tracker.png';
 
 const PLANS_WITH_HIGHLIGHT = PLANS.map(p =>
   p.key === 'pro' ? { ...p, highlighted: true } : p

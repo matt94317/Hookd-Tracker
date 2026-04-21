@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './LandingPage.module.css';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/Hookd-Tracker.png';
 
 function LandingPage() {
   const navigate = useNavigate();

@@ -415,31 +415,60 @@
 
 .progressCardTop {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  gap: 8px;
 }
 
-.progressUsernameRow {
+.progressCreatorInfo {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .progressUsername {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--color-text);
 }
 
-.platformBadge {
-  font-size: 10px;
-  font-weight: 700;
-  background: var(--color-bg-subtle);
-  color: var(--color-text-dark);
-  border-radius: 4px;
-  padding: 2px 5px;
-  letter-spacing: 0.3px;
+.progressCreatorName {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.progressCardTopRight {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.progressBadgeGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.progressPostsBadge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6366f1;
+  background: #ede9fe;
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.progressGoalLabel {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
 }
 
 .editTargetBtn {
@@ -453,6 +482,7 @@
   border-radius: 4px;
   opacity: 0;
   transition: opacity 0.15s;
+  margin-top: 2px;
 }
 
 .progressCard:hover .editTargetBtn {
@@ -463,54 +493,20 @@
   background: var(--color-bg-subtle);
 }
 
-.progressPeriodRow {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.progressPeriodLabel {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.progressPostCount {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text);
-  white-space: nowrap;
-}
-
-.progressTargets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 14px;
-}
-
-.progressTargetChip {
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+.progressBarTrack {
+  width: 100%;
+  height: 5px;
   background: var(--color-bg-subtle);
-  border-radius: 20px;
-  padding: 2px 8px;
+  border-radius: 99px;
+  margin-bottom: 14px;
+  overflow: hidden;
 }
 
-.weekHeader {
-  margin-bottom: 6px;
-}
-
-.weekRangeLabel {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.progressBarFill {
+  height: 100%;
+  background: #6366f1;
+  border-radius: 99px;
+  transition: width 0.3s ease;
 }
 
 /* ── Edit target modal ── */

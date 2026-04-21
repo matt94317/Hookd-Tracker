@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from './Sidebar.module.css';
-import logo from '../assets/logo.png';
+import logo from '../assets/Hookd-Tracker.png';
 
 const Icon = ({ d, children, viewBox = '0 0 24 24' }) => (
   <svg

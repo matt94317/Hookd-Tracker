@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
 import styles from './LoginPage.module.css';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/Hookd-Tracker.png';
 
 function LoginPage() {
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
 import styles from './RegisterPage.module.css';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/Hookd-Tracker.png';
 
 const FREE_EMAIL_DOMAINS = new Set([
   'gmail.com', 'googlemail.com',

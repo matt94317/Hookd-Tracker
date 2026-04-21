@@ -10,8 +10,21 @@ import { formatNumber, toFixed2 } from '../../utils/format';
 import { TIME_PERIODS } from '../../utils/constants';
 import styles from './DashboardPage.module.css';
 
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function formatDate() {
+  return new Date().toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+  });
+}
+
 export default function DashboardPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState('all');
   const [timePeriod, setTimePeriod] = useState(30);
@@ -107,6 +120,21 @@ export default function DashboardPage() {
 
   return (
     <AppLayout>
+      {/* Welcome banner */}
+      <div className={styles.welcomeBanner}>
+        <div>
+          <h2 className={styles.welcomeGreeting}>
+            {getGreeting()}{user?.name ? `, ${user.name}` : ''}
+          </h2>
+          <p className={styles.welcomeDate}>{formatDate()}</p>
+        </div>
+        {user?.role && (
+          <span className={styles.roleBadge}>
+            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+          </span>
+        )}
+      </div>
+
       {/* Page header */}
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Dashboard</h1>
