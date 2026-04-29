@@ -50,8 +50,8 @@ def create_checkout_session():
         session = stripe_service.create_checkout_session(
             customer_id=customer['id'],
             plan=plan,
-            success_url=f"{FRONTEND_URL}/settings?billing=success",
-            cancel_url=f"{FRONTEND_URL}/settings?billing=cancel",
+            success_url=f"{FRONTEND_URL}/settings/subscription?billing=success",
+            cancel_url=f"{FRONTEND_URL}/settings/subscription?billing=cancel",
         )
         return jsonify({"checkout_url": session['url']}), 200
     except Exception as e:
