@@ -13,6 +13,8 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Enum('admin', 'company', name='user_roles'), nullable=False)
     stripe_customer_id = db.Column(db.String(255), unique=True, nullable=True)
+    password_reset_token = db.Column(db.String(100), nullable=True)
+    password_reset_expires_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, server_default=func.now())
     updated_at = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now())
 
