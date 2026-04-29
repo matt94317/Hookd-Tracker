@@ -5,8 +5,8 @@ from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from sqlalchemy import func
 from werkzeug.utils import secure_filename
 from .. import db
-from ..models import Account, Campaign, Post
-from . import roles_required
+from ..models import Account, Campaign, Post, Subscription
+from . import roles_required, PLAN_LIMITS
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
@@ -104,6 +104,27 @@ def create_campaign():
     # admin-created campaigns have no company association
     if claims['role'] == 'company':
         company_id = user_id
+
+        # Enforce active subscription
+        sub = Subscription.query.filter_by(company_id=user_id).first()
+        if not sub or sub.status not in ('active', 'trialing'):
+            return jsonify({
+                "error": "An active subscription is required to create campaigns.",
+                "code": "subscription_required",
+            }), 402
+
+        # Enforce plan campaign limit
+        limit = PLAN_LIMITS.get(sub.plan, {}).get('campaigns')
+        if limit is not None:
+            current_count = Campaign.query.filter_by(company_id=user_id).count()
+            if current_count >= limit:
+                return jsonify({
+                    "error": f"You have reached the {limit}-campaign limit on your {sub.plan.capitalize()} plan. Please upgrade to add more.",
+                    "code": "plan_limit_reached",
+                    "resource": "campaigns",
+                    "limit": limit,
+                    "current": current_count,
+                }), 403
     else:
         company_id = None
 

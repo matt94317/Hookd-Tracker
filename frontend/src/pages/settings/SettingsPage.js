@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import AppLayout from '../../components/AppLayout';
 import { useAuth } from '../../context/AuthContext';
 import { apiFetch } from '../../utils/api';
-import { PLANS } from '../../utils/constants';
 import styles from './SettingsPage.module.css';
 
 const PREF_KEY = 'hookd_settings';
@@ -33,14 +32,6 @@ export default function SettingsPage() {
 
   // ── Billing ──────────────────────────────────────────────────────────────
   const [subscription, setSubscription] = useState(null);
-  const [billingLoading, setBillingLoading] = useState(false);
-  const [billingMsg, setBillingMsg] = useState('');
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('billing') === 'success') setBillingMsg('Subscription activated! Welcome aboard.');
-    if (params.get('billing') === 'cancel') setBillingMsg('Checkout cancelled. No charges were made.');
-  }, []);
 
   useEffect(() => {
     if (user?.role !== 'company' && user?.role !== 'admin') return;
@@ -48,35 +39,6 @@ export default function SettingsPage() {
       .then(d => setSubscription(d.subscription))
       .catch(() => {});
   }, [token, user]);
-
-  async function handleSubscribe(plan) {
-    setBillingLoading(true);
-    setBillingMsg('');
-    try {
-      const { checkout_url } = await apiFetch('/payments/create-checkout-session', {
-        method: 'POST',
-        body: JSON.stringify({ plan }),
-      }, token);
-      window.location.href = checkout_url;
-    } catch (err) {
-      setBillingMsg(err.message || 'Failed to start checkout.');
-      setBillingLoading(false);
-    }
-  }
-
-  async function handleManageBilling() {
-    setBillingLoading(true);
-    setBillingMsg('');
-    try {
-      const { portal_url } = await apiFetch('/payments/create-portal-session', {
-        method: 'POST',
-      }, token);
-      window.location.href = portal_url;
-    } catch (err) {
-      setBillingMsg(err.message || 'Failed to open billing portal.');
-      setBillingLoading(false);
-    }
-  }
 
   const [prefs, setPrefs] = useState(() => ({
     autoSync: false,
@@ -173,62 +135,26 @@ export default function SettingsPage() {
 
       {/* Billing — visible to company/admin only */}
       {(user?.role === 'company' || user?.role === 'admin') && (
-        <div className={styles.card}>
+        <div
+          className={`${styles.card} ${styles.cardClickable}`}
+          onClick={() => navigate('/settings/subscription')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && navigate('/settings/subscription')}
+        >
           <div className={`${styles.iconWrap} ${styles.iconBlue}`}>💳</div>
           <div className={styles.cardBody}>
-            <div className={styles.cardTitle} style={{ marginBottom: 12 }}>Billing &amp; Subscription</div>
-
-            {billingMsg && (
-              <p className={`${styles.syncMsg} ${billingMsg.includes('activated') ? styles.billingSuccess : styles.billingError}`}>
-                {billingMsg}
-              </p>
-            )}
-
-            {subscription ? (
-              <div className={styles.currentPlan}>
-                <div className={styles.planBadgeRow}>
-                  <span className={styles.planBadge}>{subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)}</span>
-                  <span className={`${styles.planStatus} ${subscription.status === 'active' ? styles.statusActive : styles.statusInactive}`}>
-                    {subscription.status}
-                  </span>
+            <div className={styles.cardRow} style={{ marginBottom: 0 }}>
+              <div>
+                <div className={styles.cardTitle}>Billing &amp; Subscription</div>
+                <div className={styles.cardDesc}>
+                  {subscription
+                    ? `${subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)} plan · ${subscription.status}`
+                    : 'No active plan — click to subscribe'}
                 </div>
-                {subscription.current_period_end && (
-                  <p className={styles.cardDesc} style={{ marginTop: 6 }}>
-                    Renews {new Date(subscription.current_period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                  </p>
-                )}
-                <button
-                  className={styles.primaryBtn}
-                  style={{ marginTop: 16 }}
-                  onClick={handleManageBilling}
-                  disabled={billingLoading}
-                >
-                  {billingLoading ? 'Loading…' : 'Manage Billing'}
-                </button>
               </div>
-            ) : (
-              <div className={styles.planGrid}>
-                {PLANS.map(plan => (
-                  <div key={plan.key} className={styles.planCard}>
-                    <div className={styles.planName}>{plan.name}</div>
-                    <div className={styles.planPrice}>
-                      {plan.price}<span className={styles.planPeriod}>{plan.period}</span>
-                    </div>
-                    <ul className={styles.planFeatures}>
-                      {plan.features.map(f => <li key={f}>{f}</li>)}
-                    </ul>
-                    <button
-                      className={styles.primaryBtn}
-                      style={{ width: '100%' }}
-                      onClick={() => handleSubscribe(plan.key)}
-                      disabled={billingLoading}
-                    >
-                      {billingLoading ? 'Loading…' : `Subscribe`}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+              <span className={styles.chevron}>›</span>
+            </div>
           </div>
         </div>
       )}

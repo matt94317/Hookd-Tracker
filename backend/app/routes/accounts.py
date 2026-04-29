@@ -5,8 +5,8 @@ import threading
 from flask import Blueprint, request, jsonify, redirect, current_app
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from .. import db
-from ..models import Account, Campaign, Channel, Post
-from . import roles_required
+from ..models import Account, Campaign, Channel, Post, Subscription
+from . import roles_required, PLAN_LIMITS
 
 accounts_bp = Blueprint('accounts', __name__)
 
@@ -57,6 +57,31 @@ def generate_oauth_url(campaign_id):
 
     if role == 'company' and campaign.company_id != user_id:
         return jsonify({"error": "Access forbidden"}), 403
+
+    # Enforce active subscription and account limit for company users
+    if role == 'company':
+        sub = Subscription.query.filter_by(company_id=user_id).first()
+        if not sub or sub.status not in ('active', 'trialing'):
+            return jsonify({
+                "error": "An active subscription is required to add creators.",
+                "code": "subscription_required",
+            }), 402
+
+        limit = PLAN_LIMITS.get(sub.plan, {}).get('accounts')
+        if limit is not None:
+            # Count all accounts across the company's campaigns
+            campaign_ids = [
+                c.id for c in Campaign.query.filter_by(company_id=user_id).with_entities(Campaign.id).all()
+            ]
+            current_count = Account.query.filter(Account.campaign_id.in_(campaign_ids)).count() if campaign_ids else 0
+            if current_count >= limit:
+                return jsonify({
+                    "error": f"You have reached the {limit}-creator limit on your {sub.plan.capitalize()} plan. Please upgrade to add more.",
+                    "code": "plan_limit_reached",
+                    "resource": "accounts",
+                    "limit": limit,
+                    "current": current_count,
+                }), 403
 
     channel_id = request.args.get('channel_id')
     if not channel_id:

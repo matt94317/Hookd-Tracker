@@ -16,6 +16,7 @@ import AccountsPage from './pages/accounts/AccountsPage';
 import OAuthSuccessPage from './pages/oauth/OAuthSuccessPage';
 import OAuthErrorPage from './pages/oauth/OAuthErrorPage';
 import PlanSelectionPage from './pages/settings/PlanSelectionPage';
+import SubscriptionPage from './pages/settings/SubscriptionPage';
 import PostsPage from './pages/posts/PostsPage';
 import PayrollPage from './pages/payroll/PayrollPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
@@ -44,6 +45,7 @@ function App() {
           <Route path="/payroll" element={<ProtectedRoute><PayrollPage /></ProtectedRoute>} />
           <Route path="/accounts" element={<ProtectedRoute><AccountsPage /></ProtectedRoute>} />
           <Route path="/plan-selection" element={<ProtectedRoute><PlanSelectionPage /></ProtectedRoute>} />
+          <Route path="/settings/subscription" element={<ProtectedRoute><SubscriptionPage /></ProtectedRoute>} />
           <Route path="/posts" element={<ProtectedRoute><PostsPage /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>

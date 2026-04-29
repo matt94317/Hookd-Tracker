@@ -350,6 +350,24 @@
   font-weight: 600;
 }
 
+/* ── Clickable card ── */
+.cardClickable {
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cardClickable:hover {
+  border-color: var(--color-border-dark);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.chevron {
+  font-size: 20px;
+  color: var(--color-text-tertiary);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
 .signOutBtn {
   padding: 8px 18px;
   background: transparent;

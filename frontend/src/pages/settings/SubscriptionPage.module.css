@@ -1,0 +1,337 @@
+/* ── Page header ── */
+.header {
+  margin-bottom: 24px;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  margin-bottom: 12px;
+  display: inline-block;
+  transition: color var(--transition-fast);
+}
+
+.backBtn:hover { color: var(--color-text); }
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.4px;
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ── Feedback banner ── */
+.msgBanner {
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.msgSuccess {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: var(--color-success);
+}
+
+.msgError {
+  background: var(--color-error-bg-light);
+  border: 1px solid #fecaca;
+  color: var(--color-error);
+}
+
+.loadingText {
+  font-size: 14px;
+  color: var(--color-text-tertiary);
+  margin: 24px 0;
+}
+
+/* ── Section ── */
+.section {
+  margin-bottom: 28px;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 12px;
+}
+
+/* ── Current plan card ── */
+.currentCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+}
+
+.currentCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.badgeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.planBadge {
+  background: var(--color-text);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+}
+
+.statusBadge {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.statusActive {
+  background: #f0fdf4;
+  color: var(--color-success);
+  border: 1px solid #bbf7d0;
+}
+
+.statusInactive {
+  background: var(--color-bg);
+  color: var(--color-text-tertiary);
+  border: 1px solid var(--color-border);
+}
+
+.manageBtn {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.manageBtn:hover:not(:disabled) {
+  background: var(--color-bg);
+  border-color: var(--color-border-dark);
+}
+
+.manageBtn:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.renewalText {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0 0 20px;
+}
+
+/* ── Usage meters ── */
+.usageGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  .usageGrid { grid-template-columns: 1fr; }
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.meterLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.meterCount {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.meterAtLimit   { color: var(--color-error); }
+.meterNearLimit { color: #d97706; }
+
+.meterTrack {
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.meterFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.fillGreen  { background: var(--color-success); }
+.fillOrange { background: #f59e0b; }
+.fillRed    { background: var(--color-error); }
+
+/* ── Plan grid ── */
+.planGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.planCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.planCardActive {
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 1px var(--color-text);
+}
+
+.currentPill {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-text);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.planName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-top: 8px;
+}
+
+.planPrice {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.planPeriod {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.planFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.planFeatures li {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.planFeatures li::before {
+  content: '✓ ';
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+/* ── Action buttons ── */
+.upgradeBtn {
+  width: 100%;
+  padding: 10px;
+  background: var(--color-text);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.upgradeBtn:hover:not(:disabled) { background: #1f2937; }
+
+.upgradeBtn:disabled {
+  background: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.downgradeBtn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.downgradeBtn:hover:not(:disabled) {
+  border-color: var(--color-border-dark);
+  color: var(--color-text);
+}
+
+.downgradeBtn:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
